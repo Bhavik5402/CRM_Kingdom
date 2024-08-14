@@ -1,1 +1,4 @@
-export const BASE_API_URL = 'https://localhost:5000/';
+export const Constants = {
+    AppTokenKey: "app_token",
+	UserDetails: "user_details",
+}

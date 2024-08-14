@@ -1,5 +1,5 @@
 // src/components/LoginForm.js
-import React from "react";
+import React, { useState } from "react";
 import {
     TextField,
     Button,
@@ -17,24 +17,26 @@ import GoogleIcon from "@mui/icons-material/Google";
 import "./LoginForm.css"; // Import custom CSS
 
 const LoginForm = () => {
+    // state variables
+    const [formValues, setFormValues] = useState({
+        email: "",
+        password: "",
+    });
+
+    // handle events
+    const handleFormChange = (name, value) => {
+        setFormValues({
+            ...formValues,
+            [name]: value,
+        });
+    };
+
     return (
         <Box className="login-form">
             <Box className="login-header">
                 <Typography variant="h5" className="login-title">
                     Sign in
                 </Typography>
-
-                {/* <Box className="social-login-icons">
-          <IconButton>
-            <FacebookIcon style={{ color: 'white' }} />
-          </IconButton>
-          <IconButton>
-            <GitHubIcon style={{ color: 'white' }} />
-          </IconButton>
-          <IconButton>
-            <GoogleIcon style={{ color: 'white' }} />
-          </IconButton>
-        </Box> */}
             </Box>
 
             <TextField
@@ -44,6 +46,8 @@ const LoginForm = () => {
                 type="email"
                 variant="outlined"
                 className="custom-text-field"
+                value={formValues.email}
+                onChange={(e) => handleFormChange(e.target.name, e.target.value)}
             />
             <TextField
                 fullWidth
@@ -52,12 +56,8 @@ const LoginForm = () => {
                 type="password"
                 variant="outlined"
                 className="custom-text-field"
-            />
-
-            <FormControlLabel
-                control={<Checkbox name="remember" color="primary" />}
-                label="Remember me"
-                className="remember-me-checkbox"
+                value={formValues.password}
+                onChange={(e) => handleFormChange(e.target.name, e.target.value)}
             />
 
             <Button fullWidth variant="contained" className="sign-in-button">
