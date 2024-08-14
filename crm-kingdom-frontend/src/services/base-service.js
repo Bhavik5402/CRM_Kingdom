@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ProtectedEndPoints } from "services/api-end-points.ts";
-import { BASE_API_URL } from "utility/helper/constants";
+import { BASE_API_URL } from "config";
 
 // Used to intercept the request before api enpoint is hit
 axios.interceptors.request.use(

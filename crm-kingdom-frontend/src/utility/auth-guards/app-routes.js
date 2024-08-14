@@ -13,6 +13,6 @@ export const AppRoutes = [
     id: 2,
     path: AppRoutings.Dashboard,
     element: UserPage,
-    routeType: RouterType.unprotectedRoute
+    routeType: RouterType.protectedRoute
   },
 ];
