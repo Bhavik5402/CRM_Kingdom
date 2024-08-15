@@ -26,3 +26,17 @@
 .MuiButton-root {
     height: 40px;
 }
+
+.access-list {
+    padding-left: 0px; 
+    margin: 0; 
+    list-style-type: disc; 
+}
+
+.access-item {
+    margin-bottom: 4px; 
+}
+
+.css-1ygcj2i-MuiTableCell-root{
+    text-align: center;
+}

@@ -1,0 +1,22 @@
+.table-header {
+    display: block; 
+    width: calc(100% - 100px);
+    height: 60px;
+    position: relative;
+    top: 35px;
+    border: 1px solid #efefef;
+    background:linear-gradient(195deg, #49a3f1, #1A73E8);
+    margin-left: 50px;
+    box-sizing: border-box;
+    line-height: 60px; 
+    text-align: center; 
+    color: white; 
+    border-radius: 10px;
+}
+
+.user-table {
+    padding: 10px;
+
+    width: 100%; /* Adjust width as needed */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
