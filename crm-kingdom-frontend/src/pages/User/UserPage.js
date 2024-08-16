@@ -2,6 +2,7 @@ import React from "react";
 import UserTable from "components/User/UserTable";
 import MainLayout from "Layout/MainLayout";
 import './UserPage.css'
+import Breadcrumbs from "components/common/BreadCrumb";
 
 const UserPage = () => {
     const users = [
@@ -27,9 +28,18 @@ const UserPage = () => {
         { id: 20, username: "amandawilson", email: "amandawilson@example.com", LastModified: "05/04/2024 03:55 pm", access: ["Lead Creation", "Add Page"] },
     ];
 
+    const breadcrumbRoute = ["home", "users"];
+
+
     return (
         <MainLayout>
             <div className="user-table">
+                <Breadcrumbs
+                    icon="home"
+                    title="Users"
+                    route={breadcrumbRoute}
+                    light={false}
+                />
                 <div className="table-header">
                     User Table
                 </div>
