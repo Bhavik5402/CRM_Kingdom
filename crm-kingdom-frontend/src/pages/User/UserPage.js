@@ -1,7 +1,6 @@
 // src/pages/UserPage.js
 import React from "react";
 import UserTable from "components/User/UserTable";
-import MainLayout from "Layout/MainLayout";
 
 const UserPage = () => {
     const users = [
@@ -11,12 +10,12 @@ const UserPage = () => {
     ];
 
     return (
-        <MainLayout>
+        <>
             <div>
                 <h1>Users</h1>
                 <UserTable users={users} />
             </div>
-        </MainLayout>
+        </>
     );
 };
 

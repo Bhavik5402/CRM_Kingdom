@@ -7,18 +7,27 @@ export const Login = async (req , res) => {
         const {email , password} = req.body;
         const user = await User.findOne({ where: { email: email } });
         if(!user){
-            return res.status(404).json("User does not exist.");
+            return res.status(404).json({
+                statusCode: 404,
+                isSuccessfull:false,
+                message: "User does not exist"
+            });
         }
         else{
             const userPassword = await UserPassword.findOne({ where: { userid: user.userid } });
             if (!userPassword) {
-                return res.status(404).json({ message: 'User does not exist' });
+                return res.status(404).json({
+                    statusCode: 404,
+                    isSuccessfull:false,
+                    message: "User does not exist"
+                });
             }
             const isPasswordCorrect = await bcrypt.compare(password, userPassword?.password);
             if(isPasswordCorrect){
                 const token = jwtTokenGenerator(user.userid,user.firstname);
                 return res.status(200).json({
                     statusCode: 200,
+                    isSuccessfull:true,
                     message: "Login successful.",
                     data: {
                         user,
@@ -27,8 +36,9 @@ export const Login = async (req , res) => {
                 });
             }
             else{
-                return res.status(400).json({
+                return res.status(200).json({
                     statusCode: 400,
+                    isSuccessfull:false,
                     message: "Username or Password is incorrect.",
                     data: null
                 });
@@ -36,8 +46,9 @@ export const Login = async (req , res) => {
         }
     }
     catch(error){
-        return res.status(500).json({
+        return res.status(200).json({
             statusCode: 500,
+            isSuccessfull:false,
             message: "Internal server error.",
             data: null
         });
