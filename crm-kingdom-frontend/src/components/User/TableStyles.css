@@ -40,3 +40,9 @@
 .css-1ygcj2i-MuiTableCell-root{
     text-align: center;
 }
+
+.add-user-button{
+    text-align: right;
+    margin-top: 20px;
+    margin-right: 20px;
+}

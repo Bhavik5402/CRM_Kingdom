@@ -1,4 +1,3 @@
-// src/components/UserTable.js
 import React, { useState } from "react";
 import {
     Table,
@@ -14,6 +13,7 @@ import {
     Box,
     Collapse,
     Chip,
+    TablePagination,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { Delete, Edit } from "@mui/icons-material";
@@ -23,6 +23,8 @@ const UserTable = ({ users }) => {
     const [filterOpen, setFilterOpen] = useState(false);
     const [filters, setFilters] = useState({ username: "", email: "" });
     const [filteredUsers, setFilteredUsers] = useState(users);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
@@ -37,37 +39,48 @@ const UserTable = ({ users }) => {
                     user.email.toLowerCase().includes(filters.email.toLowerCase())
             )
         );
+        setPage(0); // Reset to the first page after filtering
     };
 
     const handleClear = () => {
         setFilters({ username: "", email: "" });
         setFilteredUsers(users);
+        setPage(0); // Reset to the first page after clearing filters
     };
 
     const handleEdit = (userId) => {
-        // Handle edit action
         console.log(`Edit user with id: ${userId}`);
     };
 
     const handleDelete = (userId) => {
-        // Handle delete action
         console.log(`Delete user with id: ${userId}`);
     };
 
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
     const centerStyle = {
         textAlign: "center"
-    }
+    };
 
     const headrs = {
         fontWeight: 'bold',
         fontSize: '16px',
         textAlign: "center"
-    }
+    };
 
     return (
         <Paper className="table-container">
-            <Box className="filter-container"  sx={{marginTop:"20px"}}>
+            <div className="add-user-button">
+                <Button variant="contained" color="success">Add User</Button>
+            </div>
+            <Box className="filter-container" sx={{ marginTop: "20px" }}>
                 <IconButton onClick={() => setFilterOpen(!filterOpen)}>
                     <FilterListIcon />
                 </IconButton>
@@ -112,7 +125,7 @@ const UserTable = ({ users }) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredUsers.map((user) => (
+                        {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => (
                             <TableRow key={user.id}>
                                 <TableCell sx={centerStyle}>{user.username}</TableCell>
                                 <TableCell sx={centerStyle}>{user.email}</TableCell>
@@ -131,7 +144,7 @@ const UserTable = ({ users }) => {
                                 <TableCell sx={centerStyle}>
                                     <Button
                                         color="primary"
-                                        variant="text"  // No background, no border
+                                        variant="text"
                                         size="small"
                                         sx={{ marginRight: '8px' }}
                                         onClick={() => handleEdit(user.id)}
@@ -140,7 +153,7 @@ const UserTable = ({ users }) => {
                                     </Button>
                                     <Button
                                         color="secondary"
-                                        variant="text"  // No background, no border
+                                        variant="text"
                                         size="small"
                                         onClick={() => handleDelete(user.id)}
                                     >
@@ -151,6 +164,15 @@ const UserTable = ({ users }) => {
                         ))}
                     </TableBody>
                 </Table>
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 15, 20]}
+                    component="div"
+                    count={filteredUsers.length}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
             </TableContainer>
         </Paper>
     );
