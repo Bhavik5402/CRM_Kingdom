@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
 import router from '../routes/auth.route.js';
+import userRouter from '../routes/user.route.js';
 
 dotenv.config();
 const app = express();
@@ -17,6 +18,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 app.use("/", router);
+app.use("/users", userRouter);
 
 app.listen(PORT, () => {
     console.log(`app running on ${PORT}`);

@@ -3,18 +3,21 @@ import "./App.css";
 import { RouterConfig } from "utility/auth-guards/router-config";
 import { SuccessErrorModalProvider } from "Context/AlertContext";
 import { SuccessErrorModal } from "components/Alert/Alert";
-import {Loader} from "components/common/Loader";
+import Loader from "components/Common/Loader";
+import { UserProvider } from "Context/UserContext";
 
 function App() {
     return (
         <>
-            <SuccessErrorModalProvider>
-                <BrowserRouter>
-                    <RouterConfig />
-                    <SuccessErrorModal/>
-                    {/* <Loader/> */}
-                </BrowserRouter>
-            </SuccessErrorModalProvider>
+            <UserProvider>
+                <SuccessErrorModalProvider>
+                    <BrowserRouter>
+                        <RouterConfig />
+                        <SuccessErrorModal />
+                        {/* <Loader/> */}
+                    </BrowserRouter>
+                </SuccessErrorModalProvider>
+            </UserProvider>
         </>
     );
 }
