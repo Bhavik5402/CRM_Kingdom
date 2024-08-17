@@ -19,7 +19,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { Delete, Edit } from "@mui/icons-material";
 import "./TableStyles.css";
 
-const UserTable = ({ users }) => {
+const UserTable = ({ users, onAddUser }) => {
     const [filterOpen, setFilterOpen] = useState(false);
     const [filters, setFilters] = useState({ username: "", email: "" });
     const [filteredUsers, setFilteredUsers] = useState(users);
@@ -78,7 +78,7 @@ const UserTable = ({ users }) => {
     return (
         <Paper className="table-container">
             <div className="add-user-button">
-                <Button variant="contained" color="success">Add User</Button>
+                <Button variant="contained" onClick={onAddUser} color="success">Add User</Button>
             </div>
             <Box className="filter-container" sx={{ marginTop: "20px" }}>
                 <IconButton onClick={() => setFilterOpen(!filterOpen)}>

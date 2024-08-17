@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import UserTable from "components/User/UserTable";
-import "./UserPage.css";
 import Breadcrumbs from "components/Common/BreadCrumb";
+import AddUserForm from "components/User/AddUserForm";
+import "./UserPage.css";
 
 const UserPage = () => {
+    const [isAddingUser, setIsAddingUser] = useState(false);
+    const [breadcrumbRoute, setBreadcrumbRoute] = useState(["home", "users"]);
+    const [pageTitle, setPageTitle] = useState("Users")
     const users = [
         {
             id: 1,
@@ -147,13 +151,33 @@ const UserPage = () => {
         },
     ];
 
-    const breadcrumbRoute = ["home", "users"];
+    // const breadcrumbRoute = ["home", "users"];
+
+    const handleAddUserClick = () => {
+        setIsAddingUser(true);
+        setPageTitle("Add")
+        setBreadcrumbRoute(["home","users", "users"])
+    };
+
+    const handleSaveUser = (newUser) => {
+        // Handle the save logic here, e.g., add the new user to the users array
+        setIsAddingUser(false);
+    };
+
+    const handleCancel = () => {
+        setIsAddingUser(false);
+        setPageTitle("Users")
+        setBreadcrumbRoute(["home","users"])
+    };
 
     return (
-        <div className="user-table">
-            <Breadcrumbs icon="home" title="Users" route={breadcrumbRoute} light={false} />
-            <div className="table-header">User Table</div>
-            <UserTable users={users} />
+        <div className="user-page">
+            <Breadcrumbs icon="home" title={pageTitle} route={breadcrumbRoute} light={false} />
+            {isAddingUser ? (
+                <AddUserForm onSave={handleSaveUser} onCancel={handleCancel} />
+            ) : (
+                <UserTable users={users} onAddUser={handleAddUserClick} />
+            )}
         </div>
     );
 };

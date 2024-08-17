@@ -6,7 +6,7 @@ import Icon from "@mui/material/Icon";
 
 const Breadcrumbs = ({ icon, title, route, light }) => {
     const routes = route.slice(0, -1);
-
+    console.log("Routes - ",routes);
     return (
         <div style={{ marginRight: light ? 8 : 0 }}>
             <MuiBreadcrumbs
