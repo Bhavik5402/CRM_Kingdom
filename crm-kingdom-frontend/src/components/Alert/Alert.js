@@ -23,7 +23,6 @@ const style = {
 export function SuccessErrorModal() {
     const successErrorContext = useContext(SuccessErrorModalContext);
 	const setSuccessErrorContext = useContext(SuccessErrorModalDispatchContext);
-    console.log("Success modal called",successErrorContext?.isSuccessErrorOpen)
 	const handleClickClose = () => {
 		setSuccessErrorContext({
 			isSuccessErrorOpen: false,
