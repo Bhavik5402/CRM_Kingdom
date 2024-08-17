@@ -12,8 +12,8 @@ import {
     Checkbox,
     FormLabel,
 } from "@mui/material";
-import IntlTelInput from "react-intl-tel-input";
-import "react-intl-tel-input/dist/main.css";
+import IntlTelInput from "react-intl-tel-input-18";
+import "react-intl-tel-input-18/dist/main.css";
 import axios from "axios";
 import { UserAccess } from "../../utility/helper/constants"; // Import the UserAccess constant
 import "./TableStyles.css";
