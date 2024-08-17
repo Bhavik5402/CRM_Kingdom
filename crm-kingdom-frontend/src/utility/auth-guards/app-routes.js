@@ -2,6 +2,7 @@ import { AppRoutings } from 'utility/enums/app-routings.ts';
 import { RouterType } from 'utility/enums/router-type.ts';
 import LoginPage from 'pages/Login/LoginPage';
 import UserPage from 'pages/User/UserPage';
+import Stage from 'pages/Stage/Stage';
 export const AppRoutes = [
   {
     id: 1,
@@ -25,7 +26,7 @@ export const AppRoutes = [
   {
     id: 4,
     path: AppRoutings.Stage,
-    element: UserPage,
+    element: Stage,
     routeType: RouterType.protectedRoute
   },
 
