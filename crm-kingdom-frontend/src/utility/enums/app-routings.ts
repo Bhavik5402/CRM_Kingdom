@@ -1,5 +1,8 @@
 export enum AppRoutings {
   Root = '/',
   Login = '/login',
-  Dashboard = '/dashboard'
+  Dashboard = '/dashboard',
+  User = '/users',
+  Stage = '/stage',
+  Leads = '/leads'
 }

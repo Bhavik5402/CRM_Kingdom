@@ -2,4 +2,6 @@
 export enum ProtectedEndPoints {}
 
 // Non-protected API routes - Public API routes
-export enum UnProtectedEndPoints {}
+export enum UnProtectedEndPoints {
+    UserLogin = "login"
+}

@@ -9,10 +9,12 @@ html,
 
 .main-layout {
   display: flex;
-  height: 100vh;
+  /* height: 100vh; */
+  min-height: 100vh;
 }
 
 .sidebar {
+  min-width: 300px;
   width: 300px;
   background-color: #283593;
   color: #fff;

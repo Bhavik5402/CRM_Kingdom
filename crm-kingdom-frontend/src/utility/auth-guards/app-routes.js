@@ -15,4 +15,26 @@ export const AppRoutes = [
     element: UserPage,
     routeType: RouterType.protectedRoute
   },
+
+  {
+    id: 3,
+    path: AppRoutings.User,
+    element: UserPage,
+    routeType: RouterType.protectedRoute
+  },
+  {
+    id: 4,
+    path: AppRoutings.Stage,
+    element: UserPage,
+    routeType: RouterType.protectedRoute
+  },
+
+  {
+    id: 5,
+    path: AppRoutings.Leads,
+    element: UserPage,
+    routeType: RouterType.protectedRoute
+  },
+
+
 ];

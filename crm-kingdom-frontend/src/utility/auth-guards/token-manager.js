@@ -46,7 +46,8 @@ const getToken = () => {
     }
 };
 
-const setAuthorization = (dtySecret, jwtToken, userDetails, menuPermissions) => {
+const setAuthorization = (jwtToken, userDetails) => {
+    console.log("Set Authorization")
     Cookies.set(ENVIRONMENT + Constants.AppTokenKey, doEncryptDecrypt(true, "bearer " + jwtToken), {
         expires: 30,
     });
@@ -55,10 +56,13 @@ const setAuthorization = (dtySecret, jwtToken, userDetails, menuPermissions) => 
     });
 };
 const getUserDetails = () => {
+
+    console.log("User details string")
     const userDetailString = doEncryptDecrypt(
         false,
         Cookies.get(ENVIRONMENT + Constants.UserDetails)
     );
+    console.log("User Details - ",userDetailString);
     if (userDetailString) {
         const userDetails = JSON.parse(JSON.parse(userDetailString ? userDetailString : ""));
         userDetails.menuPermissions = "";
