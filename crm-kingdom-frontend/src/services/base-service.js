@@ -7,7 +7,7 @@ import tokenManager from "utility/auth-guards/token-manager";
 // Used to intercept the request before api enpoint is hit
 axios.interceptors.request.use(
     async (config) => {
-        // config.headers["Access-Control-Allow-Origin"] = "*";
+        config.headers["Access-Control-Allow-Origin"] = "*";
         const protectedUrl = Object.values(ProtectedEndPoints).find((url) => url === config.url);
         const isProtectedUrl = protectedUrl ? true : false;
 		if (isProtectedUrl) {
