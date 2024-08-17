@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import UserTable from "components/User/UserTable";
-import Breadcrumbs from "components/Common/BreadCrumb";
+import Breadcrumbs from "components/common/BreadCrumb"
 import AddUserForm from "components/User/AddUserForm";
 import "./UserPage.css";
 
@@ -156,7 +156,7 @@ const UserPage = () => {
     const handleAddUserClick = () => {
         setIsAddingUser(true);
         setPageTitle("Add")
-        setBreadcrumbRoute(["home","users", "users"])
+        setBreadcrumbRoute(["home", "users", "users"])
     };
 
     const handleSaveUser = (newUser) => {
@@ -167,16 +167,22 @@ const UserPage = () => {
     const handleCancel = () => {
         setIsAddingUser(false);
         setPageTitle("Users")
-        setBreadcrumbRoute(["home","users"])
+        setBreadcrumbRoute(["home", "users"])
     };
 
     return (
         <div className="user-page">
             <Breadcrumbs icon="home" title={pageTitle} route={breadcrumbRoute} light={false} />
+
             {isAddingUser ? (
                 <AddUserForm onSave={handleSaveUser} onCancel={handleCancel} />
             ) : (
-                <UserTable users={users} onAddUser={handleAddUserClick} />
+                <>
+                    <div className="table-header">
+                        User Table
+                    </div>
+                    <UserTable users={users} onAddUser={handleAddUserClick} />
+                </>
             )}
         </div>
     );

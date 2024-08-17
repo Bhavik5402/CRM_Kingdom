@@ -3,7 +3,7 @@ import "./App.css";
 import { RouterConfig } from "utility/auth-guards/router-config";
 import { SuccessErrorModalProvider } from "Context/AlertContext";
 import { SuccessErrorModal } from "components/Alert/Alert";
-import Loader from "components/Common/Loader";
+import {Loader} from "components/common/Loader";
 
 function App() {
     return (
