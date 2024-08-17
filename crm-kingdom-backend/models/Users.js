@@ -9,15 +9,31 @@ const User = sequelize.define('User', {
   },
   firstname: {
     type: DataTypes.STRING(100),
+    allowNull: false,
+    validate: {
+      notEmpty: true,  // This ensures the string is not empty
+    }
   },
   lastname: {
     type: DataTypes.STRING(100),
+    allowNull: false,
+    validate: {
+      notEmpty: true,  // This ensures the string is not empty
+    }
   },
   email: {
     type: DataTypes.STRING(100),
+    allowNull: false,
+    validate: {
+      notEmpty: true,  // This ensures the string is not empty
+    }
   },
   phonenumber: {
     type: DataTypes.STRING(10),
+    allowNull: false,
+    validate: {
+      notEmpty: true,  // This ensures the string is not empty
+    }
   },
   address: {
     type: DataTypes.TEXT,
@@ -27,6 +43,7 @@ const User = sequelize.define('User', {
   },
   usertype: {
     type: DataTypes.INTEGER,
+    allowNull: false
   },
   createdby: {
     type: DataTypes.INTEGER,
@@ -34,6 +51,7 @@ const User = sequelize.define('User', {
       model: 'users', // Name of the table to reference
       key: 'userid',
     },
+    allowNull: false
   },
   createddate: {
     type: DataTypes.DATE,
