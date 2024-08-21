@@ -3,7 +3,7 @@ import User from "../models/Users.js";
 
 const protectRoute = async (req , res , next)=>{
     try{
-        const token = req.headers.authorization;
+        let token = req.headers.authorization;
         if(!token){
             return res.status(401).json({
                 statusCode: 401,
@@ -11,6 +11,11 @@ const protectRoute = async (req , res , next)=>{
                 message: "UnAuthorized - Token is not provided."
             });
         }
+        if (token.startsWith("bearer ")) {
+            console.log("In If - ",token)
+            token = token.slice(7, token.length).trim(); // Remove 'Bearer ' prefix
+        }
+        console.log("Token - ",token)
         const decoded = Jwt.verify(token,process.env.SECRET_KEY);
         if( !decoded ){
             return res.status(401).json({
@@ -31,7 +36,7 @@ const protectRoute = async (req , res , next)=>{
 		}
 
 		req.user = user;
-
+        console.log("Req user - ",req.user)
 		next();
     }
     catch(error){

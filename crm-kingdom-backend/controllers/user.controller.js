@@ -26,12 +26,12 @@ export const GetAllUsers = async (req, res) => {
             }
         }
         const users = await User.findAndCountAll({
-            where : whereClause,
-            limit,              // Pagination: limit number of records
-            offset,             // Pagination: skip these many records
-            order,              // Sorting: order by specified column and direction
-          });
-          return res.status(200).json({
+            where: whereClause,
+            limit, // Pagination: limit number of records
+            offset, // Pagination: skip these many records
+            order, // Sorting: order by specified column and direction
+        });
+        return res.status(200).json({
             statusCode: 200,
             isSuccessfull: true,
             message: "success",
@@ -69,16 +69,18 @@ export const CreateUser = async (req, res) => {
                 usertype: user.userType,
                 createdby: user.createdBy,
             });
+
+            // User Password
             const salt = await bcrypt.genSalt(10);
-            const hashPass = await bcrypt.hash('12345678' , salt);
+            const hashPass = await bcrypt.hash("12345678", salt);
             const userPassword = await UserPassword.create({
-                password : hashPass,
-                userid : newUser.userid, 
+                password: hashPass,
+                userid: newUser.userid,
             });
 
             // Insert access data into useraccess table
             if (user.access) {
-                const userAccessData = Object.keys(user.access).map(pageId => ({
+                const userAccessData = Object.keys(user.access).map((pageId) => ({
                     pageid: parseInt(pageId),
                     userid: newUser.userid,
                     ischecked: user.access[pageId],
@@ -102,16 +104,15 @@ export const CreateUser = async (req, res) => {
         }
     } catch (error) {
         const isValid = error.toString().includes("Validation");
-        if(isValid){
+        if (isValid) {
             return res.status(400).json({
                 statusCode: 400,
                 isSuccessfull: false,
                 message: "Validation error occurred",
                 data: null,
             });
-        }
-        else{
-            console.log("Server Error - ",error)
+        } else {
+            console.log("Server Error - ", error);
             return res.status(500).json({
                 statusCode: 500,
                 isSuccessfull: false,
@@ -165,25 +166,14 @@ export const GetUserById = async (req, res) => {
             },
         });
     } catch (error) {
-        const isValid = error.toString().includes("Validation");
-        if (isValid) {
-            return res.status(400).json({
-                statusCode: 400,
-                isSuccessfull: false,
-                message: "Validation error occurred",
-                data: null,
-            });
-        } else {
-            return res.status(500).json({
-                statusCode: 500,
-                isSuccessfull: false,
-                message: "Internal server error - Get User By ID.",
-                data: null,
-            });
-        }
+        return res.status(500).json({
+            statusCode: 500,
+            isSuccessfull: false,
+            message: "Internal server error - Get User By ID.",
+            data: null,
+        });
     }
 };
-
 
 export const EditUser = async (req, res) => {
     try {
@@ -233,7 +223,7 @@ export const EditUser = async (req, res) => {
 
         // Handle the access update
         if (user.access) {
-            const userAccessData = Object.keys(user.access).map(pageId => ({
+            const userAccessData = Object.keys(user.access).map((pageId) => ({
                 pageid: parseInt(pageId),
                 userid: userId, // Use the existing userId
                 ischecked: user.access[pageId],
@@ -307,22 +297,11 @@ export const DeleteUser = async (req, res) => {
             data: updatedUser,
         });
     } catch (error) {
-        const isValid = error.toString().includes("Validation");
-        if (isValid) {
-            return res.status(400).json({
-                statusCode: 400,
-                isSuccessfull: false,
-                message: "Validation error occurred",
-                data: null,
-            });
-        } else {
-            return res.status(500).json({
-                statusCode: 500,
-                isSuccessfull: false,
-                message: "Internal server error - Delete User.",
-                data: null,
-            });
-        }
+        return res.status(500).json({
+            statusCode: 500,
+            isSuccessfull: false,
+            message: "Internal server error - Delete User.",
+            data: null,
+        });
     }
 };
-

@@ -7,9 +7,10 @@ import tokenManager from "utility/auth-guards/token-manager";
 // Used to intercept the request before api enpoint is hit
 axios.interceptors.request.use(
     async (config) => {
-        config.headers["Access-Control-Allow-Origin"] = "*";
+        // config.headers["Access-Control-Allow-Origin"] = "*";
         const protectedUrl = Object.values(ProtectedEndPoints).find((url) => url === config.url);
         const isProtectedUrl = protectedUrl ? true : false;
+        debugger;
 		if (isProtectedUrl) {
 			config.headers.Authorization = tokenManager.getToken();
 		}
@@ -29,10 +30,14 @@ axios.interceptors.request.use(
 // Used to intercept receieved response
 axios.interceptors.response.use(
     (response) => {
+        console.log("Intercept respose - ",response);
         return response;
     },
     async (error) => {
-        console.log("API call error : ", error);
+        if (error.response) {
+            return Promise.reject(error.response); // Pass the response to the catch block
+        }
+        return Promise.reject(error); // For other errors
     }
 );
 

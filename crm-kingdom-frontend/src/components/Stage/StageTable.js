@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
     Table,
     TableBody,
@@ -12,72 +12,96 @@ import {
     IconButton,
     Box,
     Collapse,
-    Chip,
     TablePagination,
+    TableSortLabel,
+    Typography,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
 } from "@mui/material";
+import { Edit, Delete, Warning as WarningIcon } from "@mui/icons-material";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import { Edit, Delete } from "@mui/icons-material";
 import "./StageTableStyle.css";
+import { useNavigate } from "react-router-dom";
 
-export default function StageTable({ stage,onAddStage }) {
+export default function StageTable({
+    stage,
+    onAddStage,
+    totalCount,
+    onFilterChange,
+    onSortChange,
+    onPageChange,
+    onDeleteStage,
+}) {
     const [filterOpen, setFilterOpen] = useState(false);
     const [filters, setFilters] = useState({ name: "" });
-    const [filteredStages, setFilteredStages] = useState(stage);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-
+    const [order, setOrder] = useState("asc");
+    const [orderBy, setOrderBy] = useState("name");
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [selectedStageId, setSelectedStageId] = useState(null);
+    const navigate = useNavigate();
+    console.log("Stage - ",stage)
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters({ ...filters, [name]: value });
     };
 
     const handleSearch = () => {
-        setFilteredStages(
-            stage.filter(
-                (stg) =>
-                    stg.name.toLowerCase().includes(filters.name.toLowerCase())
-            )
-        );
-        setPage(0); // Reset to the first page after filtering
+        onFilterChange(filters, page, rowsPerPage, order, orderBy);
+        setPage(0);
     };
 
     const handleClear = () => {
         setFilters({ name: "" });
-        setFilteredStages(stage);
-        setPage(0); // Reset to the first page after clearing filters
+        setPage(0);
+        onFilterChange({}, 0, rowsPerPage, order, orderBy);
     };
 
     const handleEdit = (stageId) => {
         console.log(`Edit stage with id: ${stageId}`);
+        navigate(`/stage/edit/${stageId}`);
     };
 
     const handleDelete = (stageId) => {
-        console.log(`Delete stage with id: ${stageId}`);
+        console.log("Stage Id -",stageId);
+        setSelectedStageId(stageId);
+        setOpenConfirmDialog(true);
+    };
+
+    const confirmDelete = () => {
+        setOpenConfirmDialog(false);
+        onDeleteStage(selectedStageId);
     };
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
+        onPageChange(filters, newPage, rowsPerPage, order, orderBy);
     };
 
     const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
+        const newRowsPerPage = parseInt(event.target.value, 10);
+        setRowsPerPage(newRowsPerPage);
         setPage(0);
+        onPageChange(filters, 0, newRowsPerPage, order, orderBy);
     };
 
-    const centerStyle = {
-        textAlign: "center"
-    };
-
-    const headrs = {
-        fontWeight: 'bold',
-        fontSize: '16px',
-        textAlign: "center"
+    const handleRequestSort = (property) => {
+        const isAsc = orderBy === property && order === "asc";
+        setOrder(isAsc ? "desc" : "asc");
+        setOrderBy(property);
+        onSortChange(filters, page, rowsPerPage, !isAsc ? "asc" : "desc", property);
     };
 
     return (
         <Paper className="table-container">
             <div className="add-stage-button">
-                <Button variant="contained" color="success" onClick={onAddStage}>Add Stage</Button>
+                <Button variant="contained" color="success" onClick={onAddStage}>
+                    Add Stage
+                </Button>
             </div>
             <Box className="filter-container" sx={{ marginTop: "20px" }}>
                 <IconButton onClick={() => setFilterOpen(!filterOpen)}>
@@ -107,57 +131,122 @@ export default function StageTable({ stage,onAddStage }) {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={headrs}>Name</TableCell>
-                            <TableCell sx={headrs}>Sequence</TableCell>
-                            <TableCell sx={headrs}>Description</TableCell>
-                            <TableCell sx={headrs}>Action</TableCell>
+                            <TableCell>
+                                <TableSortLabel
+                                    active={orderBy === "name"}
+                                    direction={orderBy === "name" ? order : "asc"}
+                                    onClick={() => handleRequestSort("name")}
+                                >
+                                    Name
+                                </TableSortLabel>
+                            </TableCell>
+                            <TableCell>
+                                <TableSortLabel
+                                    active={orderBy === "sequencenumber"}
+                                    direction={orderBy === "sequencenumber" ? order : "asc"}
+                                    onClick={() => handleRequestSort("sequencenumber")}
+                                >
+                                    Sequence
+                                </TableSortLabel>
+                            </TableCell>
+                            <TableCell>
+                                <TableSortLabel
+                                    active={orderBy === "description"}
+                                    direction={orderBy === "description" ? order : "asc"}
+                                    onClick={() => handleRequestSort("description")}
+                                >
+                                    Description
+                                </TableSortLabel>
+                            </TableCell>
+                            <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {console.log(filteredStages)}
-                        {filteredStages.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((stg) => (
-                            <TableRow key={stg.id}>
-                                <TableCell sx={centerStyle}>{stg.name}</TableCell>
-                                <TableCell sx={centerStyle}>
-                                    <Chip
-                                        label={stg.sequence}
-                                        sx={{ backgroundColor: stg.color, color: 'white' }}
-                                    />
-                                </TableCell>
-                                <TableCell sx={centerStyle}>{stg.description}</TableCell>
-                                <TableCell sx={centerStyle}>
-                                    <Button
-                                        color="primary"
-                                        variant="text"
-                                        size="small"
-                                        sx={{ marginRight: '8px' }}
-                                        onClick={() => handleEdit(stg.id)}
-                                    >
-                                        <Edit />
-                                    </Button>
-                                    <Button
-                                        color="secondary"
-                                        variant="text"
-                                        size="small"
-                                        onClick={() => handleDelete(stg.id)}
-                                    >
-                                        <Delete />
-                                    </Button>
+                        {stage.length > 0 ? (
+                            stage.map((stg) => (
+                                <TableRow key={stg.id}>
+                                    <TableCell>{stg.name}</TableCell>
+                                    <TableCell>{stg.sequence}</TableCell>
+                                    <TableCell>{stg.description}</TableCell>
+                                    <TableCell>
+                                        <IconButton
+                                            color="primary"
+                                            size="small"
+                                            sx={{ marginRight: "8px" }}
+                                            onClick={() => handleEdit(stg.id)}
+                                        >
+                                            <Edit />
+                                        </IconButton>
+                                        <IconButton
+                                            color="secondary"
+                                            size="small"
+                                            onClick={() => handleDelete(stg.id)}
+                                        >
+                                            <Delete />
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={4} align="center">
+                                    <Typography variant="body1">No records found</Typography>
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        )}
                     </TableBody>
                 </Table>
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 15, 20]}
                     component="div"
-                    count={filteredStages.length}
+                    count={totalCount}
                     page={page}
                     onPageChange={handleChangePage}
                     rowsPerPage={rowsPerPage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </TableContainer>
+            <Dialog
+                open={openConfirmDialog}
+                onClose={() => setOpenConfirmDialog(false)}
+                PaperProps={{
+                    sx: {
+                        borderRadius: "12px",
+                        padding: "20px",
+                        textAlign: "center",
+                    },
+                }}
+            >
+                <DialogTitle>
+                    <WarningIcon sx={{ fontSize: 50, color: "orange" }} />
+                    <Typography variant="h6" sx={{ marginTop: 2 }}>
+                        Confirm Deletion
+                    </Typography>
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to delete this stage? This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions sx={{ justifyContent: "center" }}>
+                    <Button
+                        onClick={() => setOpenConfirmDialog(false)}
+                        color="primary"
+                        variant="outlined"
+                        sx={{ minWidth: "120px" }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={confirmDelete}
+                        color="secondary"
+                        variant="contained"
+                        sx={{ minWidth: "120px" }}
+                    >
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Paper>
     );
 }

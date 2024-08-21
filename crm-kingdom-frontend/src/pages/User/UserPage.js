@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import UserTable from "components/User/UserTable";
-import Breadcrumbs from "components/common/BreadCrumb"
 import AddUserForm from "components/User/AddUserForm";
 import "./UserPage.css";
+import Breadcrumbs from "components/Common/BreadCrumb";
 
 const UserPage = () => {
     const [isAddingUser, setIsAddingUser] = useState(false);
