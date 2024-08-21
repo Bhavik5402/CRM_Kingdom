@@ -3,6 +3,7 @@ import { RouterType } from 'utility/enums/router-type.ts';
 import LoginPage from 'pages/Login/LoginPage';
 import UserPage from 'pages/User/UserPage';
 import Stage from 'pages/Stage/Stage';
+import LeadPage from 'pages/Lead/LeadPage';
 export const AppRoutes = [
   {
     id: 1,
@@ -33,7 +34,7 @@ export const AppRoutes = [
   {
     id: 5,
     path: AppRoutings.Leads,
-    element: UserPage,
+    element: LeadPage,
     routeType: RouterType.protectedRoute
   },
 
