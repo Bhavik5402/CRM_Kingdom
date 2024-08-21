@@ -1,5 +1,6 @@
 import { Sequelize, DataTypes } from "sequelize";
 import sequelize from "../config/database.config.js";
+import User from "./Users.js";
 
 const Lead = sequelize.define(
     "Lead",
@@ -38,21 +39,21 @@ const Lead = sequelize.define(
             },
         },
         countryid: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
                 notEmpty: true, // This ensures the string is not empty
             },
         },
         stateid: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
                 notEmpty: true, // This ensures the string is not empty
             },
         },
         cityid: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
                 notEmpty: true, // This ensures the string is not empty
@@ -110,7 +111,7 @@ const Lead = sequelize.define(
         updateddate: {
             type: DataTypes.DATE,
         },
-        deleteddby: {
+        deletedby: {
             type: DataTypes.INTEGER,
             references: {
                 model: "users", // Name of the table to reference
@@ -127,5 +128,5 @@ const Lead = sequelize.define(
         timestamps: false,
     }
 );
-
+Lead.belongsTo(User, { as: "users", foreignKey: "createdby" });
 export default Lead;
