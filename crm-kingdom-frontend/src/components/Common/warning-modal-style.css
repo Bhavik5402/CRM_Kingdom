@@ -1,0 +1,8 @@
+.warning-modal-btn-group {
+	display: flex;
+	justify-content: center;
+    margin-top: 25px;
+}
+.warning-modal-btn-group .MuiButtonBase-root:not(:first-child) {
+	margin-left: 12px;
+}

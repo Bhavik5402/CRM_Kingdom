@@ -35,6 +35,8 @@ const LoginForm = () => {
             const data = await createCommonApiCall({
                 requestBody: values,
                 apiService: authService.userLogin,
+                showErrorMessage: true,
+                showSuccessMessage: false,
                 setSuccessErrorContext,
             });
             if (data && data.isSuccessfull) {
