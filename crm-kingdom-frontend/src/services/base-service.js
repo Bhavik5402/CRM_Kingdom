@@ -3,6 +3,7 @@ import { ProtectedEndPoints } from "services/api-end-points.ts";
 import { BASE_API_URL } from "config";
 import { openSucessErrorModal } from "utility/helper/common-functions";
 import tokenManager from "utility/auth-guards/token-manager";
+import { HttpStatusCodes } from "utility/enums/http-status-code.ts";
 
 // Used to intercept the request before api enpoint is hit
 axios.interceptors.request.use(
@@ -10,17 +11,16 @@ axios.interceptors.request.use(
         // config.headers["Access-Control-Allow-Origin"] = "*";
         const protectedUrl = Object.values(ProtectedEndPoints).find((url) => url === config.url);
         const isProtectedUrl = protectedUrl ? true : false;
-        debugger;
-		if (isProtectedUrl) {
-			config.headers.Authorization = tokenManager.getToken();
-		}
-		if (config.url) {
-			config.url = BASE_API_URL + config.url;
-		}
-		const useDetails = tokenManager.getUserDetails();
-		if (useDetails && useDetails.encUserName)
-			config.headers.UserName = useDetails?.userId;
-		return config;
+        if (isProtectedUrl) {
+            config.headers.Authorization = tokenManager.getToken();
+        }
+        if (config.url) {
+            config.url = BASE_API_URL + config.url;
+        }
+        const useDetails = tokenManager.getUserDetails();
+        if (useDetails && useDetails.encUserName) config.headers.UserName = useDetails?.userId;
+        return config;
+
     },
     (error) => {
         return Promise.reject(error);
@@ -30,7 +30,11 @@ axios.interceptors.request.use(
 // Used to intercept receieved response
 axios.interceptors.response.use(
     (response) => {
-        console.log("Intercept respose - ",response);
+        if (response.data.statusCode == HttpStatusCodes.Unauthorized) {
+            console.log("UNauthorized");
+            tokenManager.clearSession(window.location.pathname);
+        }
+
         return response;
     },
     async (error) => {

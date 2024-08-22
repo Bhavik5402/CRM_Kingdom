@@ -11,13 +11,11 @@ root.render(
         <App />
     </React.StrictMode>
 );
-const loader = ReactDOM.createRoot(
-	document.getElementById("loader")
-);
+const loader = ReactDOM.createRoot(document.getElementById("loader"));
 loader.render(
-	<React.StrictMode>
-		<Loader />
-	</React.StrictMode>
+    <React.StrictMode>
+        <Loader />
+    </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
