@@ -1,64 +1,46 @@
-import { Box, Button, Modal, Typography } from '@mui/material';
-import { SuccessErrorModalContext, SuccessErrorModalDispatchContext } from 'Context/AlertContext';
-import React, { useContext } from 'react';
-import CrossRedIcon from '../../assets/images/red-cross-icon.svg';
-import SuccessIcon from '../../assets/images/success-icon.svg';
-
-const style = {
-	position: "absolute",
-	top: "50%",
-	left: "50%",
-	transform: "translate(-50%, -50%)",
-	width: 300,
-	borderRadius: "10px",
-	bgcolor: "background.paper",
-	padding: "76px 74px 70px",
-	textAlign: "center",
-	"@media (max-width:599px)": {
-		width: "calc(100% - 30px)",
-		padding: "30px",
-	},
-};
+import { Box, Button, Modal, Typography } from "@mui/material";
+import { SuccessErrorModalContext, SuccessErrorModalDispatchContext } from "Context/AlertContext";
+import React, { useContext } from "react";
+import CrossRedIcon from "../../assets/images/red-cross-icon.svg";
+import SuccessIcon from "../../assets/images/success-icon.svg";
+import { successErrorModalStyle } from "utility/helper/constants";
 
 export function SuccessErrorModal() {
     const successErrorContext = useContext(SuccessErrorModalContext);
-	const setSuccessErrorContext = useContext(SuccessErrorModalDispatchContext);
-    console.log("Success modal called",successErrorContext?.isSuccessErrorOpen)
-	const handleClickClose = () => {
-		setSuccessErrorContext({
-			isSuccessErrorOpen: false,
-			title: "",
-			message: "",
-			isSuccess: true,
-		});
-		if (successErrorContext && successErrorContext.handleOnClickOk)
-			successErrorContext.handleOnClickOk();
-	};
+    const setSuccessErrorContext = useContext(SuccessErrorModalDispatchContext);
+    const handleClickClose = () => {
+        setSuccessErrorContext({
+            isSuccessErrorOpen: false,
+            title: "",
+            message: "",
+            isSuccess: true,
+        });
+        if (successErrorContext && successErrorContext.handleOnClickOk)
+            successErrorContext.handleOnClickOk();
+    };
 
-	return (
-		<>
-			<Modal
-				open={successErrorContext?.isSuccessErrorOpen}
-				onClose={handleClickClose}
-				className="reset-modal"
-			>
-				<Box sx={style}>
-					<img
-						src={ successErrorContext.isSuccess ?SuccessIcon : CrossRedIcon }
-						alt="Done"
-						className="reset-img"
-					/>
-					<Typography variant="h4">{successErrorContext?.title}</Typography>
-					<Typography variant="body1" sx={{m:2}}>
-						{successErrorContext?.message}
-					</Typography>
-					<Button onClick={handleClickClose} variant="contained" title="close">
-						Ok
-					</Button>
-				</Box>
-			</Modal>
-		</>
-	);
+    return (
+        <>
+            <Modal
+                open={successErrorContext?.isSuccessErrorOpen}
+                onClose={handleClickClose}
+                className="reset-modal"
+            >
+                <Box sx={successErrorModalStyle}>
+                    <img
+                        src={successErrorContext.isSuccess ? SuccessIcon : CrossRedIcon}
+                        alt="Done"
+                        className="reset-img"
+                    />
+                    <Typography variant="h4">{successErrorContext?.title}</Typography>
+                    <Typography variant="body1" sx={{ m: 2 }}>
+                        {successErrorContext?.message}
+                    </Typography>
+                    <Button onClick={handleClickClose} variant="contained" title="close">
+                        Ok
+                    </Button>
+                </Box>
+            </Modal>
+        </>
+    );
 }
-
-

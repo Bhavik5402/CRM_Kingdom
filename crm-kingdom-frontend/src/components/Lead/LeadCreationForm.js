@@ -52,19 +52,18 @@ const LeadCreationForm = ({ onSave, onCancel }) => {
         },
     });
 
-
     const inputSize = {
         style: {
             // height: "50px"
             fontSize: "15px",
-            margin: "0px 0px 20px 0px"
-        }
-    }
+            margin: "0px 0px 20px 0px",
+        },
+    };
 
     return (
         <Paper className="table-container">
             <div>
-                <h2>Add Stage</h2>
+                <h2>Add Lead</h2>
             </div>
             <form onSubmit={formik.handleSubmit}>
                 <Grid container spacing={2}>
@@ -131,7 +130,6 @@ const LeadCreationForm = ({ onSave, onCancel }) => {
                             error={formik.touched.website && Boolean(formik.errors.website)}
                             helperText={formik.touched.website && formik.errors.website}
                             InputProps={inputSize}
-
                         />
                     </Grid>
                     <Grid item xs={12} sm={4}>
@@ -220,8 +218,13 @@ const LeadCreationForm = ({ onSave, onCancel }) => {
                             value={formik.values.importManagerName}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.importManagerName && Boolean(formik.errors.importManagerName)}
-                            helperText={formik.touched.importManagerName && formik.errors.importManagerName}
+                            error={
+                                formik.touched.importManagerName &&
+                                Boolean(formik.errors.importManagerName)
+                            }
+                            helperText={
+                                formik.touched.importManagerName && formik.errors.importManagerName
+                            }
                             InputProps={inputSize}
                         />
                     </Grid>
@@ -233,8 +236,14 @@ const LeadCreationForm = ({ onSave, onCancel }) => {
                             value={formik.values.importManagerEmail}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.importManagerEmail && Boolean(formik.errors.importManagerEmail)}
-                            helperText={formik.touched.importManagerEmail && formik.errors.importManagerEmail}
+                            error={
+                                formik.touched.importManagerEmail &&
+                                Boolean(formik.errors.importManagerEmail)
+                            }
+                            helperText={
+                                formik.touched.importManagerEmail &&
+                                formik.errors.importManagerEmail
+                            }
                             InputProps={inputSize}
                         />
                     </Grid>
@@ -246,8 +255,14 @@ const LeadCreationForm = ({ onSave, onCancel }) => {
                             value={formik.values.importManagerContactNo}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.importManagerContactNo && Boolean(formik.errors.importManagerContactNo)}
-                            helperText={formik.touched.importManagerContactNo && formik.errors.importManagerContactNo}
+                            error={
+                                formik.touched.importManagerContactNo &&
+                                Boolean(formik.errors.importManagerContactNo)
+                            }
+                            helperText={
+                                formik.touched.importManagerContactNo &&
+                                formik.errors.importManagerContactNo
+                            }
                             InputProps={inputSize}
                         />
                     </Grid>
@@ -259,8 +274,14 @@ const LeadCreationForm = ({ onSave, onCancel }) => {
                             value={formik.values.importManagerWhatsappNo}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.importManagerWhatsappNo && Boolean(formik.errors.importManagerWhatsappNo)}
-                            helperText={formik.touched.importManagerWhatsappNo && formik.errors.importManagerWhatsappNo}
+                            error={
+                                formik.touched.importManagerWhatsappNo &&
+                                Boolean(formik.errors.importManagerWhatsappNo)
+                            }
+                            helperText={
+                                formik.touched.importManagerWhatsappNo &&
+                                formik.errors.importManagerWhatsappNo
+                            }
                             InputProps={inputSize}
                         />
                     </Grid>
@@ -272,7 +293,9 @@ const LeadCreationForm = ({ onSave, onCancel }) => {
                             value={formik.values.instagramLink}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.instagramLink && Boolean(formik.errors.instagramLink)}
+                            error={
+                                formik.touched.instagramLink && Boolean(formik.errors.instagramLink)
+                            }
                             helperText={formik.touched.instagramLink && formik.errors.instagramLink}
                             InputProps={inputSize}
                         />
@@ -285,7 +308,9 @@ const LeadCreationForm = ({ onSave, onCancel }) => {
                             value={formik.values.facebookLink}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.facebookLink && Boolean(formik.errors.facebookLink)}
+                            error={
+                                formik.touched.facebookLink && Boolean(formik.errors.facebookLink)
+                            }
                             helperText={formik.touched.facebookLink && formik.errors.facebookLink}
                             InputProps={inputSize}
                         />
@@ -298,7 +323,9 @@ const LeadCreationForm = ({ onSave, onCancel }) => {
                             value={formik.values.linkedinLink}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.linkedinLink && Boolean(formik.errors.linkedinLink)}
+                            error={
+                                formik.touched.linkedinLink && Boolean(formik.errors.linkedinLink)
+                            }
                             helperText={formik.touched.linkedinLink && formik.errors.linkedinLink}
                             InputProps={inputSize}
                         />
@@ -341,7 +368,6 @@ const LeadCreationForm = ({ onSave, onCancel }) => {
                     </Grid>
                 </Grid>
             </form>
-
         </Paper>
     );
 };

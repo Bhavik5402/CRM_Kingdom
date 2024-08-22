@@ -40,7 +40,7 @@
     gap: 8px;
 }
 
-.divider {
+.divider-custom {
     margin: 60px 0 20px;
     /* Adjust to account for the header height */
 }
