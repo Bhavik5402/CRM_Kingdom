@@ -8,7 +8,7 @@ import { HttpStatusCodes } from "utility/enums/http-status-code.ts";
 // Used to intercept the request before api enpoint is hit
 axios.interceptors.request.use(
     async (config) => {
-        config.headers["Access-Control-Allow-Origin"] = "*";
+        // config.headers["Access-Control-Allow-Origin"] = "*";
         const protectedUrl = Object.values(ProtectedEndPoints).find((url) => url === config.url);
         const isProtectedUrl = protectedUrl ? true : false;
         if (isProtectedUrl) {
@@ -20,6 +20,7 @@ axios.interceptors.request.use(
         const useDetails = tokenManager.getUserDetails();
         if (useDetails && useDetails.encUserName) config.headers.UserName = useDetails?.userId;
         return config;
+
     },
     (error) => {
         return Promise.reject(error);
@@ -37,7 +38,10 @@ axios.interceptors.response.use(
         return response;
     },
     async (error) => {
-        console.log("API call error : ", error);
+        if (error.response) {
+            return Promise.reject(error.response); // Pass the response to the catch block
+        }
+        return Promise.reject(error); // For other errors
     }
 );
 

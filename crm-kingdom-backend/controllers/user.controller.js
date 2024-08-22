@@ -98,6 +98,8 @@ export const CreateUser = async (req, res) => {
                 usertype: user.usertype,
                 createdby: user.createdby,
             });
+
+            // User Password
             const salt = await bcrypt.genSalt(10);
             const hashPass = await bcrypt.hash("12345678", salt);
             const userPassword = await UserPassword.create({

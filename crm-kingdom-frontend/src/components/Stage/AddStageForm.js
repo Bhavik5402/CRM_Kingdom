@@ -1,48 +1,39 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-
 import {
     TextField,
     Button,
     Grid,
     Paper,
     FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    FormHelperText,
     FormLabel,
+    Box,
 } from "@mui/material";
 import { ChromePicker } from "react-color";
-import "./StageTableStyle.css";
-
 
 const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
-    sequence: Yup.string().required("Sequence is required"),
+    sequence: Yup.number().required("Sequence is required"),
     description: Yup.string().required("Description is required"),
     color: Yup.string().required("Color is required"),
 });
 
-const AddStageForm = ({ onSave, onCancel }) => {
+const AddStageForm = ({ onSave, onCancel, pageTitle, initialValues }) => {
     const [colorPickerVisible, setColorPickerVisible] = useState(false);
-    const [selectedColor, setSelectedColor] = useState("#fff");
+    const [selectedColor, setSelectedColor] = useState(initialValues.color);
 
     const formik = useFormik({
         initialValues: {
-            name: "",
-            sequence: "",
-            description: "",
-            color: selectedColor,
+            name: initialValues.name || "",
+            sequence: initialValues.sequencenumber || "",
+            description: initialValues.description || "",
+            color: initialValues.color || selectedColor,
         },
         validationSchema: validationSchema,
-        onSubmit: (values, { setSubmitting, resetForm }) => {
-            // Handle form submission
-            console.log("Form Data - ", values);
+        onSubmit: (values, { setSubmitting }) => {
             onSave(values);
             setSubmitting(false);
-            resetForm();
         },
     });
 
@@ -58,7 +49,7 @@ const AddStageForm = ({ onSave, onCancel }) => {
     return (
         <Paper className="table-container">
             <div>
-                <h2>Add Stage</h2>
+                <h2>{pageTitle}</h2>
             </div>
             <form onSubmit={formik.handleSubmit}>
                 <Grid container spacing={2}>
@@ -80,6 +71,7 @@ const AddStageForm = ({ onSave, onCancel }) => {
                             id="sequence"
                             name="sequence"
                             label="Sequence"
+                            type="number"
                             value={formik.values.sequence}
                             onChange={formik.handleChange}
                             error={formik.touched.sequence && Boolean(formik.errors.sequence)}
@@ -115,9 +107,23 @@ const AddStageForm = ({ onSave, onCancel }) => {
                     <Grid item xs={12}>
                         <FormControl component="fieldset">
                             <FormLabel component="legend">Select Color</FormLabel>
-                            <Button variant="contained" color="primary" onClick={toggleColorPicker}>
-                                Choose Color
-                            </Button>
+                            <Box display="flex" alignItems="center" mt={1}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={toggleColorPicker}
+                                >
+                                    Choose Color
+                                </Button>
+                                <Box
+                                    width={24}
+                                    height={24}
+                                    bgcolor={selectedColor}
+                                    borderRadius="50%"
+                                    border="1px solid #ccc"
+                                    ml={2}
+                                />
+                            </Box>
                             {colorPickerVisible && (
                                 <ChromePicker
                                     color={selectedColor}
@@ -125,11 +131,9 @@ const AddStageForm = ({ onSave, onCancel }) => {
                                     style={{ marginTop: "10px" }}
                                 />
                             )}
-                            {formik.touched.color && Boolean(formik.errors.color) && (
-                                <div className="custom-error">{formik.errors.color}</div>
-                            )}
                         </FormControl>
                     </Grid>
+
                     <Grid item xs={12} style={{ display: "flex", justifyContent: "space-between" }}>
                         <Button
                             color="primary"

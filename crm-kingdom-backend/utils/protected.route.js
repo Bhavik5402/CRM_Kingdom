@@ -1,11 +1,13 @@
 import Jwt from "jsonwebtoken";
 import User from "../models/Users.js";
 
+
 const protectRoute = async (req, res, next) => {
     try {
         const token = req.headers.authorization;
         if (!token) {
             return res.json({
+
                 statusCode: 401,
                 isSuccessfull: false,
                 message: "UnAuthorized - Token is not provided.",
@@ -15,6 +17,7 @@ const protectRoute = async (req, res, next) => {
         const decoded = Jwt.verify(token.replace("bearer ", ""), process.env.SECRET_KEY);
         if (!decoded) {
             return res.json({
+
                 statusCode: 401,
                 isSuccessfull: false,
                 message: "UnAuthorized - Invalid token.",
@@ -31,6 +34,7 @@ const protectRoute = async (req, res, next) => {
             });
         }
 
+
         req.user = user;
 
         next();
@@ -40,6 +44,7 @@ const protectRoute = async (req, res, next) => {
             statusCode: 401,
             isSuccessfull: false,
             message: error.message,
+
         });
     }
 };

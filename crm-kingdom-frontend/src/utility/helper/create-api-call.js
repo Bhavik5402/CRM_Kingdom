@@ -26,8 +26,15 @@ export const createCommonApiCall = async (args) => {
             }
         }
     } catch (ex) {
+      hideLoader();
+      if (error.status === HttpStatusCodes.NotFound) {
+          openSucessErrorModal(setSuccessErrorContext, "Error", error.data?.message || "Not Found", false);
+      } else {
+          openSucessErrorModal(setSuccessErrorContext, "Error", "An unexpected error occurred", false);
+      }
         console.log("Error occured in api call: ", ex);
     } finally {
         hideLoader();
     }
 };
+
