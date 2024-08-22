@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -17,23 +17,41 @@ import "react-intl-tel-input-18/dist/main.css";
 import axios from "axios";
 import { UserAccess } from "../../utility/helper/constants"; // Import the UserAccess constant
 import "./TableStyles.css";
+import { createCommonApiCall } from "utility/helper/create-api-call";
+import userService from "services/user-service";
+import { SuccessErrorModalDispatchContext } from "Context/AlertContext";
+import { useNavigate } from "react-router-dom";
+import { AppRoutings } from "utility/enums/app-routings.ts";
+import { UserTypes } from "utility/enums/user-types.ts";
+import { UserContext } from "Context/UserContext";
+import tokenManager from "utility/auth-guards/token-manager";
 
 const validationSchema = Yup.object({
-    firstName: Yup.string().required("First Name is required"),
-    lastName: Yup.string().required("Last Name is required"),
+    firstname: Yup.string().required("First Name is required"),
+    lastname: Yup.string().required("Last Name is required"),
     email: Yup.string().email("Invalid email format").required("Email is required"),
-    phoneNumber: Yup.string().required("Phone Number is required"),
-    workDescription: Yup.string().required("Work Description is required"),
+    phonenumber: Yup.string().required("Phone Number is required"),
+    workdescription: Yup.string().required("Work Description is required"),
 });
 
-const AddUserForm = ({ onSave, onCancel }) => {
+export const AddUserForm = ({ onSave, onCancel, formTitle, encUserId }) => {
+    // context variables
+    const setSuccessErrorContext = useContext(SuccessErrorModalDispatchContext);
+    const contextUser = useContext(UserContext);
+
+    // Local variables
+    const navigate = useNavigate();
+
+    // use states
+    const [isEditData, setIsEditData] = useState(false);
+
     const formik = useFormik({
         initialValues: {
-            firstName: "",
-            lastName: "",
+            firstname: "",
+            lastname: "",
             email: "",
-            phoneNumber: "",
-            workDescription: "",
+            phonenumber: "",
+            workdescription: "",
             access: [],
         },
         validationSchema: validationSchema,
@@ -48,11 +66,43 @@ const AddUserForm = ({ onSave, onCancel }) => {
             const formData = {
                 ...values,
                 access: accessData,
+                usertype: UserTypes.User,
+                createdby: contextUser.userid,
             };
 
-            console.log("Form Data - ",formData);
+            createCommonApiCall({
+                requestBody: { user: formData },
+                apiService: isEditData ? userService.editUser : userService.createUser,
+                showSuccessMessage: true,
+                showErrorMessage: true,
+                setSuccessErrorContext,
+            }).then((data) => {
+                if (data && data.isSuccessfull) {
+                    navigate(AppRoutings.User);
+                }
+            });
         },
     });
+
+    // handle events and functions
+    const handleGetEditUserData = async () => {
+        const userId = tokenManager.doEncryptDecrypt(
+            false,
+            encUserId.replaceAll("_", "/").replaceAll("-", "+")
+        );
+
+        const data = await createCommonApiCall({
+            requestBody: { userId: userId },
+            apiService: userService.getUserById,
+            showSuccessMessage: false,
+            showErrorMessage: true,
+            setSuccessErrorContext,
+        });
+
+        if (data && data.isSuccessfull) {
+            formik.setValues(data.data);
+        }
+    };
 
     const handleCheckboxChange = (event) => {
         const { value } = event.target;
@@ -67,10 +117,18 @@ const AddUserForm = ({ onSave, onCancel }) => {
         formik.setFieldValue("access", newAccess);
     };
 
+    // use effect
+    useEffect(() => {
+        if (encUserId) {
+            setIsEditData(true);
+            handleGetEditUserData();
+        }
+    }, []);
+
     return (
         <Paper className="table-container">
             <div>
-                <h2>Add User</h2>
+                <h2>{formTitle}</h2>
             </div>
             <form onSubmit={formik.handleSubmit}>
                 <Grid container spacing={2}>
@@ -78,24 +136,24 @@ const AddUserForm = ({ onSave, onCancel }) => {
                         <TextField
                             fullWidth
                             id="firstName"
-                            name="firstName"
+                            name="firstname"
                             label="First Name"
-                            value={formik.values.firstName}
+                            value={formik.values.firstname}
                             onChange={formik.handleChange}
-                            error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-                            helperText={formik.touched.firstName && formik.errors.firstName}
+                            error={formik.touched.firstname && Boolean(formik.errors.firstname)}
+                            helperText={formik.touched.firstname && formik.errors.firstname}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField
                             fullWidth
                             id="lastName"
-                            name="lastName"
+                            name="lastname"
                             label="Last Name"
-                            value={formik.values.lastName}
+                            value={formik.values.lastname}
                             onChange={formik.handleChange}
-                            error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-                            helperText={formik.touched.lastName && formik.errors.lastName}
+                            error={formik.touched.lastname && Boolean(formik.errors.lastname)}
+                            helperText={formik.touched.lastname && formik.errors.lastname}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -117,35 +175,36 @@ const AddUserForm = ({ onSave, onCancel }) => {
                                 fieldId="phoneNumber"
                                 containerClassName="intl-tel-input"
                                 inputClassName={`form-control custom-phone-input ${
-                                    formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber)
+                                    formik.touched.phonenumber && Boolean(formik.errors.phonenumber)
                                         ? "error"
                                         : ""
                                 }`}
                                 onPhoneNumberChange={(isValid, value, countryData) =>
-                                    formik.setFieldValue("phoneNumber", value)
+                                    formik.setFieldValue("phonenumber", value)
                                 }
+                                value={formik.values.phonenumber}
                             />
                         </FormControl>
-                        {formik.touched.phoneNumber && Boolean(formik.errors.phoneNumber) && (
-                            <div className="custom-phone-error">{formik.errors.phoneNumber}</div>
+                        {formik.touched.phonenumber && Boolean(formik.errors.phonenumber) && (
+                            <div className="custom-phone-error">{formik.errors.phonenumber}</div>
                         )}
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
                             fullWidth
                             id="workDescription"
-                            name="workDescription"
+                            name="workdescription"
                             label="Work Description"
                             multiline
                             rows={4}
-                            value={formik.values.workDescription}
+                            value={formik.values.workdescription}
                             onChange={formik.handleChange}
                             error={
-                                formik.touched.workDescription &&
-                                Boolean(formik.errors.workDescription)
+                                formik.touched.workdescription &&
+                                Boolean(formik.errors.workdescription)
                             }
                             helperText={
-                                formik.touched.workDescription && formik.errors.workDescription
+                                formik.touched.workdescription && formik.errors.workdescription
                             }
                         />
                     </Grid>
@@ -174,12 +233,13 @@ const AddUserForm = ({ onSave, onCancel }) => {
                                 <div className="custom-checkbox-error">{formik.errors.access}</div>
                             )} */}
                     </Grid>
-                    <Grid item xs={12} style={{ display: "flex", justifyContent: "space-between" }}>
+                    <Grid item xs={12} style={{ display: "flex", justifyContent: "end" }}>
                         <Button
                             color="primary"
                             variant="contained"
                             type="submit"
                             disabled={formik.isSubmitting}
+                            sx={{ marginRight: "10px" }}
                         >
                             Save
                         </Button>
@@ -197,5 +257,3 @@ const AddUserForm = ({ onSave, onCancel }) => {
         </Paper>
     );
 };
-
-export default AddUserForm;
