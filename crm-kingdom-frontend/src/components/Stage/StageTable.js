@@ -35,7 +35,7 @@ export default function StageTable({
     onPageChange,
     onDeleteStage,
 }) {
-    const [filterOpen, setFilterOpen] = useState(false);
+    const [filterOpen, setFilterOpen] = useState(true);
     const [filters, setFilters] = useState({ name: "" });
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -104,9 +104,9 @@ export default function StageTable({
                 </Button>
             </div>
             <Box className="filter-container" sx={{ marginTop: "20px" }}>
-                <IconButton onClick={() => setFilterOpen(!filterOpen)}>
+                {/* <IconButton onClick={() => setFilterOpen(!filterOpen)}>
                     <FilterListIcon />
-                </IconButton>
+                </IconButton> */}
                 <Collapse in={filterOpen}>
                     <Box className="filter-form">
                         <TextField
