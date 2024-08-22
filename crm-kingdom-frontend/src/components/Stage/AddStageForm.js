@@ -21,14 +21,14 @@ const validationSchema = Yup.object({
 
 const AddStageForm = ({ onSave, onCancel, pageTitle, initialValues }) => {
     const [colorPickerVisible, setColorPickerVisible] = useState(false);
-    const [selectedColor, setSelectedColor] = useState(initialValues.color);
+    const [selectedColor, setSelectedColor] = useState(initialValues?.color);
 
     const formik = useFormik({
         initialValues: {
-            name: initialValues.name || "",
-            sequence: initialValues.sequencenumber || "",
-            description: initialValues.description || "",
-            color: initialValues.color || selectedColor,
+            name: initialValues?.name || "",
+            sequence: initialValues?.sequencenumber || "",
+            description: initialValues?.description || "",
+            color: initialValues?.color || selectedColor,
         },
         validationSchema: validationSchema,
         onSubmit: (values, { setSubmitting }) => {

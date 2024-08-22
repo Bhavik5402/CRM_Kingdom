@@ -79,6 +79,7 @@ export default function Stage() {
     return (
         <div>
             <Breadcrumbs route={breadcrumbRoute} title={pageTitle} />
+            <div className="table-header">Stage Table</div>
             <StageTable
                 stage={stages}
                 totalCount={totalCount}
