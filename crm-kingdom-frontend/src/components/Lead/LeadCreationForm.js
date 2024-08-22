@@ -2,7 +2,7 @@ import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { TextField, Button, Grid, Paper, FormControl, InputLabel, Select, MenuItem, FormHelperText } from "@mui/material";
-
+import './LeadCreationForm.css'
 const LeadCreationForm = ({ onSave, onCancel }) => {
     const formik = useFormik({
         initialValues: {
@@ -331,11 +331,11 @@ const LeadCreationForm = ({ onSave, onCancel }) => {
                             InputProps={inputSize}
                         />
                     </Grid>
-                    <Grid item xs={12}>
-                        <Button color="primary" variant="contained" type="submit">
+                    <Grid item xs={12} style={{ marginTop: "40px",marginBottom:"40px" }} className="buttons">
+                        <Button color="primary" variant="contained" type="submit" size="large">
                             Save
                         </Button>
-                        <Button color="secondary" variant="outlined" onClick={onCancel} style={{ marginLeft: "10px" }}>
+                        <Button color="secondary" variant="contained" onClick={onCancel} style={{ marginLeft: "50px" }} size="large"> 
                             Clear
                         </Button>
                     </Grid>
