@@ -24,7 +24,7 @@ const doEncryptDecrypt = (isEncrypt, data) => {
             const ciphertext = CryptoJS.AES.encrypt(
                 JSON.stringify(data),
                 Constants.LocalAppEncryptkey
-            ).toString();
+            ).toString(CryptoJS.format.Base64);
             return ciphertext;
         }
         // Decrypt
@@ -46,12 +46,12 @@ const getToken = () => {
     }
 };
 
-const setAuthorization = (dtySecret, jwtToken, userDetails, menuPermissions) => {
+const setAuthorization = (jwtToken, userDetails) => {
     Cookies.set(ENVIRONMENT + Constants.AppTokenKey, doEncryptDecrypt(true, "bearer " + jwtToken), {
-        expires: 30,
+        expires: 1 / 24,
     });
     Cookies.set(ENVIRONMENT + Constants.UserDetails, doEncryptDecrypt(true, userDetails), {
-        expires: 30,
+        expires: 1 / 24,
     });
 };
 const getUserDetails = () => {
@@ -72,4 +72,5 @@ export default {
     setAuthorization,
     getToken,
     getUserDetails,
+    doEncryptDecrypt,
 };

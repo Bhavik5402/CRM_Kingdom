@@ -10,5 +10,5 @@ export const UnProtectedRoute = (props) => {
     // get session token from cookies
     const sessionToken = tokenManager.getToken();
 
-    return !sessionToken ? (element || <Outlet />) : (<Navigate to={AppRoutings.Dashboard} replace />);
+    return !sessionToken ? (element || <Outlet />) : (<Navigate to={AppRoutings.User} replace />);
 };

@@ -1,22 +1,33 @@
-// src/pages/UserPage.js
-import React from "react";
-import UserTable from "components/User/UserTable";
-import MainLayout from "Layout/MainLayout";
+
+import React, { useEffect, useState } from "react";
+import AddUserForm from "components/User/AddUserForm";
+import "./UserPage.css";
+import Breadcrumbs from "components/Common/BreadCrumb";
+import { UserTable } from "components";
+import { useNavigate } from "react-router-dom";
+import { AppRoutings } from "utility/enums/app-routings.ts";
+
 
 const UserPage = () => {
-    const users = [
-        { id: 1, username: "johndoe", email: "johndoe@example.com" },
-        { id: 2, username: "janedoe", email: "janedoe@example.com" },
-        // Add more users here...
-    ];
+    // local variables
+    const navigate = useNavigate();
+
+    // user states
+    const [isAddingUser, setIsAddingUser] = useState(false);
+    const [breadcrumbRoute, setBreadcrumbRoute] = useState(["home", "users"]);
+    const [pageTitle, setPageTitle] = useState("Users");
+
+    // handle events and methods
+    const handleAddUserClick = () => {
+        navigate(AppRoutings.AddUser);
+    };
 
     return (
-        <MainLayout>
-            <div>
-                <h1>Users</h1>
-                <UserTable users={users} />
-            </div>
-        </MainLayout>
+        <div className="user-page">
+            <Breadcrumbs icon="home" title={pageTitle} route={breadcrumbRoute} light={false} />
+            <div className="table-header">User Table</div>
+            <UserTable onAddUser={handleAddUserClick} />
+        </div>
     );
 };
 

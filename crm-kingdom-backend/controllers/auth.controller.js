@@ -2,87 +2,134 @@ import User from "../models/Users.js";
 import bcrypt from "bcryptjs";
 import jwtTokenGenerator from "../utils/generateJwtToken.js";
 import UserPassword from "../models/UserPassword.js";
-export const Login = async (req , res) => {
-    try{
-        const {email , password} = req.body;
+import UserAccess from "../models/UserAccess.js";
+import PageAccess from "../models/PageAccess.js";
+export const Login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
         const user = await User.findOne({ where: { email: email } });
-        if(!user){
-            return res.status(404).json("User does not exist.");
-        }
-        else{
+        if (!user) {
+            return res.status(404).json({
+                statusCode: 404,
+                isSuccessfull: false,
+                message: "User does not exist",
+            });
+        } else {
             const userPassword = await UserPassword.findOne({ where: { userid: user.userid } });
             if (!userPassword) {
-                return res.status(404).json({ message: 'User does not exist' });
+                return res.status(404).json({
+                    statusCode: 404,
+                    isSuccessfull: false,
+                    message: "User does not exist",
+                });
             }
+
             const isPasswordCorrect = await bcrypt.compare(password, userPassword?.password);
-            if(isPasswordCorrect){
-                const token = jwtTokenGenerator(user.userid,user.firstname);
+            if (isPasswordCorrect) {
+                const token = jwtTokenGenerator(user.userid, user.firstname);
+
+                // // Fetch user access data
+                // const userAccess = await UserAccess.findAll({
+                //     where: { userid: user.userid },
+                //     attributes: ["pageid", "ischecked"],
+                // });
+
+                // // Transform user access data into a more usable format
+                // const accessData = userAccess.reduce((acc, access) => {
+                //     acc[access.pageid] = access.ischecked;
+                //     return acc;
+                // }, {});
+
+                // Fetch all pages (assuming you have a Page model for pages)
+                const allPages = await PageAccess.findAll({
+                    attributes: ["pageid"],
+                });
+                let accessData = null;
+                if (user.usertype === 2) {
+                    // Fetch user access data
+                    const userAccess = await UserAccess.findAll({
+                        where: { userid: user.userid },
+                        attributes: ["pageid", "ischecked"],
+                    });
+
+                    // Map user access data
+                    const userAccessMap = userAccess.reduce((acc, access) => {
+                        acc[access.pageid] = access.ischecked;
+                        return acc;
+                    }, {});
+
+                    // Prepare access data for all pages
+                    accessData = allPages.reduce((acc, page) => {
+                        acc[page.pageid] = userAccessMap[page.pageid] || false;
+                        return acc;
+                    }, {});
+                }
+
                 return res.status(200).json({
                     statusCode: 200,
+                    isSuccessfull: true,
                     message: "Login successful.",
                     data: {
                         user,
-                        token
-                    }
+                        token,
+                        access: accessData,
+                    },
                 });
-            }
-            else{
-                return res.status(400).json({
+            } else {
+                return res.status(200).json({
                     statusCode: 400,
+                    isSuccessfull: false,
                     message: "Username or Password is incorrect.",
-                    data: null
+                    data: null,
                 });
             }
         }
-    }
-    catch(error){
-        return res.status(500).json({
+    } catch (error) {
+        return res.status(200).json({
             statusCode: 500,
+            isSuccessfull: false,
             message: "Internal server error.",
-            data: null
+            data: null,
         });
     }
-}
+};
 
-export const SignUp = async (req,res)=>{
+export const SignUp = async (req, res) => {
     debugger;
-    try{
+    try {
         debugger;
-        const {fullName , userName , password , confirmPassword , email} = req.body;
-        if(password != confirmPassword){
+        const { fullName, userName, password, confirmPassword, email } = req.body;
+        if (password != confirmPassword) {
             return res.status(400).json("Password are not matched.");
         }
-        const user = await User.findOne({userName});
-        if(user){
+        const user = await User.findOne({ userName });
+        if (user) {
             return res.status(400).json("This UserName or Email is already exist.");
-        }
-        else{
+        } else {
             const salt = await bcrypt.genSalt(10);
-            const hashPass = await bcrypt.hash(password , salt);
+            const hashPass = await bcrypt.hash(password, salt);
             const newUser = new User({
                 fullName,
                 userName,
-                password : hashPass,
-                email
+                password: hashPass,
+                email,
             });
 
-            if(newUser){
+            if (newUser) {
                 const token = jwtTokenGenerator(newUser._id);
                 await newUser.save();
                 res.status(201).json({
                     _id: newUser._id,
-				    fullName: newUser.fullName,
-				    username: newUser.username,
-                    email : newUser.email,
-                    token : token
+                    fullName: newUser.fullName,
+                    username: newUser.username,
+                    email: newUser.email,
+                    token: token,
                 });
-            }
-            else{
+            } else {
                 res.status(400).json({ error: "Invalid user data" });
             }
         }
-    }
-    catch(error){
+    } catch (error) {
         return res.status(500).json({ error: "Internal server error" });
     }
-}
+};
