@@ -25,6 +25,7 @@ import { Edit, Delete, Warning as WarningIcon } from "@mui/icons-material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import "./StageTableStyle.css";
 import { useNavigate } from "react-router-dom";
+import { WarningModal } from "components/Common/warning-modal";
 
 export default function StageTable({
     stage,
@@ -44,7 +45,7 @@ export default function StageTable({
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [selectedStageId, setSelectedStageId] = useState(null);
     const navigate = useNavigate();
-    console.log("Stage - ",stage)
+    console.log("Stage - ", stage);
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters({ ...filters, [name]: value });
@@ -67,7 +68,7 @@ export default function StageTable({
     };
 
     const handleDelete = (stageId) => {
-        console.log("Stage Id -",stageId);
+        console.log("Stage Id -", stageId);
         setSelectedStageId(stageId);
         setOpenConfirmDialog(true);
     };
@@ -165,7 +166,24 @@ export default function StageTable({
                         {stage.length > 0 ? (
                             stage.map((stg) => (
                                 <TableRow key={stg.id}>
-                                    <TableCell>{stg.name}</TableCell>
+                                    <TableCell>
+                                        <Box
+                                            component="span"
+                                            sx={{
+                                                display: "inline-block",
+                                                padding: "4px 12px",
+                                                borderRadius: "12px",
+                                                backgroundColor: stg.color,
+                                                color: "#fff", // White text color for contrast
+                                                fontSize: "14px",
+                                                fontWeight: "bold",
+                                                textTransform: "capitalize", // Ensures the name is in capitalized form
+                                                marginRight: "8px",
+                                            }}
+                                        >
+                                            {stg.name}
+                                        </Box>
+                                    </TableCell>
                                     <TableCell>{stg.sequence}</TableCell>
                                     <TableCell>{stg.description}</TableCell>
                                     <TableCell>
@@ -206,47 +224,17 @@ export default function StageTable({
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </TableContainer>
-            <Dialog
-                open={openConfirmDialog}
-                onClose={() => setOpenConfirmDialog(false)}
-                PaperProps={{
-                    sx: {
-                        borderRadius: "12px",
-                        padding: "20px",
-                        textAlign: "center",
-                    },
-                }}
-            >
-                <DialogTitle>
-                    <WarningIcon sx={{ fontSize: 50, color: "orange" }} />
-                    <Typography variant="h6" sx={{ marginTop: 2 }}>
-                        Confirm Deletion
-                    </Typography>
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Are you sure you want to delete this stage? This action cannot be undone.
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions sx={{ justifyContent: "center" }}>
-                    <Button
-                        onClick={() => setOpenConfirmDialog(false)}
-                        color="primary"
-                        variant="outlined"
-                        sx={{ minWidth: "120px" }}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={confirmDelete}
-                        color="secondary"
-                        variant="contained"
-                        sx={{ minWidth: "120px" }}
-                    >
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
+
+            <WarningModal
+                isModalOpen={openConfirmDialog}
+                handleOnClickCloseModal={() => setOpenConfirmDialog(false)}
+                title="Confirmation"
+                warningMessage="Are you sure you want to delete this stage?"
+                okButtonText="Delete"
+                closeButtonText="Cancel"
+                handleOnClickOk={confirmDelete}
+            />
+
         </Paper>
     );
 }

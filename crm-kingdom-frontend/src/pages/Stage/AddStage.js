@@ -8,7 +8,7 @@ import stageService from "services/stage-service";
 import { SuccessErrorModalDispatchContext } from "Context/AlertContext";
 
 export default function AddStage() {
-    const [breadcrumbRoute, setBreadcrumbRoute] = useState(["home", "stages", "Add"]);
+    const [breadcrumbRoute, setBreadcrumbRoute] = useState(["home", "stage", "Add"]);
     const setSuccessErrorContext = useContext(SuccessErrorModalDispatchContext);
     const pageTitle = "Add Stage";
     const navigate = useNavigate();
