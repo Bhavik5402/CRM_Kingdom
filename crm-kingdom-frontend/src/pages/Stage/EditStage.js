@@ -9,7 +9,7 @@ import { AppRoutings } from "utility/enums/app-routings.ts";
 
 export default function EditStage() {
     const { stageId } = useParams();
-    const [breadcrumbRoute, setBreadcrumbRoute] = useState(["home", "stages", "Edit"]);
+    const [breadcrumbRoute, setBreadcrumbRoute] = useState(["home", "stage", "Edit"]);
     const pageTitle = "Edit Stage";
     const [initialValues, setInitialValues] = useState(null);
     const setSuccessErrorContext = useContext(SuccessErrorModalDispatchContext);

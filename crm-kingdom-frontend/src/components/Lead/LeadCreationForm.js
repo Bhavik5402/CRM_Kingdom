@@ -1,11 +1,12 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { TextField, Button, Grid, Paper, FormControl, InputLabel, Select, MenuItem, FormHelperText } from "@mui/material";
-import './LeadCreationForm.css'
-const LeadCreationForm = ({ onSave, onCancel }) => {
+import { TextField, Button, Grid, Paper, FormControl, MenuItem, FormHelperText } from "@mui/material";
+import './LeadCreationForm.css';
+
+const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
     const formik = useFormik({
-        initialValues: {
+        initialValues: initialValues || {
             companyName: "",
             email: "",
             contactNo: "",
@@ -29,32 +30,20 @@ const LeadCreationForm = ({ onSave, onCancel }) => {
             companyName: Yup.string().required("Company Name is required"),
             email: Yup.string().email("Invalid email address").required("Email is required"),
             contactNo: Yup.string().required("Contact No is required"),
-            whatsappNo: Yup.string(),
-            website: Yup.string().url("Invalid URL"),
             country: Yup.string().required("Country is required"),
             state: Yup.string().required("State is required"),
             city: Yup.string().required("City is required"),
             address: Yup.string().required("Address is required"),
             importManagerName: Yup.string().required("Import Manager Name is required"),
-            importManagerEmail: Yup.string().email("Invalid email address"),
-            importManagerContactNo: Yup.string(),
-            importManagerWhatsappNo: Yup.string(),
-            instagramLink: Yup.string().url("Invalid URL"),
-            facebookLink: Yup.string().url("Invalid URL"),
-            linkedinLink: Yup.string().url("Invalid URL"),
-            leadSource: Yup.string(),
-            remarks: Yup.string(),
         }),
-        onSubmit: (values, { setSubmitting, resetForm }) => {
+        onSubmit: (values, { setSubmitting }) => {
             onSave(values);
             setSubmitting(false);
-            resetForm();
         },
     });
 
     const inputSize = {
         style: {
-            // height: "50px"
             fontSize: "15px",
             margin: "0px 0px 20px 0px",
         },
@@ -63,7 +52,7 @@ const LeadCreationForm = ({ onSave, onCancel }) => {
     return (
         <Paper className="table-container">
             <div>
-                <h2>Add Lead</h2>
+                <h2>{initialValues ? "Edit Lead" : "Add Lead"}</h2>
             </div>
             <form onSubmit={formik.handleSubmit}>
                 <Grid container spacing={2}>
@@ -362,7 +351,7 @@ const LeadCreationForm = ({ onSave, onCancel }) => {
                         <Button color="primary" variant="contained" type="submit" size="large">
                             Save
                         </Button>
-                        <Button color="secondary" variant="contained" onClick={onCancel} style={{ marginLeft: "50px" }} size="large"> 
+                        <Button color="secondary" variant="contained" onClick={onCancel} style={{ marginLeft: "50px" }} size="large">
                             Clear
                         </Button>
                     </Grid>

@@ -1,5 +1,6 @@
 import Lead from "../models/Lead.js";
 import User from "../models/Users.js";
+import Stage from "../models/Stage.js";
 import { Op } from "sequelize";
 export const CreateLead = async (req, res) => {
     try {
@@ -23,6 +24,19 @@ export const CreateLead = async (req, res) => {
             });
         }
 
+        // getting default stageId from user
+        const stage = await Stage.findAll({
+            where: { userid: leadCreatorId, deleteddate: null },
+            order: [["sequencenumber", "ASC"]],
+        });
+        if (!stage?.length) {
+            return res.status(404).json({
+                statusCode: 404,
+                isSuccessfull: false,
+                message: "Stage not defined.",
+                data: null,
+            });
+        }
         //  create new lead record
         const newLead = await Lead.create({
             email: body?.email,
@@ -41,6 +55,9 @@ export const CreateLead = async (req, res) => {
             linkedin: body?.linkedin,
             remark: body?.remark,
             createdby: leadCreatorId,
+            managerphonenumber: body?.managerphonenumber,
+            managerwhatsappnumber: body?.managerwhatsappnumber,
+            stageid: stage[0].dataValues.stageid,
         });
         return res.status(200).json({
             statusCode: 200,
@@ -49,6 +66,7 @@ export const CreateLead = async (req, res) => {
             data: newLead,
         });
     } catch (error) {
+        console.log("error: ", error);
         return res.status(500).json({
             statusCode: 500,
             isSuccessfull: false,
@@ -97,10 +115,10 @@ export const EditLead = async (req, res) => {
         }
 
         const updatedLead = await lead.update({
-            email: body.email || lead?.email,
+            email: body?.email || lead?.email,
             companyname: body?.companyname || lead?.companyname,
             phonenumber: body?.phonenumber || lead?.phonenumber,
-            whatsappnumber: body?.whatsappnumber || lead.whatsappnumber,
+            whatsappnumber: body?.whatsappnumber || lead?.whatsappnumber,
             website: body?.website || lead?.website,
             countryid: body?.countryid || lead?.countryid,
             stateid: body?.stateid || lead.stateid,
@@ -114,6 +132,9 @@ export const EditLead = async (req, res) => {
             remark: body?.remark || lead?.remark,
             updateddate: new Date(),
             updatedby: req.user.userid,
+            managerphonenumber: body?.managerphonenumber || lead?.managerphonenumber,
+            managerwhatsappnumber: body?.managerwhatsappnumber || lead?.managerwhatsappnumber,
+            stageid: body?.stageid || lead?.stageid,
         });
         return res.status(200).json({
             statusCode: 200,
@@ -218,7 +239,41 @@ export const GetLeadById = async (req, res) => {
 };
 export const GetAllLeads = async (req, res) => {
     try {
+        console.log("req.body: ", req.body);
+        const user = req.user;
+        const { pageSize, pageIndex, sortColumn, sortDirection, search } = req.body;
+        const limit = pageSize || 10;
+        const offset = pageIndex ? pageIndex * limit : 0;
+        const order = [[sortColumn || "leadid", sortDirection || "DESC"]];
+
+        let searchObject = undefined;
+        if (search) {
+            searchObject = [
+                { companyname: { [Op.iLike]: `%${search}%` } },
+                { email: { [Op.iLike]: `%${search}%` } },
+                { countryid: { [Op.iLike]: `%${search}%` } },
+            ];
+        }
+        console.log("user: ", user);
+        const where = {
+            deleteddate: null,
+            createdby: user.usertype == 2 ? user.createdby : user.userid,
+            [Op.or]: searchObject,
+        };
+        const result = await Lead.findAndCountAll({
+            where,
+            order,
+            limit,
+            offset,
+        });
+        return res.json({
+            statusCode: 200,
+            isSuccessfull: true,
+            message: "success",
+            data: result,
+        });
     } catch (error) {
+        console.log("error: ", error);
         return res.status(500).json({
             statusCode: 500,
             isSuccessfull: false,

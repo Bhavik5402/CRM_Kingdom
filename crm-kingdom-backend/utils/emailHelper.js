@@ -1,25 +1,37 @@
 import nodemailer from "nodemailer";
 
-// Set up the transporter
-const transporter = nodemailer.createTransport({
-    service: 'Gmail', // e.g., 'Gmail', 'SendGrid', 'Mailgun', etc.
-    auth: {
-        user: 'bhavik.tatvasoft5402@gmail.com', // Your email address
-        pass: 'bhavik@123'   // Your email password or an app-specific password
+export const sendResetPasswordEmail = async(email, resetToken) => {
+    try {
+        // Create a transporter object using Office 365 SMTP settings
+        const transporter = nodemailer.createTransport({
+            host: "smtp.office365.com",
+            port: 587, // Port for TLS
+            secure: false, // Use false for TLS (587)
+            auth: {
+                user: "", // Your Outlook email
+                pass: "",
+            },
+            tls: {
+                ciphers: "SSLv3",
+            },
+        });
+
+        // Email content
+        const mailOptions = {
+            from: '"Your Company Name" <your-email@your-domain.com>',
+            to: email,
+            subject: "Password Reset Request",
+            text: `You requested a password reset. Use the following token to reset your password: ${resetToken}`,
+            html: `<p>You requested a password reset. Use the following token to reset your password:</p>
+                   <p><b>${resetToken}</b></p>`,
+        };
+
+        // Send email
+        const info = await transporter.sendMail(mailOptions);
+        console.log("Password reset email sent: %s", info.messageId);
+    } catch (error) {
+        console.error("Error sending password reset email:", error);
+        throw error; // Re-throw the error to handle it in the calling function
     }
-});
+}
 
-// Function to send the email
-export const sendResetPasswordEmail = async (email, resetToken) => {
-    const resetLink = `http://yourdomain.com/reset-password?token=${resetToken}`; // Customize the link
-
-    const mailOptions = {
-        from: '"Your Company" <your-email@gmail.com>', // Sender address
-        to: email, // List of receivers
-        subject: 'Password Reset Request', // Subject line
-        text: `Please click the following link to reset your password: ${resetLink}`, // Plain text body
-        html: `<p>Please click the following link to reset your password:</p><a href="${resetLink}">${resetLink}</a>` // HTML body
-    };
-
-    return transporter.sendMail(mailOptions);
-};
