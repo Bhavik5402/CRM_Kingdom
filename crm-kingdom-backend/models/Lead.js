@@ -76,6 +76,24 @@ const Lead = sequelize.define(
                 notEmpty: true, // This ensures the string is not empty
             },
         },
+        managerphonenumber: {
+            type: DataTypes.STRING(10),
+            allowNull: false,
+            validate: {
+                notEmpty: false, // This ensures the string is not empty
+            },
+        },
+        managerwhatsappnumber: {
+            type: DataTypes.STRING(10),
+        },
+        stageid: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: "stage",
+                key: "stageid",
+            },
+            allowNull: false,
+        },
         instagram: {
             type: DataTypes.STRING(100),
         },
