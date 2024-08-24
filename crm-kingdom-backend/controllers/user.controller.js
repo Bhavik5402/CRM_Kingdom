@@ -119,10 +119,10 @@ export const CreateUser = async (req, res) => {
             }
 
             // Generate a reset token (e.g., JWT)
-            const resetToken = jwtTokenGenerator(newUser.userid, newUser.firstName);
+            // const resetToken = jwtTokenGenerator(newUser.userid, newUser.firstName);
 
-            // Send the reset password email
-            await sendResetPasswordEmail(newUser.email, resetToken);
+            // // Send the reset password email
+            // await sendResetPasswordEmail(newUser.email, resetToken);
 
             return res.json({
                 statusCode: 200,
