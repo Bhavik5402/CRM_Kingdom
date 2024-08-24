@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import React, { useState } from "react";
 import Breadcrumbs from "components/Common/BreadCrumb";
 import LeadTable from "components/Lead/LeadTable";
 
