@@ -25,9 +25,16 @@ export const createCommonApiCall = async (args) => {
                     openSucessErrorModal(setSuccessErrorContext, "Error", data.message, false);
             }
         }
-    } catch (ex) {
-        console.log("Error occured in api call: ", ex);
+    } catch (error) {
+      hideLoader();
+      if (error.status === HttpStatusCodes.NotFound) {
+          openSucessErrorModal(setSuccessErrorContext, "Error", error.data?.message || "Not Found", false);
+      } else {
+          openSucessErrorModal(setSuccessErrorContext, "Error", "An unexpected error occurred", false);
+      }
+        console.log("Error occured in api call: ", error);
     } finally {
         hideLoader();
     }
 };
+

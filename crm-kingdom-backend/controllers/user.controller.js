@@ -1,11 +1,11 @@
 import { where } from "sequelize";
 import User from "../models/Users.js";
 import UserPassword from "../models/UserPassword.js";
-import { sendResetPasswordEmail } from "../utils/emailHelper.js";
 import jwtTokenGenerator from "../utils/generateJwtToken.js";
 import bcrypt from "bcryptjs";
 import UserAccess from "../models/UserAccess.js";
 import PageAccess from "../models/PageAccess.js";
+import { sendResetPasswordEmail } from "../utils/emailHelper.js";
 
 export const GetAllUsers = async (req, res) => {
     try {
@@ -98,6 +98,8 @@ export const CreateUser = async (req, res) => {
                 usertype: user.usertype,
                 createdby: user.createdby,
             });
+
+            // User Password
             const salt = await bcrypt.genSalt(10);
             const hashPass = await bcrypt.hash("12345678", salt);
             const userPassword = await UserPassword.create({
@@ -116,7 +118,7 @@ export const CreateUser = async (req, res) => {
                 await UserAccess.bulkCreate(userAccessData);
             }
 
-            // // Generate a reset token (e.g., JWT)
+            // Generate a reset token (e.g., JWT)
             // const resetToken = jwtTokenGenerator(newUser.userid, newUser.firstName);
 
             // // Send the reset password email

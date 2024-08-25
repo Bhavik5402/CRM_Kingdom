@@ -1,3 +1,4 @@
+
 import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
@@ -6,6 +7,7 @@ import helmet from "helmet";
 import router from "../routes/auth.route.js";
 import userRouter from "../routes/user.route.js";
 import leadRouter from "../routes/lead.route.js";
+import stageRouter from '../routes/stage.route.js';
 
 dotenv.config();
 const app = express();
@@ -17,8 +19,10 @@ app.use(express.json());
 
 app.use("/", router);
 app.use("/users", userRouter);
+
 app.use("/leads", leadRouter);
 
+app.use("/stage", stageRouter);
 app.listen(PORT, () => {
     console.log(`app running on ${PORT}`);
 });
