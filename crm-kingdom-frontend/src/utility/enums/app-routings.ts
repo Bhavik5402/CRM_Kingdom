@@ -12,4 +12,5 @@ export enum AppRoutings {
   AddLead = "/leads/add",
   ResetPassword = "/reset-password",
   ForgotPassword = "/forgot-password"
+  EditLead = '/leads/edit/:leadId',
 }

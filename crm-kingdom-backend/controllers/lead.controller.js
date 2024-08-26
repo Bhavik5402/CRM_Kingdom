@@ -5,8 +5,9 @@ import { User, Lead, Stage } from "../models/index.js";
 import { Op } from "sequelize";
 export const CreateLead = async (req, res) => {
     try {
-        const { body } = req;
-
+        console.log("hello create lead");
+        const { lead } = req.body;
+        console.log("Lead obj - ",lead);
         // getting leadid according to user id.user
         let leadCreatorId;
         const user = await User.findOne({ where: { userid: req.user.userid, deleteddate: null } });
@@ -16,7 +17,7 @@ export const CreateLead = async (req, res) => {
             leadCreatorId = user.createdby;
         }
 
-        const isExist = await Lead.findOne({ where: { email: body.email } });
+        const isExist = await Lead.findOne({ where: { email: lead.email } });
         if (isExist) {
             return res.status(400).json({
                 statusCode: 400,
@@ -40,24 +41,25 @@ export const CreateLead = async (req, res) => {
         }
         //  create new lead record
         const newLead = await Lead.create({
-            email: body?.email,
-            companyname: body?.companyname,
-            phonenumber: body?.phonenumber,
-            whatsappnumber: body?.whatsappnumber,
-            website: body?.website,
-            countryid: body?.countryid,
-            stateid: body?.stateid,
-            cityid: body?.cityid,
-            address: body?.address,
-            managerusername: body?.managerusername,
-            manageremailid: body?.manageremailid,
-            instagram: body?.instagram,
-            facebook: body?.facebook,
-            linkedin: body?.linkedin,
-            remark: body?.remark,
-            createdby: leadCreatorId, // userid of a lead creator id
-            managerphonenumber: body?.managerphonenumber,
-            managerwhatsappnumber: body?.managerwhatsappnumber,
+
+            email: lead?.email,
+            companyname: lead?.companyname,
+            phonenumber: lead?.phonenumber,
+            whatsappnumber: lead?.whatsappnumber,
+            website: lead?.website,
+            countryid: 1,
+            stateid: 1,
+            cityid: 1,
+            address: lead?.address,
+            managerusername: lead?.managerusername,
+            manageremailid: lead?.manageremailid,
+            instagram: lead?.instagram,
+            facebook: lead?.facebook,
+            linkedin: lead?.linkedin,
+            remark: lead?.remark,
+            createdby: leadCreatorId,
+            managerphonenumber: lead?.managerphonenumber,
+            managerwhatsappnumber: lead?.managerwhatsappnumber,
             stageid: stage[0].dataValues.stageid,
             leadby: req.user.userid, // userid of person who is creating the lead
         });
@@ -80,9 +82,12 @@ export const CreateLead = async (req, res) => {
 
 export const EditLead = async (req, res) => {
     try {
-        const { body } = req;
-        const { leadId } = body;
-
+        console.log("hello edit lead");
+        console.log("updated soc",req.body);
+        const {updatelead } = req.body;
+        const { leadId } = updatelead.leadid;
+        
+        console.log("lead id",leadId);
         const user = await User.findOne({ where: { userid: req.user.userid, deleteddate: null } });
         const lead = await Lead.findOne({
             where: {
@@ -117,26 +122,29 @@ export const EditLead = async (req, res) => {
         }
 
         const updatedLead = await lead.update({
-            email: body?.email || lead?.email,
-            companyname: body?.companyname || lead?.companyname,
-            phonenumber: body?.phonenumber || lead?.phonenumber,
-            whatsappnumber: body?.whatsappnumber || lead?.whatsappnumber,
-            website: body?.website || lead?.website,
-            countryid: body?.countryid || lead?.countryid,
-            stateid: body?.stateid || lead.stateid,
-            cityid: body?.cityid || lead?.cityid,
-            address: body?.address || lead?.address,
-            managerusername: body?.managerusername || lead?.managerusername,
-            manageremailid: body?.manageremailid || lead?.manageremailid,
-            instagram: body?.instagram || lead?.instagram,
-            facebook: body?.facebook || lead?.facebook,
-            linkedin: body?.linkedin || lead?.linkedin,
-            remark: body?.remark || lead?.remark,
+            email: updatelead?.email || lead?.email,
+            companyname: updatelead?.companyname || lead?.companyname,
+            phonenumber: updatelead?.phonenumber || lead?.phonenumber,
+            whatsappnumber: updatelead?.whatsappnumber || lead?.whatsappnumber,
+            website: updatelead?.website || lead?.website,
+            // countryid: updatelead?.countryid || lead?.countryid,
+            // stateid: updatelead?.stateid || lead.stateid,
+            // cityid: updatelead?.cityid || lead?.cityid,
+            countryid: 1,
+            stateid: 1,
+            cityid: 1,
+            address: updatelead?.address || lead?.address,
+            managerusername: updatelead?.managerusername || lead?.managerusername,
+            manageremailid: updatelead?.manageremailid || lead?.manageremailid,
+            instagram: updatelead?.instagram || lead?.instagram,
+            facebook: updatelead?.facebook || lead?.facebook,
+            linkedin: updatelead?.linkedin || lead?.linkedin,
+            remark: updatelead?.remark || lead?.remark,
             updateddate: new Date(),
             updatedby: req.user.userid,
-            managerphonenumber: body?.managerphonenumber || lead?.managerphonenumber,
-            managerwhatsappnumber: body?.managerwhatsappnumber || lead?.managerwhatsappnumber,
-            stageid: body?.stageid || lead?.stageid,
+            managerphonenumber: updatelead?.managerphonenumber || lead?.managerphonenumber,
+            managerwhatsappnumber: updatelead?.managerwhatsappnumber || lead?.managerwhatsappnumber,
+            stageid: updatelead?.stageid || lead?.stageid,
         });
         return res.status(200).json({
             statusCode: 200,

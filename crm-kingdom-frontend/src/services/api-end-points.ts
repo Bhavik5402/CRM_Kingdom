@@ -12,7 +12,11 @@ export enum ProtectedEndPoints {
     AddStage = "stage/add",
     DeleteStage = "stage/delete",
     GetStageById = "stage/get",
-    UpdateStage = "stage/update"
+    UpdateStage = "stage/update",
+
+    AddLead = "leads/create",
+    UpdateLead = "leads/update",
+    GetLeadById = "leads/get"
 
 }
 
