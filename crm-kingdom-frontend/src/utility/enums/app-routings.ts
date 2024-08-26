@@ -9,5 +9,6 @@ export enum AppRoutings {
   AddStage = '/stage/add',
   EditStage = '/stage/edit/:stageId',
   Leads = "/leads",
-  AddLead = "/leads/add"
+  AddLead = '/leads/add',
+  EditLead = '/leads/edit/:leadId',
 }

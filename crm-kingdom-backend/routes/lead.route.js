@@ -10,22 +10,7 @@ import {
 import { fieldValidatorMiddleware } from "../utils/fieldValidation.middleware.js";
 const router = Router();
 
-router.post(
-    "/create",
-    protectRoute,
-    fieldValidatorMiddleware([
-        "email",
-        "companyname",
-        "phonenumber",
-        "website",
-        "countryid",
-        "stateid",
-        "cityid",
-        "managerusername",
-        "manageremailid",
-    ]),
-    CreateLead
-);
+router.post("/create",protectRoute,CreateLead);
 router.post("/get", protectRoute, GetLeadById);
 router.post("/get-all", protectRoute, GetAllLeads);
 router.post("/update", protectRoute, EditLead);
