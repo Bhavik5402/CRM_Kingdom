@@ -17,6 +17,7 @@ export const Login = async (req, res) => {
             });
         } else {
             const userPassword = await UserPassword.findOne({ where: { userid: user.userid } });
+            console.log("User Password - ",userPassword);
             if (!userPassword) {
                 return res.status(404).json({
                     statusCode: 404,
@@ -24,8 +25,9 @@ export const Login = async (req, res) => {
                     message: "User does not exist",
                 });
             }
-
+            console.log("isPasswordCorrect - ");
             const isPasswordCorrect = await bcrypt.compare(password, userPassword?.password);
+            console.log("isPasswordCorrect - ",isPasswordCorrect);
             if (isPasswordCorrect) {
                 const token = jwtTokenGenerator(user.userid, user.firstname);
 
