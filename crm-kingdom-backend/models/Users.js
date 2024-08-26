@@ -1,5 +1,6 @@
 import { Sequelize, DataTypes } from 'sequelize';
 import sequelize from '../config/database.config.js';
+import Lead from "./Lead.js";
 
 const User = sequelize.define(
     "User",
@@ -71,5 +72,7 @@ const User = sequelize.define(
         timestamps: false, // if you don't have `createdAt` and `updatedAt` columns
     }
 );
-User.hasMany(User, { as: "users", foreignKey: "createdby" });
+// User.hasMany(User, { as: "users", foreignKey: "createdby" });
+// User.hasMany(Lead, { foreignKey: "createdby" });
+// User.hasMany(Lead, { foreignKey: "leadby" });
 export default User;
