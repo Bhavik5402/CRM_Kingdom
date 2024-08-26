@@ -1,11 +1,11 @@
 import { where } from "sequelize";
 import User from "../models/Users.js";
 import UserPassword from "../models/UserPassword.js";
-import jwtTokenGenerator from "../utils/generateJwtToken.js";
 import bcrypt from "bcryptjs";
 import UserAccess from "../models/UserAccess.js";
 import PageAccess from "../models/PageAccess.js";
 import { sendResetPasswordEmail } from "../utils/emailHelper.js";
+import { jwtTokenGenerator } from "../utils/generateJwtToken.js";
 
 export const GetAllUsers = async (req, res) => {
     try {
@@ -119,10 +119,10 @@ export const CreateUser = async (req, res) => {
             }
 
             // Generate a reset token (e.g., JWT)
-            // const resetToken = jwtTokenGenerator(newUser.userid, newUser.firstName);
-
-            // // Send the reset password email
-            // await sendResetPasswordEmail(newUser.email, resetToken);
+            const resetToken = jwtTokenGenerator(newUser.userid, newUser.firstName);
+            console.log("Access token");
+            // Send the reset password email
+            await sendResetPasswordEmail(newUser.email, resetToken);
 
             return res.json({
                 statusCode: 200,
