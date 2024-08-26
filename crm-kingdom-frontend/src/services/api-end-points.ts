@@ -23,4 +23,6 @@ export enum ProtectedEndPoints {
 // Non-protected API routes - Public API routes
 export enum UnProtectedEndPoints {
     UserLogin = "login",
+    UserResetPassword = "reset-password",
+    UserForgotPassword = "forgot-password"
 }

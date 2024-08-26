@@ -1,6 +1,7 @@
-import Lead from "../models/Lead.js";
-import User from "../models/Users.js";
-import Stage from "../models/Stage.js";
+// import Lead from "../models/index.js";
+// import User from "../models/index.js";
+import { User, Lead, Stage } from "../models/index.js";
+// import Stage from "../models/Stage.js";
 import { Op } from "sequelize";
 export const CreateLead = async (req, res) => {
     try {
@@ -40,6 +41,7 @@ export const CreateLead = async (req, res) => {
         }
         //  create new lead record
         const newLead = await Lead.create({
+
             email: lead?.email,
             companyname: lead?.companyname,
             phonenumber: lead?.phonenumber,
@@ -59,6 +61,7 @@ export const CreateLead = async (req, res) => {
             managerphonenumber: lead?.managerphonenumber,
             managerwhatsappnumber: lead?.managerwhatsappnumber,
             stageid: stage[0].dataValues.stageid,
+            leadby: req.user.userid, // userid of person who is creating the lead
         });
         return res.status(200).json({
             statusCode: 200,
@@ -246,32 +249,64 @@ export const GetLeadById = async (req, res) => {
 };
 export const GetAllLeads = async (req, res) => {
     try {
-        console.log("req.body: ", req.body);
+        // console.log("req.body: ", req.body);
         const user = req.user;
-        const { pageSize, pageIndex, sortColumn, sortDirection, search } = req.body;
+        const {
+            pageSize,
+            pageIndex,
+            sortColumn,
+            sortDirection,
+            search,
+            stageid,
+            countryid,
+            leadby,
+        } = req.body;
         const limit = pageSize || 10;
         const offset = pageIndex ? pageIndex * limit : 0;
-        const order = [[sortColumn || "leadid", sortDirection || "DESC"]];
+        const order = [[sortColumn || "createddate", sortDirection || "DESC"]];
 
-        let searchObject = undefined;
-        if (search) {
-            searchObject = [
-                { companyname: { [Op.iLike]: `%${search}%` } },
-                { email: { [Op.iLike]: `%${search}%` } },
-                { countryid: { [Op.iLike]: `%${search}%` } },
-            ];
-        }
-        console.log("user: ", user);
-        const where = {
+        // where clause
+        const whereCondition = {
             deleteddate: null,
             createdby: user.usertype == 2 ? user.createdby : user.userid,
-            [Op.or]: searchObject,
         };
+        // adding stageid filter in where clause
+        if (stageid) {
+            whereCondition.stageid = stageid;
+        }
+        // adding countryid filter in where clause
+        if (countryid) {
+            whereCondition.countryid = countryid;
+        }
+        // adding leadby filter in where clause
+        if (leadby) {
+            whereCondition.leadby = leadby;
+        }
+        // adding search query in where clause
+        let searchObject = [];
+        if (search) {
+            searchObject.push({ companyname: { [Op.iLike]: `%${search}%` } });
+            searchObject.push({ email: { [Op.iLike]: `%${search}%` } });
+        }
+
         const result = await Lead.findAndCountAll({
-            where,
+            where: {
+                ...whereCondition,
+                [Op.or]: searchObject.length > 0 ? searchObject : {},
+            },
             order,
             limit,
             offset,
+            include: [
+                {
+                    model: User,
+                    as: "leadGenerator",
+                },
+                {
+                    model: Stage,
+                    as: "stageDetails",
+                },
+            ],
         });
         return res.json({
             statusCode: 200,

@@ -1,9 +1,10 @@
 import User from "../models/Users.js";
 import bcrypt from "bcryptjs";
-import jwtTokenGenerator from "../utils/generateJwtToken.js";
 import UserPassword from "../models/UserPassword.js";
 import UserAccess from "../models/UserAccess.js";
 import PageAccess from "../models/PageAccess.js";
+import { jwtTokenGenerator, jwtTokenValidator } from "../utils/generateJwtToken.js";
+import { sendResetPasswordEmail } from "../utils/emailHelper.js";
 export const Login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -16,6 +17,7 @@ export const Login = async (req, res) => {
             });
         } else {
             const userPassword = await UserPassword.findOne({ where: { userid: user.userid } });
+            console.log("User Password - ",userPassword);
             if (!userPassword) {
                 return res.status(404).json({
                     statusCode: 404,
@@ -23,8 +25,9 @@ export const Login = async (req, res) => {
                     message: "User does not exist",
                 });
             }
-
+            console.log("isPasswordCorrect - ");
             const isPasswordCorrect = await bcrypt.compare(password, userPassword?.password);
+            console.log("isPasswordCorrect - ",isPasswordCorrect);
             if (isPasswordCorrect) {
                 const token = jwtTokenGenerator(user.userid, user.firstname);
 
@@ -94,6 +97,57 @@ export const Login = async (req, res) => {
     }
 };
 
+export const ResetPassword = async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+
+        // Decrypt and validate the token
+        const { userId, isValid, error } = jwtTokenValidator(token);
+
+        if (!isValid) {
+            return res.status(400).json({
+                statusCode: 400,
+                isSuccessfull: false,
+                message: "Invalid or expired reset token.",
+                error,
+            });
+        }
+
+        // Continue with the reset password logic
+        const user = await User.findOne({ where: { userid: userId } });
+        if (!user) {
+            return res.status(404).json({
+                statusCode: 404,
+                isSuccessfull: false,
+                message: "User not found.",
+            });
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update the user's password
+        const userPassword = await UserPassword.findOne({ where: { userid: user.userid } });
+        if (userPassword) {
+            await userPassword.update({ password: hashedPassword });
+        } else {
+            await UserPassword.create({ userid: user.userid, password: hashedPassword });
+        }
+        return res.status(200).json({
+            statusCode: 200,
+            isSuccessfull: true,
+            message: "Password has been reset successfully."
+        });
+    } catch (error) {
+        return res.status(500).json({
+            statusCode: 500,
+            isSuccessfull: false,
+            message: "Internal server error.",
+            data: null,
+        });
+    }
+};
+
 export const SignUp = async (req, res) => {
     debugger;
     try {
@@ -131,5 +185,40 @@ export const SignUp = async (req, res) => {
         }
     } catch (error) {
         return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+
+export const forgotPassword = async (req, res) => {
+    try {
+        console.log("In forgotpassword method")
+        const { email } = req.body;
+        // Check if the user exists
+        const user = await User.findOne({ where: { email: email } });
+        if (!user) {
+            return res.status(404).json({
+                statusCode: 404,
+                isSuccessfull: false,
+                message: "User does not exist",
+            });
+        }
+
+        // Generate a reset token (e.g., JWT)
+        const resetToken = jwtTokenGenerator(user.userid, user.firstname);
+        console.log("resetToken - ",resetToken);
+        // Send the reset password email
+        await sendResetPasswordEmail(user.email, resetToken, true);
+
+        return res.status(200).json({
+            statusCode: 200,
+            isSuccessfull: true,
+            message: "Reset password email sent successfully.",
+        });
+    } catch (error) {
+        return res.status(500).json({
+            statusCode: 500,
+            isSuccessfull: false,
+            message: "Internal server error.",
+        });
     }
 };
