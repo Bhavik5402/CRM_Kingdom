@@ -95,4 +95,5 @@ export const AppRoutes = [
     path: AppRoutings.EditLead,
         element: EditLead,
         routeType: RouterType.protectedRoute,
+  }
 ];
