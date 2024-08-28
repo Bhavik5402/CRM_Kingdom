@@ -12,11 +12,17 @@ export enum ProtectedEndPoints {
     AddStage = "stage/add",
     DeleteStage = "stage/delete",
     GetStageById = "stage/get",
-    UpdateStage = "stage/update"
+    UpdateStage = "stage/update",
+
+    AddLead = "leads/create",
+    UpdateLead = "leads/update",
+    GetLeadById = "leads/get"
 
 }
 
 // Non-protected API routes - Public API routes
 export enum UnProtectedEndPoints {
     UserLogin = "login",
+    UserResetPassword = "reset-password",
+    UserForgotPassword = "forgot-password"
 }

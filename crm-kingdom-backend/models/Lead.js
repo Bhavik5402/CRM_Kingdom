@@ -106,7 +106,17 @@ const Lead = sequelize.define(
         remark: {
             type: DataTypes.TEXT,
         },
+        // userid of a person who is lead creator (userTYpe= lead creator)
         createdby: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: "users", // Name of the table to reference
+                key: "userid",
+            },
+            allowNull: false,
+        },
+        // userid of a person who create this lead (userTYpe= lead creator or user)
+        leadby: {
             type: DataTypes.INTEGER,
             references: {
                 model: "users", // Name of the table to reference
@@ -146,5 +156,6 @@ const Lead = sequelize.define(
         timestamps: false,
     }
 );
-Lead.belongsTo(User, { as: "users", foreignKey: "createdby" });
+// Lead.belongsTo(User, { as: "createorUser", foreignKey: "createdby" });
+// Lead.belongsTo(User, { as: "leadUser", foreignKey: "leadby" });
 export default Lead;

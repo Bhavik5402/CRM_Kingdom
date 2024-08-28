@@ -6,7 +6,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import LayersIcon from '@mui/icons-material/Layers';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import './Sidebar.css';
-import CompanyLogo from 'assets/images/favicon.png';
+import CompanyLogo from 'assets/images/UniqueIt.jpeg';
 
 const Sidebar = () => {
   const location = useLocation();

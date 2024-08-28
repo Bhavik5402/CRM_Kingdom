@@ -7,34 +7,32 @@ import './LeadCreationForm.css';
 const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
     const formik = useFormik({
         initialValues: initialValues || {
-            companyName: "",
+            companyname: "",
             email: "",
-            contactNo: "",
-            whatsappNo: "",
+            phonenumber: "",
+            whatsappnumber: "",
             website: "",
             country: "",
             state: "",
             city: "",
             address: "",
-            importManagerName: "",
-            importManagerEmail: "",
-            importManagerContactNo: "",
-            importManagerWhatsappNo: "",
-            instagramLink: "",
-            facebookLink: "",
-            linkedinLink: "",
-            leadSource: "",
-            remarks: "",
+            managerusername: "",
+            manageremailid: "",
+            managerphonenumber: "",
+            managerwhatsappnumber: "",
+            instagram: "",
+            facebook: "",
+            linkedin: "",
         },
         validationSchema: Yup.object({
-            companyName: Yup.string().required("Company Name is required"),
+            companyname: Yup.string().required("Company Name is required"),
             email: Yup.string().email("Invalid email address").required("Email is required"),
-            contactNo: Yup.string().required("Contact No is required"),
+            phonenumber: Yup.string().required("Contact No is required"),
             country: Yup.string().required("Country is required"),
             state: Yup.string().required("State is required"),
             city: Yup.string().required("City is required"),
             address: Yup.string().required("Address is required"),
-            importManagerName: Yup.string().required("Import Manager Name is required"),
+            managerusername: Yup.string().required("Import Manager Name is required"),
         }),
         onSubmit: (values, { setSubmitting }) => {
             onSave(values);
@@ -60,12 +58,12 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                         <TextField
                             fullWidth
                             label="Company Name"
-                            name="companyName"
-                            value={formik.values.companyName}
+                            name="companyname"
+                            value={formik.values.companyname}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.companyName && Boolean(formik.errors.companyName)}
-                            helperText={formik.touched.companyName && formik.errors.companyName}
+                            error={formik.touched.companyname && Boolean(formik.errors.companyname)}
+                            helperText={formik.touched.companyname && formik.errors.companyname}
                             InputProps={inputSize}
                         />
                     </Grid>
@@ -86,12 +84,12 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                         <TextField
                             fullWidth
                             label="Contact No"
-                            name="contactNo"
-                            value={formik.values.contactNo}
+                            name="phonenumber"
+                            value={formik.values.phonenumber}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.contactNo && Boolean(formik.errors.contactNo)}
-                            helperText={formik.touched.contactNo && formik.errors.contactNo}
+                            error={formik.touched.phonenumber && Boolean(formik.errors.phonenumber)}
+                            helperText={formik.touched.phonenumber && formik.errors.phonenumber}
                             InputProps={inputSize}
                         />
                     </Grid>
@@ -203,16 +201,16 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                         <TextField
                             fullWidth
                             label="Import Manager Name"
-                            name="importManagerName"
-                            value={formik.values.importManagerName}
+                            name="managerusername"
+                            value={formik.values.managerusername}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             error={
-                                formik.touched.importManagerName &&
-                                Boolean(formik.errors.importManagerName)
+                                formik.touched.managerusername &&
+                                Boolean(formik.errors.managerusername)
                             }
                             helperText={
-                                formik.touched.importManagerName && formik.errors.importManagerName
+                                formik.touched.managerusername && formik.errors.managerusername
                             }
                             InputProps={inputSize}
                         />
@@ -221,17 +219,17 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                         <TextField
                             fullWidth
                             label="Import Manager Email"
-                            name="importManagerEmail"
-                            value={formik.values.importManagerEmail}
+                            name="manageremailid"
+                            value={formik.values.manageremailid}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             error={
-                                formik.touched.importManagerEmail &&
-                                Boolean(formik.errors.importManagerEmail)
+                                formik.touched.manageremailid &&
+                                Boolean(formik.errors.manageremailid)
                             }
                             helperText={
-                                formik.touched.importManagerEmail &&
-                                formik.errors.importManagerEmail
+                                formik.touched.manageremailid &&
+                                formik.errors.manageremailid
                             }
                             InputProps={inputSize}
                         />
@@ -240,17 +238,17 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                         <TextField
                             fullWidth
                             label="Import Manager Contact No"
-                            name="importManagerContactNo"
-                            value={formik.values.importManagerContactNo}
+                            name="managerphonenumber"
+                            value={formik.values.managerphonenumber}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             error={
-                                formik.touched.importManagerContactNo &&
-                                Boolean(formik.errors.importManagerContactNo)
+                                formik.touched.managerphonenumber &&
+                                Boolean(formik.errors.managerphonenumber)
                             }
                             helperText={
-                                formik.touched.importManagerContactNo &&
-                                formik.errors.importManagerContactNo
+                                formik.touched.managerphonenumber &&
+                                formik.errors.managerphonenumber
                             }
                             InputProps={inputSize}
                         />
@@ -259,17 +257,17 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                         <TextField
                             fullWidth
                             label="Import Manager WhatsApp No"
-                            name="importManagerWhatsappNo"
-                            value={formik.values.importManagerWhatsappNo}
+                            name="managerwhatsappnumber"
+                            value={formik.values.managerwhatsappnumber}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             error={
-                                formik.touched.importManagerWhatsappNo &&
-                                Boolean(formik.errors.importManagerWhatsappNo)
+                                formik.touched.managerwhatsappnumber &&
+                                Boolean(formik.errors.managerwhatsappnumber)
                             }
                             helperText={
-                                formik.touched.importManagerWhatsappNo &&
-                                formik.errors.importManagerWhatsappNo
+                                formik.touched.managerwhatsappnumber &&
+                                formik.errors.managerwhatsappnumber
                             }
                             InputProps={inputSize}
                         />
@@ -278,14 +276,14 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                         <TextField
                             fullWidth
                             label="Instagram Link"
-                            name="instagramLink"
-                            value={formik.values.instagramLink}
+                            name="instagram"
+                            value={formik.values.instagram}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             error={
-                                formik.touched.instagramLink && Boolean(formik.errors.instagramLink)
+                                formik.touched.instagram && Boolean(formik.errors.instagram)
                             }
-                            helperText={formik.touched.instagramLink && formik.errors.instagramLink}
+                            helperText={formik.touched.instagram && formik.errors.instagram}
                             InputProps={inputSize}
                         />
                     </Grid>
@@ -293,14 +291,14 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                         <TextField
                             fullWidth
                             label="Facebook Link"
-                            name="facebookLink"
-                            value={formik.values.facebookLink}
+                            name="facebook"
+                            value={formik.values.facebook}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             error={
-                                formik.touched.facebookLink && Boolean(formik.errors.facebookLink)
+                                formik.touched.facebook && Boolean(formik.errors.facebook)
                             }
-                            helperText={formik.touched.facebookLink && formik.errors.facebookLink}
+                            helperText={formik.touched.facebook && formik.errors.facebook}
                             InputProps={inputSize}
                         />
                     </Grid>
@@ -308,14 +306,14 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                         <TextField
                             fullWidth
                             label="LinkedIn Link"
-                            name="linkedinLink"
-                            value={formik.values.linkedinLink}
+                            name="linkedin"
+                            value={formik.values.linkedin}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             error={
-                                formik.touched.linkedinLink && Boolean(formik.errors.linkedinLink)
+                                formik.touched.linkedin && Boolean(formik.errors.linkedin)
                             }
-                            helperText={formik.touched.linkedinLink && formik.errors.linkedinLink}
+                            helperText={formik.touched.linkedin && formik.errors.linkedin}
                             InputProps={inputSize}
                         />
                     </Grid>

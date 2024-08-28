@@ -8,6 +8,9 @@ import LeadPage from "pages/Lead/LeadPage";
 import AddStage from "pages/Stage/AddStage";
 import EditStage from "pages/Stage/EditStage";
 import AddLead from "pages/Lead/AddLead";
+import ResetPasswordPage from "pages/ResetPassword/ResetPasswordPage";
+import ForgotPasswordPage from "pages/ResetPassword/ForgotPasswordPage";
+import EditLead from "pages/Lead/EditLead";
 
 export const AppRoutes = [
     {
@@ -69,9 +72,28 @@ export const AppRoutes = [
         routeType: RouterType.protectedRoute,
     },
     {
-        id: 10,
+        id: 11,
         path: AppRoutings.AddLead,
         element: AddLead,
         routeType: RouterType.protectedRoute,
-    }
+    },
+    {
+        id: 12,
+        path: AppRoutings.ResetPassword,
+        element: ResetPasswordPage,
+        routeType: RouterType.unprotectedRoute,
+    },
+    {
+        id: 13,
+        path: AppRoutings.ForgotPassword,
+        element: ForgotPasswordPage,
+        routeType: RouterType.unprotectedRoute,
+        
+    },
+  {
+    id: 14,
+    path: AppRoutings.EditLead,
+        element: EditLead,
+        routeType: RouterType.protectedRoute,
+  }
 ];

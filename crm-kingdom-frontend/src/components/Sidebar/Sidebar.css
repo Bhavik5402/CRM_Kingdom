@@ -32,11 +32,12 @@ html,
   /* flex-direction: column; */
   align-items: center;
   padding: 20px 0;
+  justify-content: center;
   /* Add padding to space the logo and name */
 }
 
 .sidebar .logo {
-  width: 70px;
+  width: 45px;
   /* Adjust size as needed */
   height: auto;
   margin-right: 10px;
