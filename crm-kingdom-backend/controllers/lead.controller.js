@@ -47,9 +47,9 @@ export const CreateLead = async (req, res) => {
             phonenumber: lead?.phonenumber,
             whatsappnumber: lead?.whatsappnumber,
             website: lead?.website,
-            countryid: 1,
-            stateid: 1,
-            cityid: 1,
+            countryid: lead?.countryid,
+            stateid: lead?.stateid,
+            cityid: lead?.cityid,
             address: lead?.address,
             managerusername: lead?.managerusername,
             manageremailid: lead?.manageremailid,
@@ -89,19 +89,15 @@ export const EditLead = async (req, res) => {
         
         console.log("lead id",leadId);
         const user = await User.findOne({ where: { userid: req.user.userid, deleteddate: null } });
+        console.log("user  >>>>>>",user);
+        console.log("lead id  >>>>>>",updatelead.leadid);
+
         const lead = await Lead.findOne({
             where: {
-                leadid: leadId,
-                [Op.or]: [
-                    {
-                        createdby: user.userid,
-                    },
-                    {
-                        createdby: user.createdby,
-                    },
-                ],
+                leadid: updatelead.leadid
             },
         });
+        console.log("Lead - ",lead);
         if (!lead) {
             return res.status(404).json({
                 statusCode: 404,
@@ -110,7 +106,7 @@ export const EditLead = async (req, res) => {
             });
         }
         // Check if the email is already in use by another user
-        if (body.email && body.email !== lead.email) {
+        if (updatelead.email && updatelead.email !== lead.email) {
             const isEmailExist = await Lead.findOne({ where: { email: body?.email } });
             if (isEmailExist) {
                 return res.status(400).json({
@@ -120,19 +116,16 @@ export const EditLead = async (req, res) => {
                 });
             }
         }
-
+        console.log("Before Update ")
         const updatedLead = await lead.update({
             email: updatelead?.email || lead?.email,
             companyname: updatelead?.companyname || lead?.companyname,
             phonenumber: updatelead?.phonenumber || lead?.phonenumber,
             whatsappnumber: updatelead?.whatsappnumber || lead?.whatsappnumber,
             website: updatelead?.website || lead?.website,
-            // countryid: updatelead?.countryid || lead?.countryid,
-            // stateid: updatelead?.stateid || lead.stateid,
-            // cityid: updatelead?.cityid || lead?.cityid,
-            countryid: 1,
-            stateid: 1,
-            cityid: 1,
+            countryid: updatelead?.countryid || lead?.countryid,
+            stateid: updatelead?.stateid || lead.stateid,
+            cityid: updatelead?.cityid || lead?.cityid,
             address: updatelead?.address || lead?.address,
             managerusername: updatelead?.managerusername || lead?.managerusername,
             manageremailid: updatelead?.manageremailid || lead?.manageremailid,
@@ -180,6 +173,7 @@ export const DeleteLead = async (req, res) => {
                 ],
             },
         });
+        console.log("Lead - ",lead);
         if (!lead) {
             return res.status(404).json({
                 statusCode: 404,

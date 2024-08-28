@@ -147,6 +147,10 @@ const LeadTable = ({
         setDialogOpen(false);
     };
 
+    const handleEdit = (leadId) => {
+        navigate(AppRoutings.EditLead.replace(":leadId", leadId));
+    }
+
     return (
         <Paper className="table-container">
             <div>
@@ -413,7 +417,7 @@ const LeadTable = ({
                                 )}
                                 {visibleColumns.action && (
                                     <TableCell>
-                                        <IconButton onClick={() => console.log("Edit", lead.id)}>
+                                        <IconButton onClick={() => handleEdit(lead.id)}>
                                             <Edit />
                                         </IconButton>
                                         <IconButton onClick={() => handleDelete(lead.id)}>

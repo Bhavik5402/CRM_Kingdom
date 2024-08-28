@@ -1,10 +1,17 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import axios from "axios";
 import { TextField, Button, Grid, Paper, FormControl, MenuItem, FormHelperText } from "@mui/material";
 import './LeadCreationForm.css';
 
+const API_KEY = 'ckZjZFVaN3EzZGVEWUlCYzBETlRBVTVYMzdza1NJY29hZkdLTWtSOA==';  // Replace with your actual API key
+
 const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
+    const [countries, setCountries] = useState([]);
+    const [states, setStates] = useState([]);
+    const [cities, setCities] = useState([]);
+
     const formik = useFormik({
         initialValues: initialValues || {
             companyname: "",
@@ -35,10 +42,81 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
             managerusername: Yup.string().required("Import Manager Name is required"),
         }),
         onSubmit: (values, { setSubmitting }) => {
-            onSave(values);
+            // Map ISO codes to IDs
+            debugger;
+            const countryObj = countries.find(country => country.iso2 === values.country);
+            const stateObj = states.find(state => state.iso2 === values.state);
+            const cityObj = cities.find(city => city.name === values.city);
+    
+            const transformedValues = {
+                ...values,
+                countryid: countryObj ? countryObj.id : values.country,
+                stateid: stateObj ? stateObj.id : values.state,
+                cityid: cityObj ? cityObj.id : values.city,
+            };
+    
+            console.log("Transformed Values - ", transformedValues);
+            onSave(transformedValues);
             setSubmitting(false);
         },
     });
+    
+
+    useEffect(() => {
+        // Fetch countries on component mount
+        axios.get(`https://api.countrystatecity.in/v1/countries`, {
+            headers: {
+                "X-CSCAPI-KEY": API_KEY
+            }
+        }).then(response => {
+            setCountries(response.data);
+            console.log("Countries - ",countries);
+        }).catch(error => {
+            console.error("Error fetching countries", error);
+        });
+    }, []);
+
+    const handleCountryChange = (event) => {
+        const countryCode = event.target.value;
+        formik.setFieldValue('country', countryCode);
+        formik.setFieldValue('state', '');
+        formik.setFieldValue('city', '');
+        setStates([]);
+        setCities([]);
+
+        // Fetch states based on selected country
+        if (countryCode) {
+            axios.get(`https://api.countrystatecity.in/v1/countries/${countryCode}/states`, {
+                headers: {
+                    "X-CSCAPI-KEY": API_KEY
+                }
+            }).then(response => {
+                setStates(response.data);
+            }).catch(error => {
+                console.error("Error fetching states", error);
+            });
+        }
+    };
+
+    const handleStateChange = (event) => {
+        const stateCode = event.target.value;
+        formik.setFieldValue('state', stateCode);
+        formik.setFieldValue('city', '');
+        setCities([]);
+
+        // Fetch cities based on selected state
+        if (stateCode) {
+            axios.get(`https://api.countrystatecity.in/v1/countries/${formik.values.country}/states/${stateCode}/cities`, {
+                headers: {
+                    "X-CSCAPI-KEY": API_KEY
+                }
+            }).then(response => {
+                setCities(response.data);
+            }).catch(error => {
+                console.error("Error fetching cities", error);
+            });
+        }
+    };
 
     const inputSize = {
         style: {
@@ -119,12 +197,13 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                             InputProps={inputSize}
                         />
                     </Grid>
+
                     <Grid item xs={12} sm={4}>
                         <FormControl fullWidth>
                             <TextField
                                 name="country"
                                 value={formik.values.country}
-                                onChange={formik.handleChange}
+                                onChange={handleCountryChange}
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.country && Boolean(formik.errors.country)}
                                 label="Country"
@@ -133,16 +212,18 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                                 <MenuItem value="">
                                     <em>None</em>
                                 </MenuItem>
-                                <MenuItem value="USA">USA</MenuItem>
-                                <MenuItem value="Canada">Canada</MenuItem>
-                                <MenuItem value="UK">UK</MenuItem>
-                                {/* Add more countries as needed */}
+                                {countries.map((country) => (
+                                    <MenuItem key={country.iso2} value={country.iso2}>
+                                        {country.name}
+                                    </MenuItem>
+                                ))}
                             </TextField>
                             {formik.touched.country && formik.errors.country && (
                                 <FormHelperText error>{formik.errors.country}</FormHelperText>
                             )}
                         </FormControl>
                     </Grid>
+
                     <Grid item xs={12} sm={4}>
                         <FormControl fullWidth>
                             <TextField
@@ -150,25 +231,29 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                                 label="State"
                                 name="state"
                                 value={formik.values.state}
-                                onChange={formik.handleChange}
+                                onChange={handleStateChange}
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.state && Boolean(formik.errors.state)}
                                 helperText={formik.touched.state && formik.errors.state}
                                 InputProps={inputSize}
                                 select
+                                disabled={!states.length}
                             >
                                 <MenuItem value="">
                                     <em>None</em>
                                 </MenuItem>
-                                <MenuItem value="USA">USA</MenuItem>
-                                <MenuItem value="Canada">Canada</MenuItem>
-                                <MenuItem value="UK">UK</MenuItem>
+                                {states.map((state) => (
+                                    <MenuItem key={state.iso2} value={state.iso2}>
+                                        {state.name}
+                                    </MenuItem>
+                                ))}
                             </TextField>
-                            {formik.touched.country && formik.errors.state && (
+                            {formik.touched.state && formik.errors.state && (
                                 <FormHelperText error>{formik.errors.state}</FormHelperText>
                             )}
                         </FormControl>
                     </Grid>
+
                     <Grid item xs={12} sm={4}>
                         <TextField
                             fullWidth
@@ -180,8 +265,20 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                             error={formik.touched.city && Boolean(formik.errors.city)}
                             helperText={formik.touched.city && formik.errors.city}
                             InputProps={inputSize}
-                        />
+                            select
+                            disabled={!cities.length}
+                        >
+                            <MenuItem value="">
+                                <em>None</em>
+                            </MenuItem>
+                            {cities.map((city) => (
+                                <MenuItem key={city.name} value={city.name}>
+                                    {city.name}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                     </Grid>
+
                     <Grid item xs={12}>
                         <TextField
                             fullWidth
@@ -345,7 +442,8 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                             InputProps={inputSize}
                         />
                     </Grid>
-                    <Grid item xs={12} style={{ marginTop: "40px",marginBottom:"40px" }} className="buttons">
+
+                    <Grid item xs={12} style={{ marginTop: "40px", marginBottom: "40px" }} className="buttons">
                         <Button color="primary" variant="contained" type="submit" size="large">
                             Save
                         </Button>
