@@ -250,7 +250,7 @@ export const GetAllLeads = async (req, res) => {
             pageIndex,
             sortColumn,
             sortDirection,
-            search,
+            filterObj,
             stageid,
             countryid,
             leadby,
@@ -277,17 +277,18 @@ export const GetAllLeads = async (req, res) => {
             whereCondition.leadby = leadby;
         }
         // adding search query in where clause
-        let searchObject = [];
-        if (search) {
-            searchObject.push({ companyname: { [Op.iLike]: `%${search}%` } });
-            searchObject.push({ email: { [Op.iLike]: `%${search}%` } });
+        if (filterObj) {
+            for (const key in filterObj) {
+                if (filterObj[key]) {
+                    whereClause[key] = {
+                        [Op.iLike]: `%${filterObj[key]}%`, // Enable partial and case-insensitive matching
+                    };
+                }
+            }
         }
 
         const result = await Lead.findAndCountAll({
-            where: {
-                ...whereCondition,
-                [Op.or]: searchObject.length > 0 ? searchObject : {},
-            },
+            where: whereCondition,
             order,
             limit,
             offset,
