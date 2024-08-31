@@ -15,7 +15,7 @@ import {
 import IntlTelInput from "react-intl-tel-input-18";
 import "react-intl-tel-input-18/dist/main.css";
 import axios from "axios";
-import { UserAccess } from "../../utility/helper/constants"; // Import the UserAccess constant
+import { PhoneNumberRegex, UserAccess } from "../../utility/helper/constants"; // Import the UserAccess constant
 import "./TableStyles.css";
 import { createCommonApiCall } from "utility/helper/create-api-call";
 import userService from "services/user-service";
@@ -30,8 +30,13 @@ const validationSchema = Yup.object({
     firstname: Yup.string().required("First Name is required"),
     lastname: Yup.string().required("Last Name is required"),
     email: Yup.string().email("Invalid email format").required("Email is required"),
-    phonenumber: Yup.string().required("Phone Number is required"),
+    phonenumber: Yup.string()
+        .matches(PhoneNumberRegex, "Phone number is not valid")
+        .required("Phone Number is required"),
     workdescription: Yup.string().required("Work Description is required"),
+    access: Yup.array()
+        .min(1, "Select atleast one page for User access")
+        .required("Select atleast one page for User access"),
 });
 
 export const AddUserForm = ({ onSave, onCancel, formTitle, encUserId }) => {
@@ -166,10 +171,11 @@ export const AddUserForm = ({ onSave, onCancel, formTitle, encUserId }) => {
                             onChange={formik.handleChange}
                             error={formik.touched.email && Boolean(formik.errors.email)}
                             helperText={formik.touched.email && formik.errors.email}
+                            disabled={isEditData}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth>
+                        {/* <FormControl fullWidth>
                             <IntlTelInput
                                 placeholder="Enter Phone Number"
                                 fieldId="phoneNumber"
@@ -187,7 +193,17 @@ export const AddUserForm = ({ onSave, onCancel, formTitle, encUserId }) => {
                         </FormControl>
                         {formik.touched.phonenumber && Boolean(formik.errors.phonenumber) && (
                             <div className="custom-phone-error">{formik.errors.phonenumber}</div>
-                        )}
+                        )} */}
+                        <TextField
+                            fullWidth
+                            id="phoneNumber"
+                            name="phonenumber"
+                            label="Phone Number"
+                            value={formik.values.phonenumber}
+                            onChange={formik.handleChange}
+                            error={formik.touched.phonenumber && Boolean(formik.errors.phonenumber)}
+                            helperText={formik.touched.phonenumber && formik.errors.phonenumber}
+                        />
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
@@ -229,26 +245,20 @@ export const AddUserForm = ({ onSave, onCancel, formTitle, encUserId }) => {
                                 ))}
                             </FormGroup>
                         </FormControl>
-                        {/* {formik.touched.access && Boolean(formik.errors.access) && (
-                                <div className="custom-checkbox-error">{formik.errors.access}</div>
-                            )} */}
+                        {formik.touched.access && Boolean(formik.errors.access) && (
+                            <div className="custom-phone-error">{formik.errors.access}</div>
+                        )}
                     </Grid>
                     <Grid item xs={12} style={{ display: "flex", justifyContent: "end" }}>
                         <Button
                             color="primary"
                             variant="contained"
                             type="submit"
-                            disabled={formik.isSubmitting}
                             sx={{ marginRight: "10px" }}
                         >
                             Save
                         </Button>
-                        <Button
-                            color="secondary"
-                            variant="contained"
-                            onClick={onCancel}
-                            disabled={formik.isSubmitting}
-                        >
+                        <Button color="secondary" variant="contained" onClick={onCancel}>
                             Cancel
                         </Button>
                     </Grid>

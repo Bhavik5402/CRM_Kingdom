@@ -1,6 +1,7 @@
 export const Constants = {
     AppTokenKey: "app_token",
     UserDetails: "user_details",
+    MenuDetails: "menu_details",
     LocalAppEncryptkey: "Bhavik_Parmar",
 };
 
@@ -38,3 +39,5 @@ export const successErrorModalStyle = {
 		padding: "30px",
 	},
 };
+
+export const PhoneNumberRegex = /^\d{10}$/;

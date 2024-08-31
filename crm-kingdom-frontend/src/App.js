@@ -5,18 +5,21 @@ import { SuccessErrorModalProvider } from "Context/AlertContext";
 import { SuccessErrorModal } from "components/Alert/Alert";
 import Loader from "components/Common/Loader";
 import { UserProvider } from "Context/UserContext";
+import { MenuProvider } from "Context/MenuContext";
 
 function App() {
     return (
         <>
             <UserProvider>
-                <SuccessErrorModalProvider>
-                    <BrowserRouter>
-                        <RouterConfig />
-                        <SuccessErrorModal />
-                        {/* <Loader/> */}
-                    </BrowserRouter>
-                </SuccessErrorModalProvider>
+                <MenuProvider>
+                    <SuccessErrorModalProvider>
+                        <BrowserRouter>
+                            <RouterConfig />
+                            <SuccessErrorModal />
+                            {/* <Loader/> */}
+                        </BrowserRouter>
+                    </SuccessErrorModalProvider>
+                </MenuProvider>
             </UserProvider>
         </>
     );

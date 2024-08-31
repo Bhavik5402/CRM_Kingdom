@@ -24,7 +24,7 @@ export const GetAllStages = async (req, res) => {
                 }
             }
         }
-        
+
         console.log("Where Clause - ", whereClause);
 
         const stages = await Stage.findAndCountAll({
@@ -61,7 +61,7 @@ export const AddStage = async (req, res) => {
                     userid: user.usertype == 2 ? user.createdby : user.userid,
                 },
             });
-            console.log("User Stages - ",userStages.length);
+            console.log("User Stages - ", userStages.length);
             if (userStages.length > 0) {
                 const isNameExist = userStages.find((x) => x.name == stage.name);
                 if (isNameExist) {
@@ -84,18 +84,19 @@ export const AddStage = async (req, res) => {
                     });
                 }
                 const maxSequenceNumber = userStages[userStages.length - 1].sequencenumber;
-                console.log("max sequnce number ",maxSequenceNumber);
+                console.log("max sequnce number ", maxSequenceNumber);
                 console.log("Current sequence number - ", stage.sequence);
                 if (stage.sequence > maxSequenceNumber + 1) {
                     return res.status(404).json({
                         statusCode: 404,
                         isSuccessfull: false,
-                        message: `Please add stage with sequence number ${maxSequenceNumber + 1} before adding this one.`,
+                        message: `Please add stage with sequence number ${
+                            maxSequenceNumber + 1
+                        } before adding this one.`,
                         data: null,
                     });
                 }
-            }
-            else if(stage.sequence > 1){
+            } else if (stage.sequence > 1) {
                 return res.status(404).json({
                     statusCode: 404,
                     isSuccessfull: false,
@@ -146,7 +147,7 @@ export const AddStage = async (req, res) => {
 export const EditStage = async (req, res) => {
     try {
         const { stage } = req.body;
-        console.log("Stage",stage);
+        console.log("Stage", stage);
         const { stageId } = stage;
 
         const user = req.user;
@@ -179,15 +180,16 @@ export const EditStage = async (req, res) => {
         const userStages = await Stage.findAll({
             where: { deleteddate: null, userid: existingStage.userid },
         });
-        console.log("Stage - ",stage);
-        console.log("UserStages - ",userStages);
-        const isNameExist = userStages.find((x) => x.name === stage.name && x.stageid !== Number(stageId));
+        console.log("Stage - ", stage);
+        console.log("UserStages - ", userStages);
+        const isNameExist = userStages.find(
+            (x) => x.name === stage.name && x.stageid !== Number(stageId)
+        );
         const isSequnceNumberExist = userStages.find(
             (x) => x.sequencenumber === stage.sequence && x.stageid !== Number(stageId)
         );
 
         const maxSequenceNumber = userStages[userStages.length - 1].sequencenumber;
-        
 
         if (isNameExist) {
             return res.status(404).json({
@@ -258,7 +260,7 @@ export const DeleteStage = async (req, res) => {
     try {
         const { stageId } = req.body;
         const user = req.user;
-        console.log("StageIddd - ",stageId)
+        console.log("StageIddd - ", stageId);
         if (!stageId) {
             return res.status(400).json({
                 statusCode: 400,
@@ -356,6 +358,7 @@ export const GetStageById = async (req, res) => {
 export const GetAllStagesByUserId = async (req, res) => {
     try {
         const { userid } = req.body; // Get userid from the request body
+        const user = req.user;
 
         if (!userid) {
             return res.status(400).json({
@@ -369,7 +372,7 @@ export const GetAllStagesByUserId = async (req, res) => {
         // Find stages by userid
         const stages = await Stage.findAll({
             where: {
-                userid: userid, // Filter stages by the provided userid
+                userid: user.usertype == 1 ? user.userid : user.createdby, // Filter stages by the provided userid
                 deleteddate: null, // Optionally filter out deleted stages
             },
             order: [["sequencenumber", "ASC"]], // Optional: Order stages by sequence number
@@ -400,4 +403,3 @@ export const GetAllStagesByUserId = async (req, res) => {
         });
     }
 };
-
