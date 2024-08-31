@@ -352,3 +352,52 @@ export const GetStageById = async (req, res) => {
         });
     }
 };
+
+export const GetAllStagesByUserId = async (req, res) => {
+    try {
+        const { userid } = req.body; // Get userid from the request body
+
+        if (!userid) {
+            return res.status(400).json({
+                statusCode: 400,
+                isSuccessfull: false,
+                message: "User ID must be provided.",
+                data: null,
+            });
+        }
+
+        // Find stages by userid
+        const stages = await Stage.findAll({
+            where: {
+                userid: userid, // Filter stages by the provided userid
+                deleteddate: null, // Optionally filter out deleted stages
+            },
+            order: [["sequencenumber", "ASC"]], // Optional: Order stages by sequence number
+        });
+
+        if (!stages.length) {
+            return res.status(404).json({
+                statusCode: 404,
+                isSuccessfull: false,
+                message: "No stages found for the provided User ID.",
+                data: null,
+            });
+        }
+
+        return res.status(200).json({
+            statusCode: 200,
+            isSuccessfull: true,
+            message: "Stages retrieved successfully.",
+            data: stages,
+        });
+    } catch (error) {
+        console.log("Exception in GetAllStagesByUserId || ", error);
+        return res.status(500).json({
+            statusCode: 500,
+            isSuccessfull: false,
+            message: "Internal server error - Get All Stages By User ID.",
+            data: null,
+        });
+    }
+};
+

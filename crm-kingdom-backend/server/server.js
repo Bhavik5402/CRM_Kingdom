@@ -10,6 +10,7 @@ import leadRouter from "../routes/lead.route.js";
 import stageRouter from '../routes/stage.route.js';
 import Multer from "multer";
 import { uploadExcel } from "../controllers/upload.controller.js";
+import protectRoute from "../utils/protected.route.js";
 dotenv.config();
 const app = express();
 const PORT = process.env.APP_PORT || 8000;
@@ -28,7 +29,7 @@ app.use("/stage", stageRouter);
 const upload = Multer({ dest: "uploads/" }); // Files will be temporarily stored in 'uploads/' directory
 
 // Route to handle file upload and data insertion
-app.post("/upload", upload.single("file"), uploadExcel);
+app.post("/upload",protectRoute, upload.single("file"), uploadExcel);
 
 app.listen(PORT, () => {
     console.log(`app running on ${PORT}`);

@@ -1,18 +1,37 @@
-import { Lead } from "../models/index.js";
+import { Lead, Stage, User } from "../models/index.js";
 import xlsx from "xlsx";
 import * as fs from "fs";
 
 export const uploadExcel = async (req, res) => {
     try {
         const filePath = req.file.path;
-
         // Read and parse the Excel file
         const workbook = xlsx.readFile(filePath);
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const data = xlsx.utils.sheet_to_json(sheet);
-
         // Insert the parsed data into the Product table
+        // getting leadid according to user id.user
+        let leadCreatorId;
+        const user = await User.findOne({ where: { userid: req.user.userid, deleteddate: null } });
+        if (user.usertype == 1) {
+            leadCreatorId = user.userid;
+        } else {
+            leadCreatorId = user.createdby;
+        }
+        const stage = await Stage.findAll({
+            where: { userid: leadCreatorId, deleteddate: null },
+            order: [["sequencenumber", "ASC"]],
+        });
+        if (!stage?.length) {
+            return res.status(404).json({
+                statusCode: 404,
+                isSuccessfull: false,
+                message: "Stage not defined.",
+                data: null,
+            });
+        }
+
         const products = data.map((row) => {
             return {
                 leadid: row["leadid"],
@@ -29,14 +48,13 @@ export const uploadExcel = async (req, res) => {
                 manageremailid: row["manageremailid"],
                 managerphonenumber: row["managerphonenumber"],
                 managerwhatsappnumber: row["managerwhatsappnumber"],
-                stageid: row["stageid"],
+                stageid: stage[0].dataValues.stageid,
                 instagram: row["instagram"],
                 facebook: row["facebook"],
                 linkedin: row["linkedin"],
                 remark: row["remark"],
-                createdby: row["createdby"],
-                leadby: row["leadby"],
-                createddate: row["createddate"],
+                createdby: req.user.userid,
+                leadby: leadCreatorId,
                 updatedby: row["updatedby"],
                 updateddate: row["updateddate"],
                 deletedby: row["deletedby"],
@@ -56,7 +74,11 @@ export const uploadExcel = async (req, res) => {
             }
         });
 
-        res.status(200).json({ message: "Data successfully inserted into the Product table." });
+        res.status(200).json({
+            statusCode: 200,
+            isSuccessfull: true,
+            message: "Data successfully inserted into the Product table.",
+        });
     } catch (error) {
         console.error("Error occurred:", error);
         res.status(500).json({ error, message: "An error occurred while inserting data." });

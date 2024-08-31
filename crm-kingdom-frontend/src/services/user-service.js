@@ -11,10 +11,13 @@ const editUser = (request) => httpClient.post(ProtectedEndPoints.EditUser, reque
 
 const deleteUser = (request) => httpClient.post(ProtectedEndPoints.DeleteUser, request);
 
+const getUsersByLeadId = (request) => httpClient.post(ProtectedEndPoints.GetUsersByLeadId, request);
+
 export default {
     getAllUsers,
     getUserById,
     createUser,
     editUser,
     deleteUser,
+    getUsersByLeadId
 };

@@ -1,4 +1,4 @@
-import { where } from "sequelize";
+import { Op, where } from "sequelize";
 import User from "../models/Users.js";
 import UserPassword from "../models/UserPassword.js";
 import bcrypt from "bcryptjs";
@@ -367,3 +367,54 @@ export const DeleteUser = async (req, res) => {
         }
     }
 };
+
+export const GetAllUsersByLeadId = async (req, res) => {
+    try {
+        const { leadId } = req.body; // Get leadId from the request body
+
+        if (!leadId) {
+            return res.json({
+                statusCode: 400,
+                isSuccessfull: false,
+                message: "Lead ID must be provided",
+                data: null,
+            });
+        }
+
+        // Find users where createdby matches the provided lead ID or where userid equals the lead ID
+        const users = await User.findAll({
+            where: {
+                [Op.or]: [
+                    { createdby: leadId },   // Users created by the leadId
+                    { userid: leadId }       // The user with the matching leadId as userid
+                ],
+                deleteddate: null, // Optionally filter out deleted users
+            },
+        });
+
+        if (!users.length) {
+            return res.json({
+                statusCode: 404,
+                isSuccessfull: false,
+                message: "No users found for the provided lead ID",
+                data: null,
+            });
+        }
+
+        return res.json({
+            statusCode: 200,
+            isSuccessfull: true,
+            message: "Users retrieved successfully",
+            data: users,
+        });
+    } catch (error) {
+        console.log("Exception in GetAllUsersByLeadId || ", error);
+        return res.json({
+            statusCode: 500,
+            isSuccessfull: false,
+            message: "Internal server error - Get All Users By Lead ID.",
+            data: null,
+        });
+    }
+};
+

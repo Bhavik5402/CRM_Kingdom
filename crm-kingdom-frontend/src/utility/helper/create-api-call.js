@@ -10,8 +10,14 @@ export const createCommonApiCall = async (args) => {
     } = args;
     try {
         showLoader();
-        const response = requestBody ? await apiService(requestBody) : apiService();
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        };
 
+        const response = requestBody ? await apiService(requestBody, config) : apiService();
+        console.log("response - ",response);
         if (response && response.status !== HttpStatusCodes.Unauthorized) {
             const { data } = response;
             hideLoader();

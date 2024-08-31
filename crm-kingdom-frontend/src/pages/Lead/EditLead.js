@@ -17,7 +17,6 @@ export default function EditLead() {
     const navigate = useNavigate();
     useEffect(() => {
         const fetchLeadData = async () => {
-            console.log("hello edit lead form");
             const response = await createCommonApiCall({
                 requestBody: { leadId },
                 apiService: leadService.GetLeadById, // Assume this is the API to get stage by ID
@@ -25,8 +24,8 @@ export default function EditLead() {
                 showPopup: false,
             });
             if (response && response.data) {
-                console.log("LeadData - ",response.data);
                 setInitialValues(response.data);
+                console.log("Initial Values - ",initialValues);
             }
         };
         
@@ -34,10 +33,8 @@ export default function EditLead() {
     }, [leadId, setSuccessErrorContext]);
     
     const handleSaveLead = async (updatedLead) => {
-        console.log("hello update lead");
-        console.log(updatedLead);
-        console.log(leadId);
         // Call API to save updated stage details
+        console.log("Updated WhatsappNumber - ",updatedLead);
         const response = await createCommonApiCall({
             requestBody: {updatelead : { ...updatedLead, leadId }},
             apiService: leadService.UpdateLead, // Assume this is the API to update stage
@@ -57,7 +54,6 @@ export default function EditLead() {
         <div className="lead-page">
             <Breadcrumbs icon="home" title={pageTitle} route={breadcrumbRoute} light={false} />
             {initialValues && (<LeadCreationForm onSave={handleSaveLead} onCancel={handleCancel} pageTitle={pageTitle}  initialValues={initialValues}/>)}
-            {/* <LeadDetails data={formData} onEdit={handleEdit} onConfirm={handleConfirm} /> */}
         </div>
     );
 }

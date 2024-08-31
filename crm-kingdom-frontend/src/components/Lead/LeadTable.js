@@ -28,6 +28,7 @@ import {
     Grid,
     Tooltip,
     Chip,
+    Typography,
 } from "@mui/material";
 import {
     Edit,
@@ -37,8 +38,11 @@ import {
 } from "@mui/icons-material";
 import "./LeadTableStyle.css";
 import { useNavigate } from "react-router-dom";
+import leadService from "services/lead-service";
 import { AppRoutings } from "utility/enums/app-routings.ts";
 import { SuccessErrorModalDispatchContext } from "Context/AlertContext";
+import { createCommonApiCall } from "utility/helper/create-api-call";
+import { WarningModal } from "components/Common/warning-modal";
 const LeadTable = ({
     leads,
     totalCount,
@@ -46,13 +50,25 @@ const LeadTable = ({
     onSortChange,
     onPageChange,
     onDeleteLead,
+    countries,
+    stages,
+    users,
+    onStageChange,
+    onUploadFile
 }) => {
+    console.log("Lead users = ", users);
+    console.log("Stages  = ", stages);
     const [filterOpen, setFilterOpen] = useState(true);
-    const [filters, setFilters] = useState({ companyName: "", country: "", stage: "", leadBy: "" });
+    const [filters, setFilters] = useState({
+        companyname: "",
+        countryid: "",
+        stageid: "",
+        leadby: "",
+    });
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [order, setOrder] = useState("asc");
-    const [orderBy, setOrderBy] = useState("companyName");
+    const [orderBy, setOrderBy] = useState("companyname");
     const setSuccessErrorContext = useContext(SuccessErrorModalDispatchContext);
     const [visibleColumns, setVisibleColumns] = useState({
         companyName: true,
@@ -69,7 +85,11 @@ const LeadTable = ({
     const handleAddLead = () => {
         navigate(AppRoutings.AddLead);
     };
-
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [stageDialogOpen, setStageDialogOpen] = useState(false); // For stage change dialog
+    const [selectedLead, setSelectedLead] = useState(null); // To keep track of the lead to be updated
+    const [selectedStage, setSelectedStage] = useState(""); // For the selected stage
+    const [remarks, setRemarks] = useState(""); // For remarks
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters({ ...filters, [name]: value });
@@ -80,12 +100,13 @@ const LeadTable = ({
     };
 
     const handleClear = () => {
-        setFilters({ companyName: "", country: "", stage: "", leadBy: "" });
+        setFilters({ companyname: "", countryid: "", stageid: "", leadby: "" });
         onFilterChange({});
     };
 
-    const handleDelete = (leadId) => {
-        onDeleteLead(leadId);
+    const handleDelete = (lead) => {
+        setOpenConfirmDialog(true);
+        setSelectedLead(lead);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -102,8 +123,9 @@ const LeadTable = ({
     const handleImportLeads = (event) => {
         const file = event.target.files[0];
         const validExtensions = [
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // Excel
+            "application/vnd.ms-excel", // Excel
+            "text/csv" // CSV
         ];
         if (!(file && validExtensions.includes(file.type))) {
             setSuccessErrorContext({
@@ -132,7 +154,7 @@ const LeadTable = ({
         const isAsc = orderBy === property && order === "asc";
         setOrder(isAsc ? "desc" : "asc");
         setOrderBy(property);
-        onSortChange(property, isAsc ? "desc" : "asc");
+        onSortChange(filters, page, rowsPerPage, isAsc ? "desc" : "asc", property);
     };
 
     const handleColumnVisibilityChange = (column) => {
@@ -146,10 +168,63 @@ const LeadTable = ({
     const handleDialogClose = () => {
         setDialogOpen(false);
     };
+    const handleStageDialogOpen = (lead) => {
+        console.log("Lead = ", lead);
+        setSelectedLead(lead);
+        setSelectedStage(lead.stageId);
+        setStageDialogOpen(true);
+    };
 
+    const handleStageDialogClose = () => {
+        setStageDialogOpen(false);
+        setSelectedLead(null);
+        setSelectedStage("");
+    };
+
+    const handleStageChange = (event) => {
+        setSelectedStage(event.target.value);
+    };
+
+    const handleRemarksChange = (event) => {
+        setRemarks(event.target.value);
+    };
+
+    const handleSaveStage = async () => {
+        if (selectedLead && selectedStage) {
+            handleStageDialogClose();
+            onStageChange(selectedLead.id, selectedStage, remarks); // Pass remarks to the onStageChange callback
+            setRemarks("");
+        }
+    };
     const handleEdit = (leadId) => {
         navigate(AppRoutings.EditLead.replace(":leadId", leadId));
-    }
+    };
+
+    const handleComplete = (leadId) => {
+        const maxSequenceStage = stages.reduce((maxStage, currentStage) =>
+            currentStage.sequencenumber > maxStage.sequencenumber ? currentStage : maxStage
+        );
+
+        onStageChange(leadId, maxSequenceStage.stageid);
+    };
+
+    const confirmDelete = () => {
+        setOpenConfirmDialog(false);
+        onDeleteLead(selectedLead.id);
+        console.log("Selected lead - ", selectedLead.id);
+    };
+
+    const handleUploadExcel = async () => {
+        if (!selectedFile) {
+            alert("No file selected.");
+            return;
+        }
+    
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        console.log("Uploaded file - ",selectedFile);
+        onUploadFile(selectedFile);
+    };
 
     return (
         <Paper className="table-container">
@@ -171,7 +246,7 @@ const LeadTable = ({
                             <InputLabel>Stage</InputLabel>
                             <Select
                                 label="Stage"
-                                name="stage"
+                                name="stageid"
                                 value={filters.stage}
                                 onChange={handleFilterChange}
                                 fullWidth
@@ -179,7 +254,11 @@ const LeadTable = ({
                                 <MenuItem value="">
                                     <em>None</em>
                                 </MenuItem>
-                                {/* Map your stage options here */}
+                                {stages.map((stage) => (
+                                    <MenuItem key={stage.stageid} value={stage.stageid}>
+                                        {stage.name}
+                                    </MenuItem>
+                                ))}
                             </Select>
                         </FormControl>
                         <FormControl
@@ -190,7 +269,7 @@ const LeadTable = ({
                             <InputLabel>Country</InputLabel>
                             <Select
                                 label="Country"
-                                name="country"
+                                name="countryid"
                                 value={filters.country}
                                 onChange={handleFilterChange}
                                 fullWidth
@@ -198,7 +277,11 @@ const LeadTable = ({
                                 <MenuItem value="">
                                     <em>None</em>
                                 </MenuItem>
-                                {/* Map your country options here */}
+                                {countries.map((country) => (
+                                    <MenuItem key={country.countryid} value={country.countryid}>
+                                        {country.name}
+                                    </MenuItem>
+                                ))}
                             </Select>
                         </FormControl>
                         <FormControl
@@ -209,15 +292,19 @@ const LeadTable = ({
                             <InputLabel>Lead By</InputLabel>
                             <Select
                                 label="Lead By"
-                                name="leadBy"
-                                value={filters.leadBy}
+                                name="leadby"
+                                value={filters.leadby}
                                 onChange={handleFilterChange}
                                 fullWidth
                             >
                                 <MenuItem value="">
                                     <em>None</em>
                                 </MenuItem>
-                                {/* Map your lead by options here */}
+                                {users.map((user) => (
+                                    <MenuItem key={user.userid} value={user.userid}>
+                                        {user.firstname + " " + user.lastname}
+                                    </MenuItem>
+                                ))}
                             </Select>
                         </FormControl>
                         <Button
@@ -266,6 +353,15 @@ const LeadTable = ({
                                     sx={{ maxWidth: 200 }}
                                 />
                             </Tooltip>
+                            <Button
+                                sx={{ marginRight: 2 }}
+                                variant="contained"
+                                color="primary"
+                                component="label"
+                                onClick={handleUploadExcel}
+                            >
+                                Upload
+                            </Button>
                         </Box>
                     ) : (
                         <Button
@@ -277,7 +373,7 @@ const LeadTable = ({
                             Import
                             <input
                                 type="file"
-                                accept=".xlsx,.xls"
+                                accept=".xlsx,.xls,.csv"
                                 hidden
                                 onChange={handleImportLeads}
                             />
@@ -334,9 +430,9 @@ const LeadTable = ({
                             {visibleColumns.companyName && (
                                 <TableCell>
                                     <TableSortLabel
-                                        active={orderBy === "companyName"}
-                                        direction={orderBy === "companyName" ? order : "asc"}
-                                        onClick={() => handleRequestSort("companyName")}
+                                        active={orderBy === "companyname"}
+                                        direction={orderBy === "companyname" ? order : "asc"}
+                                        onClick={() => handleRequestSort("companyname")}
                                     >
                                         Company Name
                                     </TableSortLabel>
@@ -345,9 +441,9 @@ const LeadTable = ({
                             {visibleColumns.country && (
                                 <TableCell>
                                     <TableSortLabel
-                                        active={orderBy === "country"}
-                                        direction={orderBy === "country" ? order : "asc"}
-                                        onClick={() => handleRequestSort("country")}
+                                        active={orderBy === "countryid"}
+                                        direction={orderBy === "countryid" ? order : "asc"}
+                                        onClick={() => handleRequestSort("countryid")}
                                     >
                                         Country
                                     </TableSortLabel>
@@ -356,9 +452,9 @@ const LeadTable = ({
                             {visibleColumns.stage && (
                                 <TableCell>
                                     <TableSortLabel
-                                        active={orderBy === "stage"}
-                                        direction={orderBy === "stage" ? order : "asc"}
-                                        onClick={() => handleRequestSort("stage")}
+                                        active={orderBy === "stageid"}
+                                        direction={orderBy === "stageid" ? order : "asc"}
+                                        onClick={() => handleRequestSort("stageid")}
                                     >
                                         Stage
                                     </TableSortLabel>
@@ -367,9 +463,9 @@ const LeadTable = ({
                             {visibleColumns.leadBy && (
                                 <TableCell>
                                     <TableSortLabel
-                                        active={orderBy === "leadBy"}
-                                        direction={orderBy === "leadBy" ? order : "asc"}
-                                        onClick={() => handleRequestSort("leadBy")}
+                                        active={orderBy === "leadby"}
+                                        direction={orderBy === "leadby" ? order : "asc"}
+                                        onClick={() => handleRequestSort("leadby")}
                                     >
                                         Lead By
                                     </TableSortLabel>
@@ -378,9 +474,9 @@ const LeadTable = ({
                             {visibleColumns.arrivedDate && (
                                 <TableCell>
                                     <TableSortLabel
-                                        active={orderBy === "arrivedDate"}
-                                        direction={orderBy === "arrivedDate" ? order : "asc"}
-                                        onClick={() => handleRequestSort("arrivedDate")}
+                                        active={orderBy === "createddate"}
+                                        direction={orderBy === "createddate" ? order : "asc"}
+                                        onClick={() => handleRequestSort("createddate")}
                                     >
                                         Arrived Date
                                     </TableSortLabel>
@@ -389,9 +485,9 @@ const LeadTable = ({
                             {visibleColumns.importManager && (
                                 <TableCell>
                                     <TableSortLabel
-                                        active={orderBy === "importManager"}
-                                        direction={orderBy === "importManager" ? order : "asc"}
-                                        onClick={() => handleRequestSort("importManager")}
+                                        active={orderBy === "managerusername"}
+                                        direction={orderBy === "managerusername" ? order : "asc"}
+                                        onClick={() => handleRequestSort("managerusername")}
                                     >
                                         Import Manager
                                     </TableSortLabel>
@@ -401,32 +497,60 @@ const LeadTable = ({
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {leads.map((lead) => (
-                            <TableRow key={lead.id}>
-                                {visibleColumns.companyName && (
-                                    <TableCell>{lead.companyName}</TableCell>
-                                )}
-                                {visibleColumns.country && <TableCell>{lead.country}</TableCell>}
-                                {visibleColumns.stage && <TableCell>{lead.stage}</TableCell>}
-                                {visibleColumns.leadBy && <TableCell>{lead.leadBy}</TableCell>}
-                                {visibleColumns.arrivedDate && (
-                                    <TableCell>{lead.arrivedDate}</TableCell>
-                                )}
-                                {visibleColumns.importManager && (
-                                    <TableCell>{lead.importManager}</TableCell>
-                                )}
-                                {visibleColumns.action && (
-                                    <TableCell>
-                                        <IconButton onClick={() => handleEdit(lead.id)}>
-                                            <Edit />
-                                        </IconButton>
-                                        <IconButton onClick={() => handleDelete(lead.id)}>
-                                            <Delete />
-                                        </IconButton>
-                                    </TableCell>
-                                )}
+                        {leads.length > 0 ? (
+                            leads.map((lead) => (
+                                <TableRow key={lead.id}>
+                                    {visibleColumns.companyName && (
+                                        <TableCell>{lead.companyName}</TableCell>
+                                    )}
+                                    {visibleColumns.country && (
+                                        <TableCell>{lead.country}</TableCell>
+                                    )}
+                                    {visibleColumns.stage && (
+                                        <TableCell>
+                                            <Button
+                                                variant="contained"
+                                                size="small"
+                                                onClick={() => handleStageDialogOpen(lead)}
+                                            >
+                                                {lead.stage}
+                                            </Button>
+                                        </TableCell>
+                                    )}
+                                    {visibleColumns.leadBy && <TableCell>{lead.leadBy}</TableCell>}
+                                    {visibleColumns.arrivedDate && (
+                                        <TableCell>{lead.arrivedDate}</TableCell>
+                                    )}
+                                    {visibleColumns.importManager && (
+                                        <TableCell>{lead.importManager}</TableCell>
+                                    )}
+                                    {visibleColumns.action && (
+                                        <TableCell>
+                                            <IconButton onClick={() => handleEdit(lead.id)}>
+                                                <Edit />
+                                            </IconButton>
+                                            <IconButton onClick={() => handleDelete(lead)}>
+                                                <Delete />
+                                            </IconButton>
+                                            <Button
+                                                variant="contained"
+                                                color="success"
+                                                size="small"
+                                                onClick={() => handleComplete(lead.id)}
+                                            >
+                                                Complete
+                                            </Button>
+                                        </TableCell>
+                                    )}
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={7} align="center">
+                                    <Typography variant="body1">No records found</Typography>
+                                </TableCell>
                             </TableRow>
-                        ))}
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -438,6 +562,56 @@ const LeadTable = ({
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+
+            {/* Stage Change Dialog */}
+            <Dialog
+                open={stageDialogOpen}
+                onClose={handleStageDialogClose}
+                fullWidth={true}
+                maxWidth="md"
+                sx={{ "& .MuiDialog-paper": { width: "30%", maxWidth: "none" } }} // Set width to 80% of the screen
+            >
+                <DialogTitle>Update Stage</DialogTitle>
+                <DialogContent>
+                    <FormControl fullWidth>
+                        <InputLabel>Stage</InputLabel>
+                        <Select value={selectedStage} onChange={handleStageChange}>
+                            {stages.map((stage) => (
+                                <MenuItem key={stage.stageid} value={stage.stageid}>
+                                    {stage.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <TextField
+                        label="Remarks"
+                        value={remarks}
+                        onChange={handleRemarksChange}
+                        fullWidth
+                        multiline
+                        rows={4}
+                        margin="normal"
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleStageDialogClose} color="secondary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleSaveStage} color="primary">
+                        Save
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <WarningModal
+                isModalOpen={openConfirmDialog}
+                handleOnClickCloseModal={() => setOpenConfirmDialog(false)}
+                title="Confirmation"
+                warningMessage="Are you sure you want to delete this lead?"
+                okButtonText="Delete"
+                closeButtonText="Cancel"
+                handleOnClickOk={confirmDelete}
             />
         </Paper>
     );

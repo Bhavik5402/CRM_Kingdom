@@ -6,11 +6,13 @@ const addStage = (request) => httpClient.post(ProtectedEndPoints.AddStage, reque
 const deleteStage = (request) => httpClient.post(ProtectedEndPoints.DeleteStage, request);
 const getStageById = (request) => httpClient.post(ProtectedEndPoints.GetStageById, request); 
 const updateStage = (request) => httpClient.post(ProtectedEndPoints.UpdateStage, request); 
+const getAllStagesByUserId = (request) => httpClient.post(ProtectedEndPoints.GetAllStagesByUserId, request); 
 
 export default {
     getAllStages,
     addStage,
     deleteStage,
     getStageById,
-    updateStage
+    updateStage,
+    getAllStagesByUserId
 };
