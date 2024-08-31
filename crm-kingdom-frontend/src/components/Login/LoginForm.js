@@ -11,10 +11,13 @@ import tokenManager from "utility/auth-guards/token-manager";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AppRoutings } from "utility/enums/app-routings.ts";
 import { UserDispatchContext } from "Context/UserContext";
+import { MenuDispatchContext } from "Context/MenuContext";
 
 const LoginForm = () => {
     const setSuccessErrorContext = useContext(SuccessErrorModalDispatchContext);
     const setUserContext = useContext(UserDispatchContext);
+    const setMenuContext = useContext(MenuDispatchContext);
+
     const navigate = useNavigate();
     const search = useLocation().search;
     const backUrl = new URLSearchParams(search).get("back");
@@ -43,8 +46,13 @@ const LoginForm = () => {
                 setSuccessErrorContext,
             });
             if (data && data.isSuccessfull) {
-                tokenManager.setAuthorization(data.data.token, JSON.stringify(data.data.user));
+                tokenManager.setAuthorization(
+                    data.data.token,
+                    JSON.stringify(data.data.user),
+                    JSON.stringify(data.data.access)
+                );
                 setUserContext(data.data.user);
+                setMenuContext(data.data.access);
                 navigate(backUrl ? backUrl : AppRoutings.Dashboard, { replace: true });
             }
         },
@@ -91,7 +99,7 @@ const LoginForm = () => {
                 <Button type="submit" fullWidth variant="contained" className="sign-in-button">
                     SIGN IN
                 </Button>
-                <Box display="flex" justifyContent="center" alignItems="center" >
+                <Box display="flex" justifyContent="center" alignItems="center">
                     <Button onClick={handleForgotPasswordClick} className="forgot-password-button">
                         Forgot Password?
                     </Button>

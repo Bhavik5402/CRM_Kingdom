@@ -43,6 +43,7 @@ import { AppRoutings } from "utility/enums/app-routings.ts";
 import { SuccessErrorModalDispatchContext } from "Context/AlertContext";
 import { createCommonApiCall } from "utility/helper/create-api-call";
 import { WarningModal } from "components/Common/warning-modal";
+import { MenuContext } from "Context/MenuContext";
 const LeadTable = ({
     leads,
     totalCount,
@@ -54,8 +55,10 @@ const LeadTable = ({
     stages,
     users,
     onStageChange,
-    onUploadFile
+    onUploadFile,
 }) => {
+    const menuDetails = useContext(MenuContext);
+
     console.log("Lead users = ", users);
     console.log("Stages  = ", stages);
     const [filterOpen, setFilterOpen] = useState(true);
@@ -125,7 +128,7 @@ const LeadTable = ({
         const validExtensions = [
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // Excel
             "application/vnd.ms-excel", // Excel
-            "text/csv" // CSV
+            "text/csv", // CSV
         ];
         if (!(file && validExtensions.includes(file.type))) {
             setSuccessErrorContext({
@@ -219,10 +222,10 @@ const LeadTable = ({
             alert("No file selected.");
             return;
         }
-    
+
         const formData = new FormData();
         formData.append("file", selectedFile);
-        console.log("Uploaded file - ",selectedFile);
+        console.log("Uploaded file - ", selectedFile);
         onUploadFile(selectedFile);
     };
 
@@ -532,14 +535,16 @@ const LeadTable = ({
                                             <IconButton onClick={() => handleDelete(lead)}>
                                                 <Delete />
                                             </IconButton>
-                                            <Button
-                                                variant="contained"
-                                                color="success"
-                                                size="small"
-                                                onClick={() => handleComplete(lead.id)}
-                                            >
-                                                Complete
-                                            </Button>
+                                            {menuDetails.includes(4) && (
+                                                <Button
+                                                    variant="contained"
+                                                    color="success"
+                                                    size="small"
+                                                    onClick={() => handleComplete(lead.id)}
+                                                >
+                                                    Complete
+                                                </Button>
+                                            )}
                                         </TableCell>
                                     )}
                                 </TableRow>

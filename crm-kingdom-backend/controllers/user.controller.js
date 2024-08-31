@@ -241,7 +241,7 @@ export const EditUser = async (req, res) => {
         // Check if the user exists
         const existingUser = await User.findByPk(userid);
         if (!existingUser) {
-            return res.json({
+            return res.status(404).json({
                 statusCode: 404,
                 isSuccessfull: false,
                 message: "User not found",
@@ -252,7 +252,7 @@ export const EditUser = async (req, res) => {
         if (user.email && user.email !== existingUser.email) {
             const isEmailExist = await User.findOne({ where: { email: user.email } });
             if (isEmailExist) {
-                return res.json({
+                return res.status(400).json({
                     statusCode: 400,
                     isSuccessfull: false,
                     message: "This email is already in use by another user",
@@ -286,7 +286,7 @@ export const EditUser = async (req, res) => {
             await UserAccess.bulkCreate(userAccessData);
         }
 
-        return res.json({
+        return res.status(200).json({
             statusCode: 200,
             isSuccessfull: true,
             message: "User updated successfully",
@@ -296,14 +296,14 @@ export const EditUser = async (req, res) => {
         console.log(error);
         const isValid = error.toString().includes("Validation");
         if (isValid) {
-            return res.json({
+            return res.status(400).json({
                 statusCode: 400,
                 isSuccessfull: false,
                 message: "Validation error occurred",
                 data: null,
             });
         } else {
-            return res.json({
+            return res.status(500).json({
                 statusCode: 500,
                 isSuccessfull: false,
                 message: "Internal server error - Edit User.",

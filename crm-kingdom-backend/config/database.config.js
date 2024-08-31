@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
-dotenv.config();
+import environmentConfig from "./environment.config.js";
+environmentConfig.config();
 const sequelize = new Sequelize(
     process.env.DATABASE_NAME,
     process.env.DATABASE_USERNAME,
@@ -20,4 +21,5 @@ sequelize
     .catch((err) => {
         console.error("Unable to connect to the database:", err);
     });
+
 export default sequelize;
