@@ -44,6 +44,7 @@ import { SuccessErrorModalDispatchContext } from "Context/AlertContext";
 import { createCommonApiCall } from "utility/helper/create-api-call";
 import { WarningModal } from "components/Common/warning-modal";
 import { MenuContext } from "Context/MenuContext";
+import { UserContext } from "Context/UserContext";
 const LeadTable = ({
     leads,
     totalCount,
@@ -58,7 +59,7 @@ const LeadTable = ({
     onUploadFile,
 }) => {
     const menuDetails = useContext(MenuContext);
-
+    const contextUser = useContext(UserContext);
     console.log("Lead users = ", users);
     console.log("Stages  = ", stages);
     const [filterOpen, setFilterOpen] = useState(true);
@@ -535,7 +536,7 @@ const LeadTable = ({
                                             <IconButton onClick={() => handleDelete(lead)}>
                                                 <Delete />
                                             </IconButton>
-                                            {menuDetails.includes(4) && (
+                                            {(contextUser.usertype != 2 || ( menuDetails && menuDetails.includes(4))) && (
                                                 <Button
                                                     variant="contained"
                                                     color="success"
