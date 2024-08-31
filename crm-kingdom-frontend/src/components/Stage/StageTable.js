@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
     Table,
     TableBody,
@@ -26,6 +26,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import "./StageTableStyle.css";
 import { useNavigate } from "react-router-dom";
 import { WarningModal } from "components/Common/warning-modal";
+import { MenuContext } from "Context/MenuContext";
 
 export default function StageTable({
     stage,
@@ -36,6 +37,8 @@ export default function StageTable({
     onPageChange,
     onDeleteStage,
 }) {
+    const menuDetails = useContext(MenuContext);
+
     const [filterOpen, setFilterOpen] = useState(true);
     const [filters, setFilters] = useState({ name: "" });
     const [page, setPage] = useState(0);
@@ -99,11 +102,14 @@ export default function StageTable({
 
     return (
         <Paper className="table-container">
-            <div className="add-stage-button">
-                <Button variant="contained" color="success" onClick={onAddStage}>
-                    Add Stage
-                </Button>
-            </div>
+            {menuDetails.includes(2) && (
+                <div className="add-stage-button">
+                    <Button variant="contained" color="success" onClick={onAddStage}>
+                        Add Stage
+                    </Button>
+                </div>
+            )}
+
             <Box className="filter-container" sx={{ marginTop: "20px" }}>
                 {/* <IconButton onClick={() => setFilterOpen(!filterOpen)}>
                     <FilterListIcon />
@@ -234,7 +240,6 @@ export default function StageTable({
                 closeButtonText="Cancel"
                 handleOnClickOk={confirmDelete}
             />
-
         </Paper>
     );
 }

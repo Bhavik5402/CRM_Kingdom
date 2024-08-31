@@ -1,8 +1,8 @@
-import { Sequelize, DataTypes } from 'sequelize';
-import sequelize from '../config/database.config.js';
+import { Sequelize, DataTypes } from "sequelize";
+import sequelize from "../config/database.config.js";
 
 const Country = sequelize.define(
-    'Country',
+    "Country",
     {
         countryid: {
             type: DataTypes.INTEGER,
@@ -15,20 +15,22 @@ const Country = sequelize.define(
             validate: {
                 notEmpty: true, // Ensures the name is not empty
             },
-        },
-        iso2: {
-            type: DataTypes.CHAR(2),
-            allowNull: false,
-            unique: true,
-            validate: {
-                notEmpty: true, // Ensures the ISO code is not empty
-            },
-        },
+        }
     },
     {
-        tableName: 'countries', // Explicitly define the table name
+        tableName: "countries", // Explicitly define the table name
         timestamps: false,
     }
 );
+
+// add Country data if not available
+const countryData = [{ countryid: 1, name: "India" }];
+
+for (const item of countryData) {
+    Country.findOrCreate({
+        where: { name: item.name },
+        defaults: item,
+    });
+}
 
 export default Country;

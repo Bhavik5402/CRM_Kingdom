@@ -17,7 +17,7 @@ export const Login = async (req, res) => {
             });
         } else {
             const userPassword = await UserPassword.findOne({ where: { userid: user.userid } });
-            console.log("User Password - ",userPassword);
+            console.log("User Password - ", userPassword);
             if (!userPassword) {
                 return res.status(404).json({
                     statusCode: 404,
@@ -27,7 +27,7 @@ export const Login = async (req, res) => {
             }
             console.log("isPasswordCorrect - ");
             const isPasswordCorrect = await bcrypt.compare(password, userPassword?.password);
-            console.log("isPasswordCorrect - ",isPasswordCorrect);
+            console.log("isPasswordCorrect - ", isPasswordCorrect);
             if (isPasswordCorrect) {
                 const token = jwtTokenGenerator(user.userid, user.firstname);
 
@@ -51,21 +51,23 @@ export const Login = async (req, res) => {
                 if (user.usertype === 2) {
                     // Fetch user access data
                     const userAccess = await UserAccess.findAll({
-                        where: { userid: user.userid },
+                        where: { userid: user.userid, ischecked: true },
                         attributes: ["pageid", "ischecked"],
                     });
 
-                    // Map user access data
-                    const userAccessMap = userAccess.reduce((acc, access) => {
-                        acc[access.pageid] = access.ischecked;
-                        return acc;
-                    }, {});
+                    accessData = userAccess.map((value) => value.dataValues.pageid);
 
-                    // Prepare access data for all pages
-                    accessData = allPages.reduce((acc, page) => {
-                        acc[page.pageid] = userAccessMap[page.pageid] || false;
-                        return acc;
-                    }, {});
+                    // // Map user access data
+                    // const userAccessMap = userAccess.reduce((acc, access) => {
+                    //     acc[access.pageid] = access.ischecked;
+                    //     return acc;
+                    // }, {});
+
+                    // // Prepare access data for all pages
+                    // accessData = allPages.reduce((acc, page) => {
+                    //     acc[page.pageid] = userAccessMap[page.pageid] || false;
+                    //     return acc;
+                    // }, {});
                 }
 
                 return res.status(200).json({
@@ -88,7 +90,8 @@ export const Login = async (req, res) => {
             }
         }
     } catch (error) {
-        return res.status(200).json({
+        console.log(error);
+        return res.status(500).json({
             statusCode: 500,
             isSuccessfull: false,
             message: "Internal server error.",
@@ -136,7 +139,7 @@ export const ResetPassword = async (req, res) => {
         return res.status(200).json({
             statusCode: 200,
             isSuccessfull: true,
-            message: "Password has been reset successfully."
+            message: "Password has been reset successfully.",
         });
     } catch (error) {
         return res.status(500).json({
@@ -188,10 +191,9 @@ export const SignUp = async (req, res) => {
     }
 };
 
-
 export const forgotPassword = async (req, res) => {
     try {
-        console.log("In forgotpassword method")
+        console.log("In forgotpassword method");
         const { email } = req.body;
         // Check if the user exists
         const user = await User.findOne({ where: { email: email } });
@@ -205,7 +207,7 @@ export const forgotPassword = async (req, res) => {
 
         // Generate a reset token (e.g., JWT)
         const resetToken = jwtTokenGenerator(user.userid, user.firstname);
-        console.log("resetToken - ",resetToken);
+        console.log("resetToken - ", resetToken);
         // Send the reset password email
         await sendResetPasswordEmail(user.email, resetToken, true);
 

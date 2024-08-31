@@ -23,3 +23,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 crm-kingdom-backend/.env
+crm-kingdom-backend/.env.development
+crm-kingdom-backend/.env.production
+crm-kingdom-backend/.env.stage
