@@ -110,6 +110,7 @@ export default function LeadPage() {
                 companyName: lead.companyname,
                 country: lead.country.name,
                 stage: lead.stageDetails ? lead.stageDetails.name : "N/A",
+                stageColor: lead.stageDetails ? lead.stageDetails.color : "#1976d2",
                 leadBy: `${lead.leadGenerator.firstname} ${lead.leadGenerator.lastname}`,
                 arrivedDate: new Date(lead.createddate)
                     .toLocaleString("en-GB", {

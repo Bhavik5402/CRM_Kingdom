@@ -30,9 +30,8 @@ const ForgotPasswordForm = () => {
             const data = await createCommonApiCall({
                 requestBody: { email: values.username },
                 apiService: authService.forgotPassword,
-                showErrorMessage: true,
-                showSuccessMessage: true,
                 setSuccessErrorContext,
+                showPopup: true
             });
             if (data && data.isSuccessfull) {
                 navigate(AppRoutings.Root);

@@ -27,6 +27,7 @@ import "./StageTableStyle.css";
 import { useNavigate } from "react-router-dom";
 import { WarningModal } from "components/Common/warning-modal";
 import { MenuContext } from "Context/MenuContext";
+import { UserContext } from "Context/UserContext";
 
 export default function StageTable({
     stage,
@@ -38,7 +39,7 @@ export default function StageTable({
     onDeleteStage,
 }) {
     const menuDetails = useContext(MenuContext);
-
+    const contextUser = useContext(UserContext);
     const [filterOpen, setFilterOpen] = useState(true);
     const [filters, setFilters] = useState({ name: "" });
     const [page, setPage] = useState(0);
@@ -102,7 +103,7 @@ export default function StageTable({
 
     return (
         <Paper className="table-container">
-            {menuDetails.includes(2) && (
+            {(contextUser.usertype != 2 || ( menuDetails && menuDetails.includes(2))) && (
                 <div className="add-stage-button">
                     <Button variant="contained" color="success" onClick={onAddStage}>
                         Add Stage

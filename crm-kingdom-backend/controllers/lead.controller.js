@@ -287,6 +287,9 @@ export const GetAllLeads = async (req, res) => {
                 {
                     model: Stage,
                     as: "stageDetails",
+                    where: {
+                        deleteddate: null, // Only include stages that are not deleted
+                    },
                 },
                 {
                     model: Country,
@@ -311,6 +314,7 @@ export const GetAllLeads = async (req, res) => {
         });
     }
 };
+
 
 
 export const GetAllCountries = async (req, res)=>{

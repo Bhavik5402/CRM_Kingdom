@@ -19,6 +19,7 @@ export const GetAllUsers = async (req, res) => {
         let whereClause = {
             deleteddate: null,
             createdby: user.usertype == 2 ? user.createdby : user.userid,
+            userid: { [Op.ne]: user.userid }, // Exclude the current user's own record
         };
 
         if (filterObj) {
@@ -83,7 +84,7 @@ export const CreateUser = async (req, res) => {
         if (user) {
             const isExist = await User.findOne({ where: { email: user.email, deleteddate: null } });
             if (isExist) {
-                return res.json({
+                return res.status(404).json({
                     statusCode: 404,
                     isSuccessfull: false,
                     message: "This email is already exist",

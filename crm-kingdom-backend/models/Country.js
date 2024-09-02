@@ -24,13 +24,6 @@ const Country = sequelize.define(
 );
 
 // add Country data if not available
-const countryData = [{ countryid: 1, name: "India" }];
 
-for (const item of countryData) {
-    Country.findOrCreate({
-        where: { name: item.name },
-        defaults: item,
-    });
-}
 
 export default Country;

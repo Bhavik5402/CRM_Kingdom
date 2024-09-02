@@ -72,4 +72,9 @@ const User = sequelize.define(
         timestamps: false, // if you don't have `createdAt` and `updatedAt` columns
     }
 );
+
+
+
+
+
 export default User;
