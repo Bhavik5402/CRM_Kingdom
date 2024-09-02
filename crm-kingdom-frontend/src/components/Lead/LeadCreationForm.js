@@ -2,13 +2,21 @@ import React, { useContext, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { TextField, Button, Grid, Paper, FormControl, MenuItem, FormHelperText } from "@mui/material";
-import './LeadCreationForm.css';
+import {
+    TextField,
+    Button,
+    Grid,
+    Paper,
+    FormControl,
+    MenuItem,
+    FormHelperText,
+} from "@mui/material";
+import "./LeadCreationForm.css";
 import leadService from "services/lead-service";
 import { createCommonApiCall } from "utility/helper/create-api-call";
 import { SuccessErrorModalDispatchContext } from "Context/AlertContext";
 
-const API_KEY = 'ckZjZFVaN3EzZGVEWUlCYzBETlRBVTVYMzdza1NJY29hZkdLTWtSOA==';  // Replace with your actual API key
+const API_KEY = "ckZjZFVaN3EzZGVEWUlCYzBETlRBVTVYMzdza1NJY29hZkdLTWtSOA=="; // Replace with your actual API key
 
 const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
     const [countries, setCountries] = useState([]);
@@ -78,26 +86,41 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
         },
         validationSchema: Yup.object({
             companyname: Yup.string().required("Company Name is required"),
+            website: Yup.string().required("website is required"),
             email: Yup.string().email("Invalid email address").required("Email is required"),
-            phonenumber: Yup.string().required("Contact No is required"),
+            phonenumber: Yup.string()
+                .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+                .required("Contact No is required"),
             countryid: Yup.string().required("Country is required"),
             stateid: Yup.string().required("State is required"),
             cityid: Yup.string().required("City is required"),
             address: Yup.string().required("Address is required"),
             managerusername: Yup.string().required("Import Manager Name is required"),
+            manageremailid: Yup.string()
+                .email("Invalid email address")
+                .required("Import Manager Email is required"),
+            whatsappnumber: Yup.string()
+                .notRequired()
+                .matches(/^\d{7,15}$/, "WhatsApp number must be between 7 and 15 digits"),
+            managerwhatsappnumber: Yup.string()
+                .notRequired()
+                .matches(/^\d{7,15}$/, "WhatsApp number must be between 7 and 15 digits"),
+            managerphonenumber: Yup.string()
+                .notRequired()
+                .matches(/^\d{7,15}$/, "phone number must be between 7 and 15 digits"),
         }),
         onSubmit: (values, { setSubmitting }) => {
-            const countryObj = countries.find(country => country.iso2 === values.countryid);
-            const stateObj = states.find(state => state.iso2 === values.stateid);
-            const cityObj = cities.find(city => city.name === values.cityid);
-    
+            const countryObj = countries.find((country) => country.iso2 === values.countryid);
+            const stateObj = states.find((state) => state.iso2 === values.stateid);
+            const cityObj = cities.find((city) => city.name === values.cityid);
+
             const transformedValues = {
                 ...values,
                 countryid: countryObj ? countryObj.id : values.countryid,
                 stateid: stateObj ? stateObj.id : values.stateid,
                 cityid: cityObj ? cityObj.id : values.cityid,
             };
-    
+
             console.log("Transformed Values - ", transformedValues);
             onSave(transformedValues);
             setSubmitting(false);
@@ -132,9 +155,9 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
 
     const handleCountryChange = async (event) => {
         const countryId = event.target.value;
-        formik.setFieldValue('countryid', countryId);
-        formik.setFieldValue('stateid', '');
-        formik.setFieldValue('cityid', '');
+        formik.setFieldValue("countryid", countryId);
+        formik.setFieldValue("stateid", "");
+        formik.setFieldValue("cityid", "");
         setStates([]);
         setCities([]);
 
@@ -145,8 +168,8 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
 
     const handleStateChange = async (event) => {
         const stateId = event.target.value;
-        formik.setFieldValue('stateid', stateId);
-        formik.setFieldValue('cityid', '');
+        formik.setFieldValue("stateid", stateId);
+        formik.setFieldValue("cityid", "");
         setCities([]);
 
         if (stateId) {
@@ -215,8 +238,13 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                             value={formik.values.whatsappnumber}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={formik.touched.whatsappnumber && Boolean(formik.errors.whatsappnumber)}
-                            helperText={formik.touched.whatsappnumber && formik.errors.whatsappnumber}
+                            error={
+                                formik.touched.whatsappnumber &&
+                                Boolean(formik.errors.whatsappnumber)
+                            }
+                            helperText={
+                                formik.touched.whatsappnumber && formik.errors.whatsappnumber
+                            }
                             InputProps={inputSize}
                         />
                     </Grid>
@@ -359,8 +387,7 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                                 Boolean(formik.errors.manageremailid)
                             }
                             helperText={
-                                formik.touched.manageremailid &&
-                                formik.errors.manageremailid
+                                formik.touched.manageremailid && formik.errors.manageremailid
                             }
                             InputProps={inputSize}
                         />
@@ -411,9 +438,7 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                             value={formik.values.instagram}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={
-                                formik.touched.instagram && Boolean(formik.errors.instagram)
-                            }
+                            error={formik.touched.instagram && Boolean(formik.errors.instagram)}
                             helperText={formik.touched.instagram && formik.errors.instagram}
                             InputProps={inputSize}
                         />
@@ -426,9 +451,7 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                             value={formik.values.facebook}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={
-                                formik.touched.facebook && Boolean(formik.errors.facebook)
-                            }
+                            error={formik.touched.facebook && Boolean(formik.errors.facebook)}
                             helperText={formik.touched.facebook && formik.errors.facebook}
                             InputProps={inputSize}
                         />
@@ -441,9 +464,7 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                             value={formik.values.linkedin}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            error={
-                                formik.touched.linkedin && Boolean(formik.errors.linkedin)
-                            }
+                            error={formik.touched.linkedin && Boolean(formik.errors.linkedin)}
                             helperText={formik.touched.linkedin && formik.errors.linkedin}
                             InputProps={inputSize}
                         />
@@ -477,11 +498,22 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                         />
                     </Grid>
 
-                    <Grid item xs={12} style={{ marginTop: "40px", marginBottom: "40px" }} className="buttons">
+                    <Grid
+                        item
+                        xs={12}
+                        style={{ marginTop: "40px", marginBottom: "40px" }}
+                        className="buttons"
+                    >
                         <Button color="primary" variant="contained" type="submit" size="large">
                             Save
                         </Button>
-                        <Button color="secondary" variant="contained" onClick={onCancel} style={{ marginLeft: "50px" }} size="large">
+                        <Button
+                            color="secondary"
+                            variant="contained"
+                            onClick={onCancel}
+                            style={{ marginLeft: "50px" }}
+                            size="large"
+                        >
                             Clear
                         </Button>
                     </Grid>

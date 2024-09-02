@@ -32,19 +32,5 @@ const PageAccess = sequelize.define(
     }
 );
 
-// add PageAccess data if not available
-const pageAccessData = [
-    { pageid: 1, name: "Stages" },
-    { pageid: 2, name: "Add Stage" },
-    { pageid: 3, name: "Lead" },
-    { pageid: 4, name: "Lead Processing" },
-];
-
-for (const item of pageAccessData) {
-    PageAccess.findOrCreate({
-        where: { name: item.name },
-        defaults: item,
-    });
-}
 
 export default PageAccess;

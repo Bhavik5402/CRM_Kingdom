@@ -63,7 +63,8 @@ export const AddStage = async (req, res) => {
             });
             console.log("User Stages - ", userStages.length);
             if (userStages.length > 0) {
-                const isNameExist = userStages.find((x) => x.name == stage.name);
+                console.log("User Stages  --  ",userStages);
+                const isNameExist = userStages.find((x) => x.name.toLowerCase() === stage.name.toLowerCase());
                 if (isNameExist) {
                     return res.status(404).json({
                         statusCode: 404,
@@ -83,20 +84,8 @@ export const AddStage = async (req, res) => {
                         data: null,
                     });
                 }
-                const maxSequenceNumber = userStages[userStages.length - 1].sequencenumber;
-                console.log("max sequnce number ", maxSequenceNumber);
-                console.log("Current sequence number - ", stage.sequence);
-                if (stage.sequence > maxSequenceNumber + 1) {
-                    return res.status(404).json({
-                        statusCode: 404,
-                        isSuccessfull: false,
-                        message: `Please add stage with sequence number ${
-                            maxSequenceNumber + 1
-                        } before adding this one.`,
-                        data: null,
-                    });
-                }
-            } else if (stage.sequence > 1) {
+            }
+            else if(stage.sequence > 1){
                 return res.status(404).json({
                     statusCode: 404,
                     isSuccessfull: false,
@@ -180,16 +169,13 @@ export const EditStage = async (req, res) => {
         const userStages = await Stage.findAll({
             where: { deleteddate: null, userid: existingStage.userid },
         });
-        console.log("Stage - ", stage);
-        console.log("UserStages - ", userStages);
-        const isNameExist = userStages.find(
-            (x) => x.name === stage.name && x.stageid !== Number(stageId)
-        );
+        console.log("Stage - ",stage);
+        console.log("UserStages - ",userStages);
+        const isNameExist = userStages.find((x) => x.name.toLowerCase() === stage.name.toLowerCase() && x.stageid !== Number(stageId));
         const isSequnceNumberExist = userStages.find(
             (x) => x.sequencenumber === stage.sequence && x.stageid !== Number(stageId)
         );
-
-        const maxSequenceNumber = userStages[userStages.length - 1].sequencenumber;
+        
 
         if (isNameExist) {
             return res.status(404).json({
@@ -205,17 +191,6 @@ export const EditStage = async (req, res) => {
                 statusCode: 404,
                 isSuccessfull: false,
                 message: "Sequence Number is already exist.",
-                data: null,
-            });
-        }
-
-        if (stage.sequenceNumber > maxSequenceNumber + 1) {
-            return res.status(404).json({
-                statusCode: 404,
-                isSuccessfull: false,
-                message: `Please add stage with sequence number ${
-                    maxSequenceNumber + 1
-                } before adding this one.`,
                 data: null,
             });
         }
@@ -382,7 +357,7 @@ export const GetAllStagesByUserId = async (req, res) => {
             return res.status(404).json({
                 statusCode: 404,
                 isSuccessfull: false,
-                message: "No stages found for the provided User ID.",
+                message: "No stages found for the provided user.",
                 data: null,
             });
         }

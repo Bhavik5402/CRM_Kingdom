@@ -41,4 +41,6 @@ const State = sequelize.define(
 
 State.belongsTo(Country, { foreignKey: 'countryid' });
 
+
+
 export default State;

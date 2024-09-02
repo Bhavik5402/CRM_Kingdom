@@ -27,9 +27,9 @@ const Stage = sequelize.define('Stage', {
         allowNull: true,
     },
     sequencenumber: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DOUBLE,
         allowNull: false,
-    },
+    },    
     description: {
         type: DataTypes.TEXT,
         allowNull: true,

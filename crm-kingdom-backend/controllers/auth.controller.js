@@ -22,7 +22,7 @@ export const Login = async (req, res) => {
                 return res.status(404).json({
                     statusCode: 404,
                     isSuccessfull: false,
-                    message: "User does not exist",
+                    message: "UserName or Password is incorrect!",
                 });
             }
             console.log("isPasswordCorrect - ");

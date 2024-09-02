@@ -56,7 +56,7 @@ const LeadTable = ({
     stages,
     users,
     onStageChange,
-    onUploadFile,
+    onUploadFile
 }) => {
     const menuDetails = useContext(MenuContext);
     const contextUser = useContext(UserContext);
@@ -73,6 +73,7 @@ const LeadTable = ({
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [order, setOrder] = useState("asc");
     const [orderBy, setOrderBy] = useState("companyname");
+    const [nextStages, setNextStages] = useState([]);
     const setSuccessErrorContext = useContext(SuccessErrorModalDispatchContext);
     const [visibleColumns, setVisibleColumns] = useState({
         companyName: true,
@@ -87,7 +88,18 @@ const LeadTable = ({
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const handleAddLead = () => {
-        navigate(AppRoutings.AddLead);
+        if(stages && stages.length > 0){
+            navigate(AppRoutings.AddLead);
+
+        }
+        else{
+            setSuccessErrorContext({
+                isSuccessErrorOpen: true,
+                title: "Error",
+                message: "Please enter atleast 1 stage.",
+                isSuccess: false,
+            });
+        }
     };
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [stageDialogOpen, setStageDialogOpen] = useState(false); // For stage change dialog
@@ -115,13 +127,13 @@ const LeadTable = ({
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
-        onPageChange(newPage, rowsPerPage);
+        onPageChange(filters, newPage, rowsPerPage, order, orderBy)
     };
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
-        onPageChange(0, parseInt(event.target.value, 10));
+        onPageChange(filters, page, parseInt(event.target.value, 10), order, orderBy)
     };
 
     const handleImportLeads = (event) => {
@@ -129,6 +141,7 @@ const LeadTable = ({
         const validExtensions = [
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // Excel
             "application/vnd.ms-excel", // Excel
+            "text/csv", // CSV
             "text/csv", // CSV
         ];
         if (!(file && validExtensions.includes(file.type))) {
@@ -174,10 +187,31 @@ const LeadTable = ({
     };
     const handleStageDialogOpen = (lead) => {
         console.log("Lead = ", lead);
+        console.log("Stages = ", stages);
+    
+        // Find the sequence number of the selected stage
+        const selectedStage = stages.find((stage) => stage.stageid === lead.stageId);
+        const selectedStageSequenceNumber = selectedStage ? selectedStage.sequencenumber : null;
+    
+        // Get stages with sequence numbers greater than the selected stage's sequence number
+        const nextStages = selectedStageSequenceNumber !== null 
+            ? stages.filter((stage) => stage.sequencenumber > selectedStageSequenceNumber)
+            : [];
+    
+        // Log for debugging
+        console.log("Selected Stage Sequence Number = ", selectedStageSequenceNumber);
+        console.log("Next Stages = ", nextStages);
+        setNextStages(nextStages);
+        setSelectedStage(nextStages[0]?.stageid);
+        console.log("Selected Stages - ",selectedStage);
         setSelectedLead(lead);
-        setSelectedStage(lead.stageId);
+        // setSelectedStage(lead.stageId);
         setStageDialogOpen(true);
+    
+        // You can pass `nextStages` to the dialog or store it in a state if you need to use it there
+        // setAvailableNextStages(nextStages); // Example: store in state
     };
+    
 
     const handleStageDialogClose = () => {
         setStageDialogOpen(false);
@@ -223,6 +257,7 @@ const LeadTable = ({
             alert("No file selected.");
             return;
         }
+
 
         const formData = new FormData();
         formData.append("file", selectedFile);
@@ -512,13 +547,18 @@ const LeadTable = ({
                                     )}
                                     {visibleColumns.stage && (
                                         <TableCell>
-                                            <Button
-                                                variant="contained"
-                                                size="small"
-                                                onClick={() => handleStageDialogOpen(lead)}
+                                            {/* Replacing the button with a badge */}
+                                            <span
+                                                style={{
+                                                    backgroundColor: lead.stageColor, // Using the stageColor for the badge
+                                                    color: "#fff", // Text color, adjust if needed
+                                                    padding: "5px 10px",
+                                                    borderRadius: "5px",
+                                                    fontSize: "0.875rem",
+                                                }}
                                             >
                                                 {lead.stage}
-                                            </Button>
+                                            </span>
                                         </TableCell>
                                     )}
                                     {visibleColumns.leadBy && <TableCell>{lead.leadBy}</TableCell>}
@@ -538,13 +578,13 @@ const LeadTable = ({
                                             </IconButton>
                                             {(contextUser.usertype != 2 || ( menuDetails && menuDetails.includes(4))) && (
                                                 <Button
-                                                    variant="contained"
-                                                    color="success"
-                                                    size="small"
-                                                    onClick={() => handleComplete(lead.id)}
-                                                >
-                                                    Complete
-                                                </Button>
+                                                variant="contained"
+                                                color="success"
+                                                size="small"
+                                                onClick={() => handleStageDialogOpen(lead)}
+                                            >
+                                                Complete
+                                            </Button>
                                             )}
                                         </TableCell>
                                     )}
@@ -563,6 +603,7 @@ const LeadTable = ({
 
             <TablePagination
                 component="div"
+                rowsPerPageOptions={[5, 10, 15, 20]}
                 count={totalCount}
                 page={page}
                 onPageChange={handleChangePage}
@@ -583,7 +624,7 @@ const LeadTable = ({
                     <FormControl fullWidth>
                         <InputLabel>Stage</InputLabel>
                         <Select value={selectedStage} onChange={handleStageChange}>
-                            {stages.map((stage) => (
+                            {nextStages.map((stage) => (
                                 <MenuItem key={stage.stageid} value={stage.stageid}>
                                     {stage.name}
                                 </MenuItem>
