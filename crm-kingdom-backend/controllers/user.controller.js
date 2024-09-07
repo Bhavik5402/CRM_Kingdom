@@ -19,7 +19,7 @@ export const GetAllUsers = async (req, res) => {
         let whereClause = {
             deleteddate: null,
             createdby: user.usertype == 2 ? user.createdby : user.userid,
-            userid: { [Op.ne]: user.userid }, // Exclude the current user's own record
+            userid: { [Op.ne]: user.usertype == 2 ? user.createdby : user.userid }, // Exclude the current user's own record
         };
 
         if (filterObj) {
@@ -80,7 +80,6 @@ export const GetAllUsers = async (req, res) => {
 export const CreateUser = async (req, res) => {
     try {
         const { user } = req.body;
-        console.log("User - ", user);
         if (user) {
             const isExist = await User.findOne({ where: { email: user.email, deleteddate: null } });
             if (isExist) {
@@ -97,7 +96,7 @@ export const CreateUser = async (req, res) => {
                 phonenumber: user.phonenumber,
                 workdescription: user.workdescription,
                 usertype: user.usertype,
-                createdby: user.createdby,
+                createdby: req.user.usertype == 2 ? req.user.createdby : req.user.userid,
             });
 
             // User Password

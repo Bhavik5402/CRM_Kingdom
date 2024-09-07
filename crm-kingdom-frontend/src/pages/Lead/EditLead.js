@@ -10,7 +10,7 @@ import leadService from "services/lead-service";
 export default function EditLead() {
    
     const { leadId } = useParams();
-    const [breadcrumbRoute, setBreadcrumbRoute] = useState(["home", "lead", "Edit"]);
+    const [breadcrumbRoute, setBreadcrumbRoute] = useState(["home", "leads", "Edit"]);
     const pageTitle = "Edit Lead";
     const [initialValues, setInitialValues] = useState(null);
     const setSuccessErrorContext = useContext(SuccessErrorModalDispatchContext);

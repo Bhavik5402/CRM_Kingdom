@@ -81,8 +81,7 @@ const LeadTable = ({
         stage: true,
         leadBy: true,
         arrivedDate: true,
-        importManager: true,
-        action: true,
+        importManager: true
     });
     const navigate = useNavigate();
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -532,7 +531,7 @@ const LeadTable = ({
                                     </TableSortLabel>
                                 </TableCell>
                             )}
-                            {visibleColumns.action && <TableCell>Action</TableCell>}
+                            <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -568,7 +567,6 @@ const LeadTable = ({
                                     {visibleColumns.importManager && (
                                         <TableCell>{lead.importManager}</TableCell>
                                     )}
-                                    {visibleColumns.action && (
                                         <TableCell>
                                             <IconButton onClick={() => handleEdit(lead.id)}>
                                                 <Edit />
@@ -587,7 +585,6 @@ const LeadTable = ({
                                             </Button>
                                             )}
                                         </TableCell>
-                                    )}
                                 </TableRow>
                             ))
                         ) : (
@@ -621,33 +618,45 @@ const LeadTable = ({
             >
                 <DialogTitle>Update Stage</DialogTitle>
                 <DialogContent>
-                    <FormControl fullWidth>
-                        <InputLabel>Stage</InputLabel>
-                        <Select value={selectedStage} onChange={handleStageChange}>
-                            {nextStages.map((stage) => (
-                                <MenuItem key={stage.stageid} value={stage.stageid}>
-                                    {stage.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <TextField
-                        label="Remarks"
-                        value={remarks}
-                        onChange={handleRemarksChange}
-                        fullWidth
-                        multiline
-                        rows={4}
-                        margin="normal"
-                    />
+                {nextStages.length > 0 ? (
+                    <div>
+
+                        <FormControl fullWidth>
+                            <InputLabel>Stage</InputLabel>
+                            <Select value={selectedStage} onChange={handleStageChange}>
+                                {nextStages.map((stage) => (
+                                    <MenuItem key={stage.stageid} value={stage.stageid}>
+                                        {stage.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <TextField
+                            label="Remarks"
+                            value={remarks}
+                            onChange={handleRemarksChange}
+                            fullWidth
+                            multiline
+                            rows={4}
+                            margin="normal"
+                        />
+                    </div>
+                ) : (
+                    <h3>This lead is already completed</h3>
+                ) }
+                    
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleStageDialogClose} color="secondary">
                         Cancel
                     </Button>
-                    <Button onClick={handleSaveStage} color="primary">
+                    {
+                        nextStages.length > 0 &&
+                        <Button onClick={handleSaveStage} color="primary">
                         Save
                     </Button>
+                    }
+                    
                 </DialogActions>
             </Dialog>
 
