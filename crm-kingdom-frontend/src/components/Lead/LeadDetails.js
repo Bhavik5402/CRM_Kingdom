@@ -12,7 +12,7 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const LeadDetails = ({ data, onEdit, onConfirm }) => {
-     const sortedHistory = [...data.history].sort((a, b) => b.dateChanged - a.dateChanged);
+    const sortedHistory = [...data.history].sort((a, b) => b.dateChanged - a.dateChanged);
 
 
     return (
@@ -106,16 +106,16 @@ const LeadDetails = ({ data, onEdit, onConfirm }) => {
                     <Typography variant="h6" style={{ fontWeight: 'bold' }}>History</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                <Box
+                    <Box
                         sx={{
                             width: '100%',
-                            maxHeight: 200,  
-                            overflowY: 'auto',  
-                            pr: 1, 
+                            maxHeight: 250,
+                            overflowY: 'auto',
+                            pr: 1,
                             mx: 2
                         }}
                     >
-                   
+
                         {sortedHistory.map((entry, index) => (
                             <React.Fragment key={index}>
                                 <Grid container spacing={2} >
@@ -125,8 +125,12 @@ const LeadDetails = ({ data, onEdit, onConfirm }) => {
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
-                                        <Typography >
-                                            <strong>Stage:</strong> {entry.previouseStage || 'N/A'} &rArr; {entry.newState}
+                                        <Typography>
+                                            <strong>Stage: </strong>
+                                            {entry.previouseStage
+                                                ? ` ${entry.previouseStage} ` + ' \u21D2 ' + ` ${entry.newState}`
+                                                :  entry.newState 
+                                            }
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
@@ -145,7 +149,6 @@ const LeadDetails = ({ data, onEdit, onConfirm }) => {
                         ))}
                     </Box>
                 </AccordionDetails>
-    
             </Accordion>
         </div>
     );
