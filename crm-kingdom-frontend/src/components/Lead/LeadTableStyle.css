@@ -15,3 +15,7 @@
     margin-bottom: 20px;
     justify-content: end;
 }
+
+.lead-row:hover{
+  cursor: pointer;   
+}
