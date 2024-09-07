@@ -1,31 +1,38 @@
 import { Sequelize, DataTypes } from "sequelize";
 import sequelize from "../config/database.config.js";
 import User from "./Users.js";
+import Country from "./Country.js"; // Import the Country model
+import State from "./State.js";     // Import the State model
+import City from "./City.js";       // Import the City model
 
 const Lead = sequelize.define(
     "Lead",
     {
-        leadid: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        leadid: { 
+            type: DataTypes.INTEGER, 
+            primaryKey: true, 
+            autoIncrement: true 
+        },
         email: {
             type: DataTypes.STRING(100),
             allowNull: false,
             unique: true,
             validate: {
-                notEmpty: true, // This ensures the string is not empty
+                notEmpty: true,
             },
         },
         companyname: {
             type: DataTypes.STRING(100),
             allowNull: false,
             validate: {
-                notEmpty: true, // This ensures the string is not empty
+                notEmpty: true,
             },
         },
         phonenumber: {
             type: DataTypes.STRING(10),
             allowNull: false,
             validate: {
-                notEmpty: true, // This ensures the string is not empty
+                notEmpty: true,
             },
         },
         whatsappnumber: {
@@ -33,30 +40,42 @@ const Lead = sequelize.define(
         },
         website: {
             type: DataTypes.TEXT,
-            allowNull: false,
+            allowNull: true, // Optional, can be empty
             validate: {
-                notEmpty: false, // This ensures the string is optional and can be empty
+                notEmpty: false,
             },
         },
         countryid: {
             type: DataTypes.INTEGER,
+            references: {
+                model: Country,
+                key: "countryid",
+            },
             allowNull: false,
             validate: {
-                notEmpty: true, // This ensures the string is not empty
+                notEmpty: true,
             },
         },
         stateid: {
             type: DataTypes.INTEGER,
+            references: {
+                model: State,
+                key: "stateid",
+            },
             allowNull: false,
             validate: {
-                notEmpty: true, // This ensures the string is not empty
+                notEmpty: true,
             },
         },
         cityid: {
             type: DataTypes.INTEGER,
+            references: {
+                model: City,
+                key: "cityid",
+            },
             allowNull: false,
             validate: {
-                notEmpty: true, // This ensures the string is not empty
+                notEmpty: true,
             },
         },
         address: {
@@ -66,21 +85,21 @@ const Lead = sequelize.define(
             type: DataTypes.STRING(100),
             allowNull: false,
             validate: {
-                notEmpty: true, // This ensures the string is not empty
+                notEmpty: true,
             },
         },
         manageremailid: {
             type: DataTypes.STRING(100),
             allowNull: false,
             validate: {
-                notEmpty: true, // This ensures the string is not empty
+                notEmpty: true,
             },
         },
         managerphonenumber: {
             type: DataTypes.STRING(10),
             allowNull: false,
             validate: {
-                notEmpty: false, // This ensures the string is not empty
+                notEmpty: false,
             },
         },
         managerwhatsappnumber: {
@@ -106,20 +125,18 @@ const Lead = sequelize.define(
         remark: {
             type: DataTypes.TEXT,
         },
-        // userid of a person who is lead creator (userTYpe= lead creator)
         createdby: {
             type: DataTypes.INTEGER,
             references: {
-                model: "users", // Name of the table to reference
+                model: "users",
                 key: "userid",
             },
             allowNull: false,
         },
-        // userid of a person who create this lead (userTYpe= lead creator or user)
         leadby: {
             type: DataTypes.INTEGER,
             references: {
-                model: "users", // Name of the table to reference
+                model: "users",
                 key: "userid",
             },
             allowNull: false,
@@ -131,7 +148,7 @@ const Lead = sequelize.define(
         updatedby: {
             type: DataTypes.INTEGER,
             references: {
-                model: "users", // Name of the table to reference
+                model: "users",
                 key: "userid",
             },
             allowNull: true,
@@ -142,7 +159,7 @@ const Lead = sequelize.define(
         deletedby: {
             type: DataTypes.INTEGER,
             references: {
-                model: "users", // Name of the table to reference
+                model: "users",
                 key: "userid",
             },
             allowNull: true,
@@ -152,10 +169,9 @@ const Lead = sequelize.define(
         },
     },
     {
-        tableName: "leads", // explicitly define table name to match your existing table
+        tableName: "leads",
         timestamps: false,
     }
 );
-// Lead.belongsTo(User, { as: "createorUser", foreignKey: "createdby" });
-// Lead.belongsTo(User, { as: "leadUser", foreignKey: "leadby" });
+
 export default Lead;

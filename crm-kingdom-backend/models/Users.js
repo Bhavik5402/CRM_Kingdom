@@ -72,7 +72,9 @@ const User = sequelize.define(
         timestamps: false, // if you don't have `createdAt` and `updatedAt` columns
     }
 );
-// User.hasMany(User, { as: "users", foreignKey: "createdby" });
-// User.hasMany(Lead, { foreignKey: "createdby" });
-// User.hasMany(Lead, { foreignKey: "leadby" });
+
+
+
+
+
 export default User;

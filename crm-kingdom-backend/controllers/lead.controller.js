@@ -1,13 +1,8 @@
-// import Lead from "../models/index.js";
-// import User from "../models/index.js";
-import { User, Lead, Stage } from "../models/index.js";
-// import Stage from "../models/Stage.js";
+import { User, Lead, Stage, City, State, Country } from "../models/index.js";
 import { Op } from "sequelize";
 export const CreateLead = async (req, res) => {
     try {
-        console.log("hello create lead");
         const { lead } = req.body;
-        console.log("Lead obj - ",lead);
         // getting leadid according to user id.user
         let leadCreatorId;
         const user = await User.findOne({ where: { userid: req.user.userid, deleteddate: null } });
@@ -39,6 +34,9 @@ export const CreateLead = async (req, res) => {
                 data: null,
             });
         }
+        
+        console.log("Lead - ",lead);
+
         //  create new lead record
         const newLead = await Lead.create({
 
@@ -47,9 +45,9 @@ export const CreateLead = async (req, res) => {
             phonenumber: lead?.phonenumber,
             whatsappnumber: lead?.whatsappnumber,
             website: lead?.website,
-            countryid: 1,
-            stateid: 1,
-            cityid: 1,
+            countryid: lead?.countryid,
+            stateid: lead?.stateid,
+            cityid: lead?.cityid,
             address: lead?.address,
             managerusername: lead?.managerusername,
             manageremailid: lead?.manageremailid,
@@ -82,24 +80,10 @@ export const CreateLead = async (req, res) => {
 
 export const EditLead = async (req, res) => {
     try {
-        console.log("hello edit lead");
-        console.log("updated soc",req.body);
         const {updatelead } = req.body;
-        const { leadId } = updatelead.leadid;
-        
-        console.log("lead id",leadId);
-        const user = await User.findOne({ where: { userid: req.user.userid, deleteddate: null } });
         const lead = await Lead.findOne({
             where: {
-                leadid: leadId,
-                [Op.or]: [
-                    {
-                        createdby: user.userid,
-                    },
-                    {
-                        createdby: user.createdby,
-                    },
-                ],
+                leadid: updatelead.leadid
             },
         });
         if (!lead) {
@@ -110,7 +94,7 @@ export const EditLead = async (req, res) => {
             });
         }
         // Check if the email is already in use by another user
-        if (body.email && body.email !== lead.email) {
+        if (updatelead.email && updatelead.email !== lead.email) {
             const isEmailExist = await Lead.findOne({ where: { email: body?.email } });
             if (isEmailExist) {
                 return res.status(400).json({
@@ -120,19 +104,16 @@ export const EditLead = async (req, res) => {
                 });
             }
         }
-
+        console.log("Before Update ")
         const updatedLead = await lead.update({
             email: updatelead?.email || lead?.email,
             companyname: updatelead?.companyname || lead?.companyname,
             phonenumber: updatelead?.phonenumber || lead?.phonenumber,
             whatsappnumber: updatelead?.whatsappnumber || lead?.whatsappnumber,
             website: updatelead?.website || lead?.website,
-            // countryid: updatelead?.countryid || lead?.countryid,
-            // stateid: updatelead?.stateid || lead.stateid,
-            // cityid: updatelead?.cityid || lead?.cityid,
-            countryid: 1,
-            stateid: 1,
-            cityid: 1,
+            countryid: updatelead?.countryid || lead?.countryid,
+            stateid: updatelead?.stateid || lead.stateid,
+            cityid: updatelead?.cityid || lead?.cityid,
             address: updatelead?.address || lead?.address,
             managerusername: updatelead?.managerusername || lead?.managerusername,
             manageremailid: updatelead?.manageremailid || lead?.manageremailid,
@@ -180,6 +161,7 @@ export const DeleteLead = async (req, res) => {
                 ],
             },
         });
+        console.log("Lead - ",lead);
         if (!lead) {
             return res.status(404).json({
                 statusCode: 404,
@@ -210,20 +192,10 @@ export const DeleteLead = async (req, res) => {
 export const GetLeadById = async (req, res) => {
     try {
         const { leadId } = req.body;
-
-        const user = await User.findOne({ where: { userid: req.user.userid, deleteddate: null } });
         const lead = await Lead.findOne({
             where: {
-                leadid: leadId,
-                [Op.or]: [
-                    {
-                        createdby: user.userid,
-                    },
-                    {
-                        createdby: user.createdby,
-                    },
-                ],
-            },
+                leadid: leadId
+            }
         });
         if (!lead) {
             return res.status(404).json({
@@ -232,6 +204,7 @@ export const GetLeadById = async (req, res) => {
                 message: "Lead not found",
             });
         }
+        console.log("Lead is -",lead);
         return res.status(200).json({
             statusCode: 200,
             isSuccessfull: true,
@@ -249,51 +222,60 @@ export const GetLeadById = async (req, res) => {
 };
 export const GetAllLeads = async (req, res) => {
     try {
-        // console.log("req.body: ", req.body);
         const user = req.user;
         const {
             pageSize,
             pageIndex,
             sortColumn,
             sortDirection,
-            search,
-            stageid,
-            countryid,
-            leadby,
+            filterObj,
         } = req.body;
+        
         const limit = pageSize || 10;
         const offset = pageIndex ? pageIndex * limit : 0;
         const order = [[sortColumn || "createddate", sortDirection || "DESC"]];
 
-        // where clause
+        console.log("In Lead controller");
+
+        // Where clause base setup
         const whereCondition = {
             deleteddate: null,
             createdby: user.usertype == 2 ? user.createdby : user.userid,
         };
-        // adding stageid filter in where clause
-        if (stageid) {
-            whereCondition.stageid = stageid;
-        }
-        // adding countryid filter in where clause
-        if (countryid) {
-            whereCondition.countryid = countryid;
-        }
-        // adding leadby filter in where clause
-        if (leadby) {
-            whereCondition.leadby = leadby;
-        }
-        // adding search query in where clause
-        let searchObject = [];
-        if (search) {
-            searchObject.push({ companyname: { [Op.iLike]: `%${search}%` } });
-            searchObject.push({ email: { [Op.iLike]: `%${search}%` } });
+
+        // Apply additional filters from filterObj
+        if (filterObj) {
+            const { stageid, countryid, leadby, ...restFilters } = filterObj;
+
+            // Adding stageid filter in where clause
+            if (stageid) {
+                whereCondition.stageid = stageid;
+            }
+
+            // Adding countryid filter in where clause
+            if (countryid) {
+                whereCondition.countryid = countryid;
+            }
+
+            // Adding leadby filter in where clause
+            if (leadby) {
+                whereCondition.leadby = leadby;
+            }
+
+            // Adding remaining filters from filterObj (e.g., companyname, etc.)
+            for (const key in restFilters) {
+                if (restFilters[key]) {
+                    whereCondition[key] = {
+                        [Op.iLike]: `%${restFilters[key]}%`, // Enable partial and case-insensitive matching
+                    };
+                }
+            }
         }
 
+        console.log("After Filter Obj", whereCondition);
+
         const result = await Lead.findAndCountAll({
-            where: {
-                ...whereCondition,
-                [Op.or]: searchObject.length > 0 ? searchObject : {},
-            },
+            where: whereCondition,
             order,
             limit,
             offset,
@@ -305,9 +287,17 @@ export const GetAllLeads = async (req, res) => {
                 {
                     model: Stage,
                     as: "stageDetails",
+                    where: {
+                        deleteddate: null, // Only include stages that are not deleted
+                    },
                 },
+                {
+                    model: Country,
+                    as: "country", // Include the Country model
+                }
             ],
         });
+
         return res.json({
             statusCode: 200,
             isSuccessfull: true,
@@ -320,6 +310,162 @@ export const GetAllLeads = async (req, res) => {
             statusCode: 500,
             isSuccessfull: false,
             message: "Internal server error - Get All Leads",
+            data: null,
+        });
+    }
+};
+
+
+
+export const GetAllCountries = async (req, res)=>{
+    try {
+        const countries = await Country.findAll({
+            attributes: ["countryid", "name"],
+            order: [["name", "ASC"]], // Optionally order by country name
+        });
+
+        if (!countries || countries.length === 0) {
+            return res.status(404).json({
+                statusCode: 404,
+                isSuccessfull: false,
+                message: "No countries found",
+                data: [],
+            });
+        }
+
+        return res.status(200).json({
+            statusCode: 200,
+            isSuccessfull: true,
+            message: "Countries retrieved successfully",
+            data: countries,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            statusCode: 500,
+            isSuccessfull: false,
+            message: "Internal server error - Get All Countries",
+            data: null,
+        });
+    }
+}
+
+export const GetStatesByCountry = async (req, res) => {
+    try {
+        const { countryid } = req.body;
+
+        const states = await State.findAll({
+            where: { countryid },
+            attributes: ["stateid", "name"],
+            order: [["name", "ASC"]], // Optionally order by state name
+        });
+
+        if (!states || states.length === 0) {
+            return res.status(404).json({
+                statusCode: 404,
+                isSuccessfull: false,
+                message: "No states found for the specified country",
+                data: [],
+            });
+        }
+
+        return res.status(200).json({
+            statusCode: 200,
+            isSuccessfull: true,
+            message: "States retrieved successfully",
+            data: states,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            statusCode: 500,
+            isSuccessfull: false,
+            message: "Internal server error - Get States By Country",
+            data: null,
+        });
+    }
+};
+
+export const GetCitiesByState = async (req, res) => {
+    try {
+        const { stateid } = req.body;
+
+        const cities = await City.findAll({
+            where: { stateid },
+            attributes: ["cityid", "name"],
+            order: [["name", "ASC"]], // Optionally order by city name
+        });
+
+        if (!cities || cities.length === 0) {
+            return res.status(404).json({
+                statusCode: 404,
+                isSuccessfull: false,
+                message: "No cities found for the specified state",
+                data: [],
+            });
+        }
+
+        return res.status(200).json({
+            statusCode: 200,
+            isSuccessfull: true,
+            message: "Cities retrieved successfully",
+            data: cities,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            statusCode: 500,
+            isSuccessfull: false,
+            message: "Internal server error - Get Cities By State",
+            data: null,
+        });
+    }
+};
+
+export const ChangeLeadStage = async (req, res) => {
+    try {
+        const { leadId, newStageId, remarks } = req.body;
+
+        // Fetch the lead by ID
+        const lead = await Lead.findOne({
+            where: { leadid: leadId, deleteddate: null }
+        });
+
+        if (!lead) {
+            return res.status(404).json({
+                statusCode: 404,
+                isSuccessfull: false,
+                message: "Lead not found",
+            });
+        }
+
+        // Check if the new stage exists
+        const stage = await Stage.findOne({
+            where: { stageid: newStageId, deleteddate: null }
+        });
+
+        if (!stage) {
+            return res.status(404).json({
+                statusCode: 404,
+                isSuccessfull: false,
+                message: "Stage not found",
+            });
+        }
+
+        // Update the stage of the lead
+        lead.stageid = newStageId;
+        lead.remark = remarks;
+        await lead.save();
+
+        return res.status(200).json({
+            statusCode: 200,
+            isSuccessfull: true,
+            message: "Lead stage updated successfully",
+            data: lead,
+        });
+    } catch (error) {
+        console.log("error: ", error);
+        return res.status(500).json({
+            statusCode: 500,
+            isSuccessfull: false,
+            message: "Internal server error - Change Lead Stage",
             data: null,
         });
     }

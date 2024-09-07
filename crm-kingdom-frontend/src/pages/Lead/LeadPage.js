@@ -1,97 +1,200 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Breadcrumbs from "components/Common/BreadCrumb";
 import LeadTable from "components/Lead/LeadTable";
+import { createCommonApiCall } from "utility/helper/create-api-call";
+import leadService from "services/lead-service";
+import stageService from "services/stage-service"; // Import stage service
+import userService from "services/user-service"; // Import user service
+import { SuccessErrorModalDispatchContext } from "Context/AlertContext";
+import { UserContext } from "Context/UserContext";
 
 export default function LeadPage() {
     const [breadcrumbRoute, setBreadcrumbRoute] = useState(["home", "Lead"]);
     const [pageTitle, setPageTitle] = useState("Leads");
-    const [leads, setLeads] = useState([
-        {
-            id: 1,
-            companyName: "Acme Corp",
-            country: "USA",
-            stage: "Qualified",
-            leadBy: "John Doe",
-            arrivedDate: "2024-08-01",
-            importManager: "Jane Smith",
-        },
-        {
-            id: 2,
-            companyName: "Globex Inc.",
-            country: "Canada",
-            stage: "In Progress",
-            leadBy: "Alice Johnson",
-            arrivedDate: "2024-08-10",
-            importManager: "Bob Brown",
-        },
-        {
-            id: 3,
-            companyName: "Umbrella Corp",
-            country: "UK",
-            stage: "Proposal Sent",
-            leadBy: "Charlie Davis",
-            arrivedDate: "2024-08-15",
-            importManager: "David Wilson",
-        },
-    ]);
-    const [filteredLeads, setFilteredLeads] = useState(leads);
-    const [totalCount, setTotalCount] = useState(leads.length);
-
-    const handleFilterChange = (filters) => {
-        let filtered = leads.filter((lead) => {
-            return (
-                (!filters.companyName || lead.companyName.includes(filters.companyName)) &&
-                (!filters.country || lead.country.includes(filters.country)) &&
-                (!filters.stage || lead.stage.includes(filters.stage)) &&
-                (!filters.leadBy || lead.leadBy.includes(filters.leadBy))
-            );
-        });
-        setFilteredLeads(filtered);
-        setTotalCount(filtered.length);
-    };
-
-    const handleSortChange = (property, direction) => {
-        let sortedLeads = [...filteredLeads].sort((a, b) => {
-            if (direction === "asc") {
-                return a[property] > b[property] ? 1 : -1;
-            } else {
-                return a[property] < b[property] ? 1 : -1;
+    const [leads, setLeads] = useState([]);
+    const [totalCount, setTotalCount] = useState(0);
+    const [countries, setCountries] = useState([]);
+    const [stages, setStages] = useState([]); // State for stages
+    const [users, setUsers] = useState([]); // State for users
+    const [loadingCountries, setLoadingCountries] = useState(true);
+    const setSuccessErrorContext = useContext(SuccessErrorModalDispatchContext);
+    const contextUser = useContext(UserContext);
+    useEffect(() => {
+        const fetchCountries = async () => {
+            try {
+                const response = await createCommonApiCall({
+                    requestBody: {},
+                    apiService: leadService.GetAllCountries, // Your custom API to get all countries
+                    setSuccessErrorContext,
+                    showPopup: false,
+                });
+                if (response && response.isSuccessfull) {
+                    setCountries(response.data);
+                } else {
+                    console.error("Error fetching countries", response.message);
+                }
+            } catch (error) {
+                console.error("Error fetching countries", error);
             }
+        };
+
+        fetchCountries();
+    }, []);
+
+    useEffect(() => {
+        fetchLeads(); // Fetch leads only after countries are loaded
+        fetchStages(); // Fetch stages
+        fetchUsers(); // Fetch users
+    }, [loadingCountries]);
+
+    const fetchStages = async () => {
+        try {
+            const response = await createCommonApiCall({
+                requestBody: { userid: contextUser.userid },
+                apiService: stageService.getAllStagesByUserId, // API to get all stages by user ID
+                setSuccessErrorContext,
+                showPopup: false,
+            });
+            if (response && response.isSuccessfull) {
+                setStages(response.data);
+            } else {
+                console.error("Error fetching stages", response.message);
+            }
+        } catch (error) {
+            console.error("Error fetching stages", error);
+        }
+    };
+
+    const fetchUsers = async () => {
+        try {
+            const response = await createCommonApiCall({
+                requestBody: { leadId: contextUser.userid },
+                apiService: userService.getUsersByLeadId, // API to get all users by lead ID
+                setSuccessErrorContext,
+                showPopup: false,
+            });
+            if (response && response.isSuccessfull) {
+                setUsers(response.data);
+            } else {
+                console.error("Error fetching users", response.message);
+            }
+        } catch (error) {
+            console.error("Error fetching users", error);
+        }
+    };
+
+    const fetchLeads = async (
+        filters = {},
+        page = 0,
+        rowsPerPage = 5,
+        order = "asc",
+        orderBy = "companyname"
+    ) => {
+        const requestBody = {
+            filterObj: filters,
+            pageIndex: page,
+            pageSize: rowsPerPage,
+            sortColumn: orderBy,
+            sortDirection: order,
+        };
+        console.log("Request body -", requestBody);
+        const response = await createCommonApiCall({
+            requestBody,
+            apiService: leadService.GetAllLeads,
+            setSuccessErrorContext,
+            showPopup: false,
         });
-        setFilteredLeads(sortedLeads);
+        if (response && response.data) {
+            const mappedLeads = response.data.rows.map((lead) => ({
+                id: lead.leadid,
+                companyName: lead.companyname,
+                country: lead.country.name,
+                stage: lead.stageDetails ? lead.stageDetails.name : "N/A",
+                stageColor: lead.stageDetails ? lead.stageDetails.color : "#1976d2",
+                leadBy: `${lead.leadGenerator.firstname} ${lead.leadGenerator.lastname}`,
+                arrivedDate: new Date(lead.createddate)
+                    .toLocaleString("en-GB", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                    })
+                    .replace(",", ""),
+                importManager: lead.managerusername,
+                stageId: lead.stageDetails.stageid,
+            }));
+            setLeads(mappedLeads);
+            setTotalCount(response.data.count);
+        }
     };
 
-    const handlePageChange = (newPage, rowsPerPage) => {
-        // For now, just log the new page and rows per page
-        console.log(`Page: ${newPage}, Rows per page: ${rowsPerPage}`);
+    const handleFilterChange = (filters, page, rowsPerPage, order, orderBy) => {
+        fetchLeads(filters, page, rowsPerPage, order, orderBy);
     };
 
-    const handleDeleteLead = (leadId) => {
-        const updatedLeads = filteredLeads.filter((lead) => lead.id !== leadId);
-        setFilteredLeads(updatedLeads);
-        setLeads(updatedLeads);
-        setTotalCount(updatedLeads.length);
+    const handleSortChange = (filters, page, rowsPerPage, order, orderBy) => {
+        fetchLeads(filters, page, rowsPerPage, order, orderBy);
     };
 
-    const handleImportLeads = () => {
-        console.log("Import leads");
+    const handlePageChange = (filters, page, rowsPerPage, order, orderBy) => {
+        fetchLeads(filters, page, rowsPerPage, order, orderBy);
     };
 
-    const handleExportLeads = () => {
-        console.log("Export leads");
+    const handleDeleteLead = async (leadId) => {
+        const response = await createCommonApiCall({
+            requestBody: { leadId: leadId },
+            apiService: leadService.DeleteLead,
+            setSuccessErrorContext,
+            showPopup: true,
+        });
+        if (response) {
+            fetchLeads(); // Refresh the list of leads
+        }
+    };
+
+    const handleStageChange = async (leadId, stageId, remarks) => {
+        const response = await createCommonApiCall({
+            requestBody: { leadId: leadId, newStageId: stageId, remarks: remarks },
+            apiService: leadService.ChangeStage,
+            setSuccessErrorContext,
+            showPopup: true,
+        });
+        if (response && response.isSuccessfull) {
+            fetchLeads();
+        }
+    };
+
+    const handleFileUpload = async (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        // Create the API call
+        const response = await createCommonApiCall({
+            requestBody: formData,
+            apiService: leadService.UploadExcelSheet,
+            setSuccessErrorContext,
+            showPopup: true,
+        });
     };
 
     return (
         <div>
-            <Breadcrumbs icon="home" title={pageTitle} route={breadcrumbRoute} light={false} />
+            <Breadcrumbs route={breadcrumbRoute} title={pageTitle} />
             <div className="table-header">Lead Table</div>
             <LeadTable
-                leads={filteredLeads}
+                leads={leads}
                 totalCount={totalCount}
                 onFilterChange={handleFilterChange}
                 onSortChange={handleSortChange}
                 onPageChange={handlePageChange}
                 onDeleteLead={handleDeleteLead}
+                countries={countries}
+                stages={stages} // Pass stages to the table
+                users={users}
+                onStageChange={handleStageChange}
+                onUploadFile={handleFileUpload}
             />
         </div>
     );

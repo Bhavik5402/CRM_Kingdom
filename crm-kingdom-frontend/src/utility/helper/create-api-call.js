@@ -6,22 +6,27 @@ export const createCommonApiCall = async (args) => {
         requestBody,
         apiService,
         setSuccessErrorContext,
-        showSuccessMessage,
-        showErrorMessage,
+        showPopup
     } = args;
     try {
         showLoader();
-        const response = requestBody ? await apiService(requestBody) : apiService();
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        };
 
+        const response = requestBody ? await apiService(requestBody, config) : apiService();
+        console.log("response - ",response);
         if (response && response.status !== HttpStatusCodes.Unauthorized) {
             const { data } = response;
             hideLoader();
             if (data && data.isSuccessfull) {
-                if (showSuccessMessage)
+                if (showPopup)
                     openSucessErrorModal(setSuccessErrorContext, "Success", data.message, true);
                 return data;
             } else {
-                if (showErrorMessage)
+                if (showPopup)
                     openSucessErrorModal(setSuccessErrorContext, "Error", data.message, false);
             }
         }

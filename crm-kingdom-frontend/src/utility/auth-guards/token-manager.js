@@ -46,11 +46,14 @@ const getToken = () => {
     }
 };
 
-const setAuthorization = (jwtToken, userDetails) => {
+const setAuthorization = (jwtToken, userDetails, menuDetails) => {
     Cookies.set(ENVIRONMENT + Constants.AppTokenKey, doEncryptDecrypt(true, "bearer " + jwtToken), {
         expires: 1 / 24,
     });
     Cookies.set(ENVIRONMENT + Constants.UserDetails, doEncryptDecrypt(true, userDetails), {
+        expires: 1 / 24,
+    });
+    Cookies.set(ENVIRONMENT + Constants.MenuDetails, doEncryptDecrypt(true, menuDetails), {
         expires: 1 / 24,
     });
 };
@@ -66,6 +69,17 @@ const getUserDetails = () => {
     } else return undefined;
 };
 
+const getMenuDetails = () => {
+    const menuDetailString = doEncryptDecrypt(
+        false,
+        Cookies.get(ENVIRONMENT + Constants.MenuDetails)
+    );
+    if (menuDetailString) {
+        const menuDetails = JSON.parse(JSON.parse(menuDetailString ? menuDetailString : ""));
+        return menuDetails;
+    } else return undefined;
+};
+
 export default {
     clearCookiesAndLocalStorage,
     clearSession,
@@ -73,4 +87,5 @@ export default {
     getToken,
     getUserDetails,
     doEncryptDecrypt,
+    getMenuDetails,
 };

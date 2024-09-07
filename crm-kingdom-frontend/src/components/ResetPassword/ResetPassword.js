@@ -36,9 +36,8 @@ const ResetPasswordForm = () => {
             const data = await createCommonApiCall({
                 requestBody: { token: resetToken, newPassword: values.password },
                 apiService: authService.resetPassword,
-                showErrorMessage: true,
-                showSuccessMessage: true,
                 setSuccessErrorContext,
+                showPopup: true
             });
             if (data && data.isSuccessfull) {
                 navigate(AppRoutings.Root, { replace: true });

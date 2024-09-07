@@ -1,4 +1,4 @@
-import { where } from "sequelize";
+import { Op, where } from "sequelize";
 import User from "../models/Users.js";
 import UserPassword from "../models/UserPassword.js";
 import bcrypt from "bcryptjs";
@@ -19,6 +19,7 @@ export const GetAllUsers = async (req, res) => {
         let whereClause = {
             deleteddate: null,
             createdby: user.usertype == 2 ? user.createdby : user.userid,
+            userid: { [Op.ne]: user.userid }, // Exclude the current user's own record
         };
 
         if (filterObj) {
@@ -83,7 +84,7 @@ export const CreateUser = async (req, res) => {
         if (user) {
             const isExist = await User.findOne({ where: { email: user.email, deleteddate: null } });
             if (isExist) {
-                return res.json({
+                return res.status(404).json({
                     statusCode: 404,
                     isSuccessfull: false,
                     message: "This email is already exist",
@@ -241,7 +242,7 @@ export const EditUser = async (req, res) => {
         // Check if the user exists
         const existingUser = await User.findByPk(userid);
         if (!existingUser) {
-            return res.json({
+            return res.status(404).json({
                 statusCode: 404,
                 isSuccessfull: false,
                 message: "User not found",
@@ -252,7 +253,7 @@ export const EditUser = async (req, res) => {
         if (user.email && user.email !== existingUser.email) {
             const isEmailExist = await User.findOne({ where: { email: user.email } });
             if (isEmailExist) {
-                return res.json({
+                return res.status(400).json({
                     statusCode: 400,
                     isSuccessfull: false,
                     message: "This email is already in use by another user",
@@ -286,7 +287,7 @@ export const EditUser = async (req, res) => {
             await UserAccess.bulkCreate(userAccessData);
         }
 
-        return res.json({
+        return res.status(200).json({
             statusCode: 200,
             isSuccessfull: true,
             message: "User updated successfully",
@@ -296,14 +297,14 @@ export const EditUser = async (req, res) => {
         console.log(error);
         const isValid = error.toString().includes("Validation");
         if (isValid) {
-            return res.json({
+            return res.status(400).json({
                 statusCode: 400,
                 isSuccessfull: false,
                 message: "Validation error occurred",
                 data: null,
             });
         } else {
-            return res.json({
+            return res.status(500).json({
                 statusCode: 500,
                 isSuccessfull: false,
                 message: "Internal server error - Edit User.",
@@ -367,3 +368,54 @@ export const DeleteUser = async (req, res) => {
         }
     }
 };
+
+export const GetAllUsersByLeadId = async (req, res) => {
+    try {
+        const { leadId } = req.body; // Get leadId from the request body
+
+        if (!leadId) {
+            return res.json({
+                statusCode: 400,
+                isSuccessfull: false,
+                message: "Lead ID must be provided",
+                data: null,
+            });
+        }
+
+        // Find users where createdby matches the provided lead ID or where userid equals the lead ID
+        const users = await User.findAll({
+            where: {
+                [Op.or]: [
+                    { createdby: leadId },   // Users created by the leadId
+                    { userid: leadId }       // The user with the matching leadId as userid
+                ],
+                deleteddate: null, // Optionally filter out deleted users
+            },
+        });
+
+        if (!users.length) {
+            return res.json({
+                statusCode: 404,
+                isSuccessfull: false,
+                message: "No users found for the provided lead ID",
+                data: null,
+            });
+        }
+
+        return res.json({
+            statusCode: 200,
+            isSuccessfull: true,
+            message: "Users retrieved successfully",
+            data: users,
+        });
+    } catch (error) {
+        console.log("Exception in GetAllUsersByLeadId || ", error);
+        return res.json({
+            statusCode: 500,
+            isSuccessfull: false,
+            message: "Internal server error - Get All Users By Lead ID.",
+            data: null,
+        });
+    }
+};
+

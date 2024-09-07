@@ -8,13 +8,15 @@ import { HttpStatusCodes } from "utility/enums/http-status-code.ts";
 // Used to intercept the request before api enpoint is hit
 axios.interceptors.request.use(
     async (config) => {
+        const isExternalUrl = /^(http|https):\/\//i.test(config.url);
+        console.log("In intercept", config.url);
         // config.headers["Access-Control-Allow-Origin"] = "*";
         const protectedUrl = Object.values(ProtectedEndPoints).find((url) => url === config.url);
         const isProtectedUrl = protectedUrl ? true : false;
         if (isProtectedUrl) {
             config.headers.Authorization = tokenManager.getToken();
         }
-        if (config.url) {
+        if (config.url && !isExternalUrl) {
             config.url = BASE_API_URL + config.url;
         }
         const useDetails = tokenManager.getUserDetails();
