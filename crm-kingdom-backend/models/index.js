@@ -5,6 +5,7 @@ import Country from "./Country.js";
 import State from "./State.js";
 import City from "./City.js";
 import PageAccess from "./PageAccess.js";
+import LeadHistory from "./LeadHistory.js";
 import { syncDatabase } from "../config/database.config.js";
 
 async function initialize() {
@@ -111,4 +112,4 @@ async function initialize() {
 
 initialize();
 
-export { Lead, User, Stage, Country, City, State };
+export { Lead, User, Stage, Country, City, State, LeadHistory };
