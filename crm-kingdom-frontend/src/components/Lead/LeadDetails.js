@@ -5,11 +5,16 @@ import {
     AccordionDetails,
     Typography,
     Button,
-    Grid
+    Grid,
+    Box,
+    Divider
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const LeadDetails = ({ data, onEdit, onConfirm }) => {
+     const sortedHistory = [...data.history].sort((a, b) => b.dateChanged - a.dateChanged);
+
+
     return (
         <div>
             <Accordion>
@@ -96,12 +101,52 @@ const LeadDetails = ({ data, onEdit, onConfirm }) => {
                 </AccordionDetails>
             </Accordion>
 
-            <Button variant="contained" color="primary" onClick={onEdit} style={{ marginTop: '20px', marginRight: '10px' }}>
-                Edit
-            </Button>
-            <Button variant="contained" color="secondary" onClick={onConfirm} style={{marginTop: '20px', marginRight: '10px'}} >
-                Confirm
-            </Button>
+            <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="h6" style={{ fontWeight: 'bold' }}>History</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                <Box
+                        sx={{
+                            width: '100%',
+                            maxHeight: 200,  
+                            overflowY: 'auto',  
+                            pr: 1, 
+                            mx: 2
+                        }}
+                    >
+                   
+                        {sortedHistory.map((entry, index) => (
+                            <React.Fragment key={index}>
+                                <Grid container spacing={2} >
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography >
+                                            <strong>Username:</strong> {entry.username}
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography >
+                                            <strong>Stage:</strong> {entry.previouseStage || 'N/A'} &rArr; {entry.newState}
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography >
+                                            <strong>Remarks:</strong> {entry.remarks || 'N/A'}
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} >
+                                        <Typography >
+                                            <strong>Date:</strong> {entry.dateChanged.toLocaleDateString()}
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                                {index < sortedHistory.length - 1 && <Divider sx={{ my: 1 }} />}
+                            </React.Fragment>
+                        ))}
+                    </Box>
+                </AccordionDetails>
+    
+            </Accordion>
         </div>
     );
 };
