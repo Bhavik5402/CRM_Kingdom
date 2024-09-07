@@ -33,7 +33,7 @@ async function initialize() {
         ];
 
         for (const item of pageAccessData) {
-            PageAccess.findOrCreate({
+            await PageAccess.findOrCreate({
                 where: { name: item.name },
                 defaults: item,
             });
@@ -64,9 +64,44 @@ async function initialize() {
         ];
 
         for (const user of userData) {
-            User.findOrCreate({
+            await User.findOrCreate({
                 where: { email: user.email },
                 defaults: user,
+            });
+        }
+
+        const countryData = [{ countryid: 1, name: "India" }];
+
+        for (const item of countryData) {
+            await Country.findOrCreate({
+                where: { name: item.name },
+                defaults: item,
+            });
+        }
+
+        const stateData = [
+            { stateid: 1, name: "Maharashtra", iso2: "MH", countryid: 1 },
+            { stateid: 2, name: "Karnataka", iso2: "KA", countryid: 1 },
+        ];
+
+        for (const item of stateData) {
+            await State.findOrCreate({
+                where: { name: item.name },
+                defaults: item,
+            });
+        }
+
+        const cityData = [
+            { cityid: 1, name: "Mumbai", stateid: 1 },
+            { cityid: 2, name: "Pune", stateid: 1 },
+            { cityid: 3, name: "Bangalore", stateid: 2 },
+            { cityid: 4, name: "Mysore", stateid: 2 },
+        ];
+
+        for (const item of cityData) {
+            await City.findOrCreate({
+                where: { name: item.name },
+                defaults: item,
             });
         }
     } catch (error) {
