@@ -87,7 +87,7 @@ const LeadTable = ({
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const handleAddLead = () => {
-        if(stages && stages.length > 0){
+        if (stages && stages.length > 0) {
             navigate(AppRoutings.AddLead);
 
         }
@@ -187,16 +187,13 @@ const LeadTable = ({
     const handleStageDialogOpen = (lead) => {
         console.log("Lead = ", lead);
         console.log("Stages = ", stages);
-    
         // Find the sequence number of the selected stage
         const selectedStage = stages.find((stage) => stage.stageid === lead.stageId);
         const selectedStageSequenceNumber = selectedStage ? selectedStage.sequencenumber : null;
-    
         // Get stages with sequence numbers greater than the selected stage's sequence number
         const nextStages = selectedStageSequenceNumber !== null 
             ? stages.filter((stage) => stage.sequencenumber > selectedStageSequenceNumber)
             : [];
-    
         // Log for debugging
         console.log("Selected Stage Sequence Number = ", selectedStageSequenceNumber);
         console.log("Next Stages = ", nextStages);
@@ -537,13 +534,13 @@ const LeadTable = ({
                     <TableBody>
                         {leads.length > 0 ? (
                             leads.map((lead) => (
-                                <TableRow key={lead.id}>
-                                    {visibleColumns.companyName && (
-                                        <TableCell>{lead.companyName}</TableCell>
-                                    )}
-                                    {visibleColumns.country && (
-                                        <TableCell>{lead.country}</TableCell>
-                                    )}
+                                <TableRow
+                                    key={lead.id}
+                                    className="lead-row"
+                                    onClick={() => handleEdit(lead.id)} 
+                                >
+                                    {visibleColumns.companyName && <TableCell>{lead.companyName}</TableCell>}
+                                    {visibleColumns.country && <TableCell>{lead.country}</TableCell>}
                                     {visibleColumns.stage && (
                                         <TableCell>
                                             {/* Replacing the button with a badge */}
@@ -561,30 +558,27 @@ const LeadTable = ({
                                         </TableCell>
                                     )}
                                     {visibleColumns.leadBy && <TableCell>{lead.leadBy}</TableCell>}
-                                    {visibleColumns.arrivedDate && (
-                                        <TableCell>{lead.arrivedDate}</TableCell>
-                                    )}
-                                    {visibleColumns.importManager && (
-                                        <TableCell>{lead.importManager}</TableCell>
-                                    )}
-                                        <TableCell>
-                                            <IconButton onClick={() => handleEdit(lead.id)}>
-                                                <Edit />
-                                            </IconButton>
-                                            <IconButton onClick={() => handleDelete(lead)}>
-                                                <Delete />
-                                            </IconButton>
-                                            {(contextUser.usertype != 2 || ( menuDetails && menuDetails.includes(4))) && (
-                                                <Button
+                                    {visibleColumns.arrivedDate && <TableCell>{lead.arrivedDate}</TableCell>}
+                                    {visibleColumns.importManager && <TableCell>{lead.importManager}</TableCell>}
+                                    <TableCell>
+                                        {/* Stop propagation to prevent row click */}
+                                        <IconButton onClick={(event) => { event.stopPropagation(); handleEdit(lead.id); }}>
+                                            <Edit />
+                                        </IconButton>
+                                        <IconButton onClick={(event) => { event.stopPropagation(); handleDelete(lead); }}>
+                                            <Delete />
+                                        </IconButton>
+                                        {(contextUser.usertype !== 2 || (menuDetails && menuDetails.includes(4))) && (
+                                            <Button
                                                 variant="contained"
                                                 color="success"
                                                 size="small"
-                                                onClick={() => handleStageDialogOpen(lead)}
+                                                onClick={(event) => { event.stopPropagation(); handleStageDialogOpen(lead); }}
                                             >
                                                 Complete
                                             </Button>
-                                            )}
-                                        </TableCell>
+                                        )}
+                                    </TableCell>
                                 </TableRow>
                             ))
                         ) : (
