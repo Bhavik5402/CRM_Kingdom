@@ -208,7 +208,7 @@ export const GetLeadById = async (req, res) => {
             where: {
                 leadid: leadId,
             },
-            attributes: ["createddate"],
+            attributes: ["createddate", "remark"],
             include: [
                 {
                     model: User,
@@ -227,20 +227,30 @@ export const GetLeadById = async (req, res) => {
             ],
         });
 
-        
         const history = leadhistory.map((l) => ({
             username: l.User.firstname + " " + l.User.lastname,
             previouseStage: l.previouseStage.name,
             newState: l.newState.name,
             dateChanged: l.createddate,
+            remark: l.remark,
         }));
-        console.log("==================================");
-        console.log("Lead History");
-        console.log(history);
-        console.log("==================================");
-        
+
+        const leadbyUser = await User.findOne({
+            where: {
+                userid: lead.dataValues.leadby,
+            },
+        });
+
+        const sourcebyUser = await User.findOne({
+            where: {
+                userid: lead.dataValues.createdby,
+            },
+        });
+
         const returnData = {
             ...lead.dataValues,
+            leadby: leadbyUser.dataValues.firstname + " " + leadbyUser.dataValues.lastname,
+            sourceby: sourcebyUser.dataValues.firstname + " " + sourcebyUser.dataValues.lastname,
             history: history,
         };
 

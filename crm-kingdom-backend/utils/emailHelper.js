@@ -4,12 +4,12 @@ export const sendResetPasswordEmail = async (email, resetToken, isResetPassword 
     try {
         // Create a transporter object using Office 365 SMTP settings
         const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 465, // Port for TLS
-            secure: true, // Use false for TLS (587)
+            host: "smtp.office365.com",
+            port: 587, // Port for TLS
+            secure: false, // Use false for TLS (587)
             auth: {
-                user: "vedant.trainee.tatvasoft@gmail.com", // Your Outlook email
-                pass: "ifhi wwcn jrnd gasu", // Your Outlook password
+                user: "bhavik.parmar5402@outlook.com", // Your Outlook email
+                pass: "Bhavik@123", // Your Outlook password
             },
             tls: {
                 ciphers: "SSLv3",
@@ -18,12 +18,12 @@ export const sendResetPasswordEmail = async (email, resetToken, isResetPassword 
 
         // Email content based on the isResetPassword flag
         const mailOptions = {
-            from: 'bhavik.parmar5402@outlook.com',
+            from: "bhavik.parmar5402@outlook.com",
             to: email,
-            subject: isResetPassword 
+            subject: isResetPassword
                 ? "Reset Your Password - LeadGenerator"
                 : "Welcome to LeadGenerator! Your Account Has Been Created",
-            html: isResetPassword 
+            html: isResetPassword
                 ? `
                     <div style="font-family: Arial, sans-serif; line-height: 1.6;">
                         <h2 style="color: #333;">Password Reset Request</h2>
@@ -61,9 +61,12 @@ export const sendResetPasswordEmail = async (email, resetToken, isResetPassword 
 
         // Send email
         const info = await transporter.sendMail(mailOptions);
-        console.log(`${isResetPassword ? "Password reset" : "Welcome"} email sent: %s`, info.messageId);
+        console.log(
+            `${isResetPassword ? "Password reset" : "Welcome"} email sent: %s`,
+            info.messageId
+        );
     } catch (error) {
         console.error("Error sending email:", error);
         throw error; // Re-throw the error to handle it in the calling function
     }
-}
+};
