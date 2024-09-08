@@ -11,6 +11,7 @@ import AddLead from "pages/Lead/AddLead";
 import ResetPasswordPage from "pages/ResetPassword/ResetPasswordPage";
 import ForgotPasswordPage from "pages/ResetPassword/ForgotPasswordPage";
 import EditLead from "pages/Lead/EditLead";
+import ViewLead from "pages/Lead/ViewLead";
 
 export const AppRoutes = [
     {
@@ -88,12 +89,17 @@ export const AppRoutes = [
         path: AppRoutings.ForgotPassword,
         element: ForgotPasswordPage,
         routeType: RouterType.unprotectedRoute,
-        
     },
-  {
-    id: 14,
-    path: AppRoutings.EditLead,
+    {
+        id: 14,
+        path: AppRoutings.EditLead,
         element: EditLead,
         routeType: RouterType.protectedRoute,
-  }
+    },
+    {
+        id: 15,
+        path: AppRoutings.ViewLead,
+        element: ViewLead,
+        routeType: RouterType.protectedRoute,
+    },
 ];

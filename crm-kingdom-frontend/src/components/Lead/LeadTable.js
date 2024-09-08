@@ -56,7 +56,7 @@ const LeadTable = ({
     stages,
     users,
     onStageChange,
-    onUploadFile
+    onUploadFile,
 }) => {
     const menuDetails = useContext(MenuContext);
     const contextUser = useContext(UserContext);
@@ -81,7 +81,7 @@ const LeadTable = ({
         stage: true,
         leadBy: true,
         arrivedDate: true,
-        importManager: true
+        importManager: true,
     });
     const navigate = useNavigate();
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -89,9 +89,7 @@ const LeadTable = ({
     const handleAddLead = () => {
         if (stages && stages.length > 0) {
             navigate(AppRoutings.AddLead);
-
-        }
-        else{
+        } else {
             setSuccessErrorContext({
                 isSuccessErrorOpen: true,
                 title: "Error",
@@ -126,13 +124,13 @@ const LeadTable = ({
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
-        onPageChange(filters, newPage, rowsPerPage, order, orderBy)
+        onPageChange(filters, newPage, rowsPerPage, order, orderBy);
     };
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
-        onPageChange(filters, page, parseInt(event.target.value, 10), order, orderBy)
+        onPageChange(filters, page, parseInt(event.target.value, 10), order, orderBy);
     };
 
     const handleImportLeads = (event) => {
@@ -191,23 +189,23 @@ const LeadTable = ({
         const selectedStage = stages.find((stage) => stage.stageid === lead.stageId);
         const selectedStageSequenceNumber = selectedStage ? selectedStage.sequencenumber : null;
         // Get stages with sequence numbers greater than the selected stage's sequence number
-        const nextStages = selectedStageSequenceNumber !== null 
-            ? stages.filter((stage) => stage.sequencenumber > selectedStageSequenceNumber)
-            : [];
+        const nextStages =
+            selectedStageSequenceNumber !== null
+                ? stages.filter((stage) => stage.sequencenumber > selectedStageSequenceNumber)
+                : [];
         // Log for debugging
         console.log("Selected Stage Sequence Number = ", selectedStageSequenceNumber);
         console.log("Next Stages = ", nextStages);
         setNextStages(nextStages);
         setSelectedStage(nextStages[0]?.stageid);
-        console.log("Selected Stages - ",selectedStage);
+        console.log("Selected Stages - ", selectedStage);
         setSelectedLead(lead);
         // setSelectedStage(lead.stageId);
         setStageDialogOpen(true);
-    
+
         // You can pass `nextStages` to the dialog or store it in a state if you need to use it there
         // setAvailableNextStages(nextStages); // Example: store in state
     };
-    
 
     const handleStageDialogClose = () => {
         setStageDialogOpen(false);
@@ -234,6 +232,10 @@ const LeadTable = ({
         navigate(AppRoutings.EditLead.replace(":leadId", leadId));
     };
 
+    const handleOpenViewLead = (leadId) => {
+        navigate(AppRoutings.ViewLead.replace(":leadId", leadId));
+    };
+
     const handleComplete = (leadId) => {
         const maxSequenceStage = stages.reduce((maxStage, currentStage) =>
             currentStage.sequencenumber > maxStage.sequencenumber ? currentStage : maxStage
@@ -253,7 +255,6 @@ const LeadTable = ({
             alert("No file selected.");
             return;
         }
-
 
         const formData = new FormData();
         formData.append("file", selectedFile);
@@ -537,10 +538,14 @@ const LeadTable = ({
                                 <TableRow
                                     key={lead.id}
                                     className="lead-row"
-                                    onClick={() => handleEdit(lead.id)} 
+                                    onClick={() => handleOpenViewLead(lead.id)}
                                 >
-                                    {visibleColumns.companyName && <TableCell>{lead.companyName}</TableCell>}
-                                    {visibleColumns.country && <TableCell>{lead.country}</TableCell>}
+                                    {visibleColumns.companyName && (
+                                        <TableCell>{lead.companyName}</TableCell>
+                                    )}
+                                    {visibleColumns.country && (
+                                        <TableCell>{lead.country}</TableCell>
+                                    )}
                                     {visibleColumns.stage && (
                                         <TableCell>
                                             {/* Replacing the button with a badge */}
@@ -558,22 +563,48 @@ const LeadTable = ({
                                         </TableCell>
                                     )}
                                     {visibleColumns.leadBy && <TableCell>{lead.leadBy}</TableCell>}
-                                    {visibleColumns.arrivedDate && <TableCell>{lead.arrivedDate}</TableCell>}
-                                    {visibleColumns.importManager && <TableCell>{lead.importManager}</TableCell>}
+                                    {visibleColumns.arrivedDate && (
+                                        <TableCell>{lead.arrivedDate}</TableCell>
+                                    )}
+                                    {visibleColumns.importManager && (
+                                        <TableCell>{lead.importManager}</TableCell>
+                                    )}
                                     <TableCell>
                                         {/* Stop propagation to prevent row click */}
-                                        <IconButton onClick={(event) => { event.stopPropagation(); handleEdit(lead.id); }}>
+                                        <IconButton
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                handleOpenViewLead(lead.id);
+                                            }}
+                                        >
+                                            <VisibilityIcon />
+                                        </IconButton>
+                                        <IconButton
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                handleEdit(lead.id);
+                                            }}
+                                        >
                                             <Edit />
                                         </IconButton>
-                                        <IconButton onClick={(event) => { event.stopPropagation(); handleDelete(lead); }}>
+                                        <IconButton
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                handleDelete(lead);
+                                            }}
+                                        >
                                             <Delete />
                                         </IconButton>
-                                        {(contextUser.usertype !== 2 || (menuDetails && menuDetails.includes(4))) && (
+                                        {(contextUser.usertype !== 2 ||
+                                            (menuDetails && menuDetails.includes(4))) && (
                                             <Button
                                                 variant="contained"
                                                 color="success"
                                                 size="small"
-                                                onClick={(event) => { event.stopPropagation(); handleStageDialogOpen(lead); }}
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    handleStageDialogOpen(lead);
+                                                }}
                                             >
                                                 Complete
                                             </Button>
@@ -612,45 +643,41 @@ const LeadTable = ({
             >
                 <DialogTitle>Update Stage</DialogTitle>
                 <DialogContent>
-                {nextStages.length > 0 ? (
-                    <div>
-
-                        <FormControl fullWidth>
-                            <InputLabel>Stage</InputLabel>
-                            <Select value={selectedStage} onChange={handleStageChange}>
-                                {nextStages.map((stage) => (
-                                    <MenuItem key={stage.stageid} value={stage.stageid}>
-                                        {stage.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <TextField
-                            label="Remarks"
-                            value={remarks}
-                            onChange={handleRemarksChange}
-                            fullWidth
-                            multiline
-                            rows={4}
-                            margin="normal"
-                        />
-                    </div>
-                ) : (
-                    <h3>This lead is already completed</h3>
-                ) }
-                    
+                    {nextStages.length > 0 ? (
+                        <div>
+                            <FormControl fullWidth>
+                                <InputLabel>Stage</InputLabel>
+                                <Select value={selectedStage} onChange={handleStageChange}>
+                                    {nextStages.map((stage) => (
+                                        <MenuItem key={stage.stageid} value={stage.stageid}>
+                                            {stage.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <TextField
+                                label="Remarks"
+                                value={remarks}
+                                onChange={handleRemarksChange}
+                                fullWidth
+                                multiline
+                                rows={4}
+                                margin="normal"
+                            />
+                        </div>
+                    ) : (
+                        <h3>This lead is already completed</h3>
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleStageDialogClose} color="secondary">
                         Cancel
                     </Button>
-                    {
-                        nextStages.length > 0 &&
+                    {nextStages.length > 0 && (
                         <Button onClick={handleSaveStage} color="primary">
-                        Save
-                    </Button>
-                    }
-                    
+                            Save
+                        </Button>
+                    )}
                 </DialogActions>
             </Dialog>
 
