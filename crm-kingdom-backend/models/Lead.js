@@ -8,15 +8,14 @@ import City from "./City.js";       // Import the City model
 const Lead = sequelize.define(
     "Lead",
     {
-        leadid: { 
-            type: DataTypes.INTEGER, 
-            primaryKey: true, 
-            autoIncrement: true 
+        leadid: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
         },
         email: {
             type: DataTypes.STRING(100),
             allowNull: false,
-            unique: true,
             validate: {
                 notEmpty: true,
             },
