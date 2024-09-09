@@ -12,7 +12,9 @@ export const CreateLead = async (req, res) => {
             leadCreatorId = user.createdby;
         }
 
-        const isExist = await Lead.findOne({ where: { email: lead.email } });
+        const isExist = await Lead.findOne({
+            where: { email: lead.email, createdby: leadCreatorId },
+        });
         if (isExist) {
             return res.status(400).json({
                 statusCode: 400,

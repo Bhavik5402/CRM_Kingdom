@@ -15,10 +15,23 @@ export const uploadExcel = async (req, res) => {
 
         // Define the required fields
         const requiredFields = [
-            "email", "companyname", "phonenumber", "whatsappnumber", "website",
-            "countryid", "stateid", "cityid", "address", "managerusername",
-            "manageremailid", "managerphonenumber", "managerwhatsappnumber",
-            "instagram", "facebook", "linkedin", "remark"
+            "email",
+            "companyname",
+            "phonenumber",
+            "whatsappnumber",
+            "website",
+            "countryid",
+            "stateid",
+            "cityid",
+            "address",
+            "managerusername",
+            "manageremailid",
+            "managerphonenumber",
+            "managerwhatsappnumber",
+            "instagram",
+            "facebook",
+            "linkedin",
+            "remark",
         ];
 
         // Validate that all required fields are present in the Excel data
@@ -26,7 +39,9 @@ export const uploadExcel = async (req, res) => {
             for (const field of requiredFields) {
                 if (!row.hasOwnProperty(field) || !row[field]) {
                     // If the field is missing or empty, throw an error
-                    throw new Error(`Invalid format: Missing or empty required field '${field}' in the Excel file.`);
+                    throw new Error(
+                        `Invalid format: Missing or empty required field '${field}' in the Excel file.`
+                    );
                 }
             }
         }
@@ -79,37 +94,54 @@ export const uploadExcel = async (req, res) => {
         }));
 
         // Insert data into the Lead table, checking for uniqueness and skipping errors
-        const results = await Promise.all(products.map(async (product) => {
-            try {
-                // Check if email or manageremailid already exists in the Lead table
-                const existingLead = await Lead.findOne({
-                    where: {
-                        [Op.or]: [
-                            { email: product.email },
-                            { manageremailid: product.manageremailid }
-                        ],
-                        deleteddate: null // Check only active leads
+        const results = await Promise.all(
+            products.map(async (product) => {
+                try {
+                    // Check if email or manageremailid already exists in the Lead table
+                    const existingLead = await Lead.findOne({
+                        where: {
+                            [Op.or]: [
+                                {
+                                    email: product.email,
+                                },
+                                { manageremailid: product.manageremailid.toString() },
+                            ],
+                            createdby: leadCreatorId,
+                            deleteddate: null, // Check only active leads
+                        },
+                    });
+
+                    if (existingLead) {
+                        console.log(
+                            `Skipping entry with duplicate email or manager email ID: ${product.email}, ${product.manageremailid}`
+                        );
+                        return {
+                            success: false,
+                            error: "Duplicate email or manager email ID",
+                            product,
+                        };
                     }
-                });
 
-                if (existingLead) {
-                    console.log(`Skipping entry with duplicate email or manager email ID: ${product.email}, ${product.manageremailid}`);
-                    return { success: false, error: "Duplicate email or manager email ID", product };
+                    // Create the product entry
+                    await Lead.create(product);
+                    return { success: true, product };
+                } catch (error) {
+                    if (
+                        error.name === "SequelizeUniqueConstraintError" ||
+                        error.name === "SequelizeValidationError"
+                    ) {
+                        // Log the error and skip the conflicting entry
+                        console.error(
+                            "Skipping entry due to unique constraint or validation error:",
+                            error.message
+                        );
+                        return { success: false, error: error.message, product };
+                    } else {
+                        throw error; // rethrow if it's not a unique constraint or validation error
+                    }
                 }
-
-                // Create the product entry
-                await Lead.create(product);
-                return { success: true, product };
-            } catch (error) {
-                if (error.name === 'SequelizeUniqueConstraintError' || error.name === 'SequelizeValidationError') {
-                    // Log the error and skip the conflicting entry
-                    console.error("Skipping entry due to unique constraint or validation error:", error.message);
-                    return { success: false, error: error.message, product };
-                } else {
-                    throw error; // rethrow if it's not a unique constraint or validation error
-                }
-            }
-        }));
+            })
+        );
 
         // Deleting the uploaded file
         fs.unlink(filePath, (err) => {
@@ -121,8 +153,8 @@ export const uploadExcel = async (req, res) => {
             }
         });
 
-        const successfulEntries = results.filter(result => result.success).length;
-        const failedEntries = results.filter(result => !result.success).length;
+        const successfulEntries = results.filter((result) => result.success).length;
+        const failedEntries = results.filter((result) => !result.success).length;
 
         res.status(200).json({
             statusCode: 200,
