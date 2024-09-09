@@ -1,4 +1,4 @@
-import { User, Lead, Stage, City, State, Country } from "../models/index.js";
+import { User, Lead, Stage, City, State, Country, LeadHistory } from "../models/index.js";
 import { Op } from "sequelize";
 export const CreateLead = async (req, res) => {
     try {
@@ -36,12 +36,11 @@ export const CreateLead = async (req, res) => {
                 data: null,
             });
         }
-        
-        console.log("Lead - ",lead);
+
+        console.log("Lead - ", lead);
 
         //  create new lead record
         const newLead = await Lead.create({
-
             email: lead?.email,
             companyname: lead?.companyname,
             phonenumber: lead?.phonenumber,
@@ -82,10 +81,10 @@ export const CreateLead = async (req, res) => {
 
 export const EditLead = async (req, res) => {
     try {
-        const {updatelead } = req.body;
+        const { updatelead } = req.body;
         const lead = await Lead.findOne({
             where: {
-                leadid: updatelead.leadid
+                leadid: updatelead.leadid,
             },
         });
         if (!lead) {
@@ -106,7 +105,7 @@ export const EditLead = async (req, res) => {
                 });
             }
         }
-        console.log("Before Update ")
+        console.log("Before Update ");
         const updatedLead = await lead.update({
             email: updatelead?.email || lead?.email,
             companyname: updatelead?.companyname || lead?.companyname,
@@ -163,7 +162,7 @@ export const DeleteLead = async (req, res) => {
                 ],
             },
         });
-        console.log("Lead - ",lead);
+        console.log("Lead - ", lead);
         if (!lead) {
             return res.status(404).json({
                 statusCode: 404,
@@ -196,8 +195,8 @@ export const GetLeadById = async (req, res) => {
         const { leadId } = req.body;
         const lead = await Lead.findOne({
             where: {
-                leadid: leadId
-            }
+                leadid: leadId,
+            },
         });
         if (!lead) {
             return res.status(404).json({
@@ -206,14 +205,66 @@ export const GetLeadById = async (req, res) => {
                 message: "Lead not found",
             });
         }
-        console.log("Lead is -",lead);
+
+        const leadhistory = await LeadHistory.findAll({
+            where: {
+                leadid: leadId,
+            },
+            attributes: ["createddate", "remark"],
+            include: [
+                {
+                    model: User,
+                    attributes: ["firstname", "lastname"], // Include username from User
+                },
+                {
+                    model: Stage,
+                    as: "previouseStage",
+                    attributes: ["name"], // Include stageName as OldStageName
+                },
+                {
+                    model: Stage,
+                    as: "newState",
+                    attributes: ["name"], // Include stageName as NewStageName
+                },
+            ],
+        });
+
+        const history = leadhistory.map((l) => ({
+            username: l.User.firstname + " " + l.User.lastname,
+            previouseStage: l.previouseStage.name,
+            newState: l.newState.name,
+            dateChanged: l.createddate,
+            remark: l.remark,
+        }));
+
+        const leadbyUser = await User.findOne({
+            where: {
+                userid: lead.dataValues.leadby,
+            },
+        });
+
+        const sourcebyUser = await User.findOne({
+            where: {
+                userid: lead.dataValues.createdby,
+            },
+        });
+
+        const returnData = {
+            ...lead.dataValues,
+            leadby: leadbyUser.dataValues.firstname + " " + leadbyUser.dataValues.lastname,
+            sourceby: sourcebyUser.dataValues.firstname + " " + sourcebyUser.dataValues.lastname,
+            history: history,
+        };
+
+        console.log("Lead is -", lead);
         return res.status(200).json({
             statusCode: 200,
             isSuccessfull: true,
             message: "Lead retrieved successfully",
-            data: lead,
+            data: returnData,
         });
     } catch (error) {
+        console.log(error);
         return res.status(500).json({
             statusCode: 500,
             isSuccessfull: false,
@@ -225,14 +276,8 @@ export const GetLeadById = async (req, res) => {
 export const GetAllLeads = async (req, res) => {
     try {
         const user = req.user;
-        const {
-            pageSize,
-            pageIndex,
-            sortColumn,
-            sortDirection,
-            filterObj,
-        } = req.body;
-        
+        const { pageSize, pageIndex, sortColumn, sortDirection, filterObj } = req.body;
+
         const limit = pageSize || 10;
         const offset = pageIndex ? pageIndex * limit : 0;
         const order = [[sortColumn || "createddate", sortDirection || "DESC"]];
@@ -296,7 +341,7 @@ export const GetAllLeads = async (req, res) => {
                 {
                     model: Country,
                     as: "country", // Include the Country model
-                }
+                },
             ],
         });
 
@@ -317,9 +362,7 @@ export const GetAllLeads = async (req, res) => {
     }
 };
 
-
-
-export const GetAllCountries = async (req, res)=>{
+export const GetAllCountries = async (req, res) => {
     try {
         const countries = await Country.findAll({
             attributes: ["countryid", "name"],
@@ -349,7 +392,7 @@ export const GetAllCountries = async (req, res)=>{
             data: null,
         });
     }
-}
+};
 
 export const GetStatesByCountry = async (req, res) => {
     try {
@@ -424,10 +467,11 @@ export const GetCitiesByState = async (req, res) => {
 export const ChangeLeadStage = async (req, res) => {
     try {
         const { leadId, newStageId, remarks } = req.body;
+        const user = req.user;
 
         // Fetch the lead by ID
         const lead = await Lead.findOne({
-            where: { leadid: leadId, deleteddate: null }
+            where: { leadid: leadId, deleteddate: null },
         });
 
         if (!lead) {
@@ -440,7 +484,7 @@ export const ChangeLeadStage = async (req, res) => {
 
         // Check if the new stage exists
         const stage = await Stage.findOne({
-            where: { stageid: newStageId, deleteddate: null }
+            where: { stageid: newStageId, deleteddate: null },
         });
 
         if (!stage) {
@@ -451,9 +495,17 @@ export const ChangeLeadStage = async (req, res) => {
             });
         }
 
+        // add entry in lead history table for stage change
+        const leadHistory = await LeadHistory.create({
+            leadid: leadId,
+            userid: user.userid,
+            oldstageid: lead.stageid,
+            newstageid: newStageId,
+            remark: remarks,
+        });
+
         // Update the stage of the lead
         lead.stageid = newStageId;
-        lead.remark = remarks;
         await lead.save();
 
         return res.status(200).json({

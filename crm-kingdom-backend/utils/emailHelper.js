@@ -18,12 +18,12 @@ export const sendResetPasswordEmail = async (email, resetToken, isResetPassword 
 
         // Email content based on the isResetPassword flag
         const mailOptions = {
-            from: 'bhavik.parmar5402@outlook.com',
+            from: "bhavik.parmar5402@outlook.com",
             to: email,
-            subject: isResetPassword 
+            subject: isResetPassword
                 ? "Reset Your Password - LeadGenerator"
                 : "Welcome to LeadGenerator! Your Account Has Been Created",
-            html: isResetPassword 
+            html: isResetPassword
                 ? `
                     <div style="font-family: Arial, sans-serif; line-height: 1.6;">
                         <h2 style="color: #333;">Password Reset Request</h2>
@@ -61,9 +61,12 @@ export const sendResetPasswordEmail = async (email, resetToken, isResetPassword 
 
         // Send email
         const info = await transporter.sendMail(mailOptions);
-        console.log(`${isResetPassword ? "Password reset" : "Welcome"} email sent: %s`, info.messageId);
+        console.log(
+            `${isResetPassword ? "Password reset" : "Welcome"} email sent: %s`,
+            info.messageId
+        );
     } catch (error) {
         console.error("Error sending email:", error);
         throw error; // Re-throw the error to handle it in the calling function
     }
-}
+};
