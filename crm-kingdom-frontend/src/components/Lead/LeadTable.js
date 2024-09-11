@@ -68,6 +68,7 @@ const LeadTable = ({
         countryid: "",
         stageid: "",
         leadby: "",
+        country: ""
     });
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -297,7 +298,7 @@ const LeadTable = ({
                                 ))}
                             </Select>
                         </FormControl>
-                        <FormControl
+                        {/* <FormControl
                             variant="outlined"
                             size="small"
                             sx={{ flex: 1, minWidth: 250 }}
@@ -319,7 +320,15 @@ const LeadTable = ({
                                     </MenuItem>
                                 ))}
                             </Select>
-                        </FormControl>
+                        </FormControl> */}
+                        <TextField
+                            label="Country"
+                            name="country"
+                            value={filters.country}
+                            onChange={handleFilterChange}
+                            variant="outlined"
+                            size="small"
+                        />
                         <FormControl
                             variant="outlined"
                             size="small"

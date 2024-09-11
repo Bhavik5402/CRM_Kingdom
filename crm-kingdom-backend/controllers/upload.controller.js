@@ -88,7 +88,8 @@ export const uploadExcel = async (req, res) => {
                             { email: product.email },
                             { manageremailid: product.manageremailid }
                         ],
-                        deleteddate: null // Check only active leads
+                        deleteddate: null, // Check only active leads
+                        createdby: leadCreatorId
                     }
                 });
 

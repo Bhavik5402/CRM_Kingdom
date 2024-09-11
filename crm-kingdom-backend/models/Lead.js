@@ -45,39 +45,60 @@ const Lead = sequelize.define(
                 notEmpty: false,
             },
         },
-        countryid: {
-            type: DataTypes.INTEGER,
-            references: {
-                model: Country,
-                key: "countryid",
-            },
-            allowNull: false,
+        country: {
+            type: DataTypes.TEXT,
+            allowNull: true, // Optional, can be empty
             validate: {
-                notEmpty: true,
+                notEmpty: false,
             },
         },
-        stateid: {
-            type: DataTypes.INTEGER,
-            references: {
-                model: State,
-                key: "stateid",
-            },
-            allowNull: false,
+        state: {
+            type: DataTypes.TEXT,
+            allowNull: true, // Optional, can be empty
             validate: {
-                notEmpty: true,
+                notEmpty: false,
             },
         },
-        cityid: {
-            type: DataTypes.INTEGER,
-            references: {
-                model: City,
-                key: "cityid",
-            },
-            allowNull: false,
+        city: {
+            type: DataTypes.TEXT,
+            allowNull: true, // Optional, can be empty
             validate: {
-                notEmpty: true,
+                notEmpty: false,
             },
         },
+        // countryid: {
+        //     type: DataTypes.INTEGER,
+        //     references: {
+        //         model: Country,
+        //         key: "countryid",
+        //     },
+        //     allowNull: false,
+        //     validate: {
+        //         notEmpty: true,
+        //     },
+        // },
+        // stateid: {
+        //     type: DataTypes.INTEGER,
+        //     references: {
+        //         model: State,
+        //         key: "stateid",
+        //     },
+        //     allowNull: false,
+        //     validate: {
+        //         notEmpty: true,
+        //     },
+        // },
+        // cityid: {
+        //     type: DataTypes.INTEGER,
+        //     references: {
+        //         model: City,
+        //         key: "cityid",
+        //     },
+        //     allowNull: false,
+        //     validate: {
+        //         notEmpty: true,
+        //     },
+        // },
         address: {
             type: DataTypes.TEXT,
         },

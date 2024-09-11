@@ -108,7 +108,7 @@ export default function LeadPage() {
             const mappedLeads = response.data.rows.map((lead) => ({
                 id: lead.leadid,
                 companyName: lead.companyname,
-                country: lead.country.name,
+                country: lead.country,
                 stage: lead.stageDetails ? lead.stageDetails.name : "N/A",
                 stageColor: lead.stageDetails ? lead.stageDetails.color : "#1976d2",
                 leadBy: `${lead.leadGenerator.firstname} ${lead.leadGenerator.lastname}`,

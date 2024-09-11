@@ -83,6 +83,9 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
             instagram: "",
             facebook: "",
             linkedin: "",
+            country: "",
+            state: "",
+            city: ""
         },
         validationSchema: Yup.object({
             companyname: Yup.string().required("Company Name is required"),
@@ -91,9 +94,12 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
             phonenumber: Yup.string()
                 .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
                 .required("Contact No is required"),
-            countryid: Yup.string().required("Country is required"),
-            stateid: Yup.string().required("State is required"),
-            cityid: Yup.string().required("City is required"),
+            // countryid: Yup.string().required("Country is required"),
+            country: Yup.string().required("Country is required"),
+            // stateid: Yup.string().required("State is required"),
+            state: Yup.string().required("State is required"),
+            // cityid: Yup.string().required("City is required"),
+            city: Yup.string().required("City is required"),
             address: Yup.string().required("Address is required"),
             managerusername: Yup.string().required("Import Manager Name is required"),
             manageremailid: Yup.string()
@@ -261,8 +267,47 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                             InputProps={inputSize}
                         />
                     </Grid>
-
                     <Grid item xs={12} sm={4}>
+                        <TextField
+                            fullWidth
+                            label="Country"
+                            name="country"
+                            value={formik.values.country}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.country && Boolean(formik.errors.country)}
+                            helperText={formik.touched.country && formik.errors.country}
+                            InputProps={inputSize}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <TextField
+                            fullWidth
+                            label="State"
+                            name="state"
+                            value={formik.values.state}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.state && Boolean(formik.errors.state)}
+                            helperText={formik.touched.state && formik.errors.state}
+                            InputProps={inputSize}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <TextField
+                            fullWidth
+                            label="City"
+                            name="city"
+                            value={formik.values.city}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.city && Boolean(formik.errors.city)}
+                            helperText={formik.touched.city && formik.errors.city}
+                            InputProps={inputSize}
+                        />
+                    </Grid>
+
+                    {/* <Grid item xs={12} sm={4}>
                         <FormControl fullWidth>
                             <TextField
                                 name="countryid"
@@ -339,7 +384,7 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                                 </MenuItem>
                             ))}
                         </TextField>
-                    </Grid>
+                    </Grid> */}
 
                     <Grid item xs={12}>
                         <TextField
