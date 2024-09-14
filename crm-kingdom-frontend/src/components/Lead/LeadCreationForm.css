@@ -2,3 +2,12 @@
     display: flex;
     justify-content: center;
 }
+
+.table-container{
+    margin-bottom: 20px;
+}
+
+.add-lead-form{
+    height: 57vh;
+    overflow-y: scroll;
+}
