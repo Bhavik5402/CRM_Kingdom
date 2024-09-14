@@ -51,7 +51,7 @@ const Sidebar = () => {
                             className={location.pathname === item.path ? "active" : ""}
                         >
                             <div className="menu-icon">{item.icon}</div>
-                            <ListItemText primary={item.text} />
+                            <ListItemText primary={item.text} className="sidebarmenutext" />
                         </ListItem>
                     ))}
             </List>

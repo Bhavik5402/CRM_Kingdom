@@ -16,7 +16,7 @@ const LeadDetails = ({ data, onEdit, onConfirm }) => {
 
     return (
         <div>
-            <Accordion>
+            <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography variant="h6" style={{ fontWeight: "bold" }}>
                         Company Details
@@ -73,7 +73,7 @@ const LeadDetails = ({ data, onEdit, onConfirm }) => {
                 </AccordionDetails>
             </Accordion>
 
-            <Accordion>
+            <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography variant="h6" style={{ fontWeight: "bold" }}>
                         Import Manager Details
@@ -105,7 +105,7 @@ const LeadDetails = ({ data, onEdit, onConfirm }) => {
                 </AccordionDetails>
             </Accordion>
 
-            <Accordion>
+            <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography variant="h6" style={{ fontWeight: "bold" }}>
                         Lead Details
@@ -127,7 +127,7 @@ const LeadDetails = ({ data, onEdit, onConfirm }) => {
                 </AccordionDetails>
             </Accordion>
 
-            <Accordion>
+            <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography variant="h6" style={{ fontWeight: "bold" }}>
                         Remark
@@ -140,7 +140,7 @@ const LeadDetails = ({ data, onEdit, onConfirm }) => {
                 </AccordionDetails>
             </Accordion>
 
-            <Accordion>
+            <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography variant="h6" style={{ fontWeight: "bold" }}>
                         History

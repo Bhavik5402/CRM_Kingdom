@@ -81,7 +81,7 @@ export const Login = async (req, res) => {
                     },
                 });
             } else {
-                return res.status(200).json({
+                return res.status(400).json({
                     statusCode: 400,
                     isSuccessfull: false,
                     message: "Username or Password is incorrect.",

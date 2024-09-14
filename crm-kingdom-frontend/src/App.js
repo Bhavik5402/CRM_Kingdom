@@ -6,6 +6,7 @@ import { SuccessErrorModal } from "components/Alert/Alert";
 import Loader from "components/Common/Loader";
 import { UserProvider } from "Context/UserContext";
 import { MenuProvider } from "Context/MenuContext";
+import Footer from "components/Footer/Footer";
 
 function App() {
     return (

@@ -8,8 +8,8 @@ export const sendResetPasswordEmail = async (email, resetToken, isResetPassword 
             port: 587, // Port for TLS
             secure: false, // Use false for TLS (587)
             auth: {
-                user: "bhavik.parmar5402@outlook.com", // Your Outlook email
-                pass: "Bhavik@123", // Your Outlook password
+                user: "", // Your Outlook email
+                pass: "", // Your Outlook password
             },
             tls: {
                 ciphers: "SSLv3",

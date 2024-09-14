@@ -83,7 +83,7 @@ export const AddUserForm = ({ onSave, onCancel, formTitle, encUserId }) => {
                 setSuccessErrorContext,
             }).then((data) => {
                 if (data && data.isSuccessfull) {
-                    navigate(AppRoutings.User);
+                    // navigate(AppRoutings.User);
                 }
             });
         },

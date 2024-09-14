@@ -534,7 +534,7 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                             name="remarks"
                             multiline
                             rows={4}
-                            value={formik.values.remarks}
+                            value={formik.values.remark}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             error={formik.touched.remarks && Boolean(formik.errors.remarks)}

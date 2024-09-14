@@ -135,8 +135,8 @@ export default function StageTable({
                     </Box>
                 </Collapse>
             </Box>
-            <TableContainer>
-                <Table>
+            <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
                             <TableCell>

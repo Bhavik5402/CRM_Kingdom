@@ -25,7 +25,9 @@ export const GetAllUsers = async (req, res) => {
         if (filterObj) {
             for (const key in filterObj) {
                 if (filterObj[key]) {
-                    whereClause[key] = filterObj[key];
+                    whereClause[key] = {
+                        [Op.iLike]: `%${filterObj[key]}%`,
+                    };
                 }
             }
         }
