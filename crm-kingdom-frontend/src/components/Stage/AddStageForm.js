@@ -1,15 +1,7 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import {
-    TextField,
-    Button,
-    Grid,
-    Paper,
-    FormControl,
-    FormLabel,
-    Box,
-} from "@mui/material";
+import { TextField, Button, Grid, Paper, FormControl, FormLabel, Box } from "@mui/material";
 import { ChromePicker } from "react-color";
 
 const validationSchema = Yup.object({
@@ -21,7 +13,7 @@ const validationSchema = Yup.object({
 
 const AddStageForm = ({ onSave, onCancel, pageTitle, initialValues }) => {
     const [colorPickerVisible, setColorPickerVisible] = useState(false);
-    const [selectedColor, setSelectedColor] = useState(initialValues?.color);
+    const [selectedColor, setSelectedColor] = useState(initialValues?.color || "#FFFFFF");
 
     const formik = useFormik({
         initialValues: {
@@ -52,110 +44,115 @@ const AddStageForm = ({ onSave, onCancel, pageTitle, initialValues }) => {
                 <h2>{pageTitle}</h2>
             </div>
             <div className="custom-form">
-
-            <form onSubmit={formik.handleSubmit}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            fullWidth
-                            id="name"
-                            name="name"
-                            label="Name"
-                            value={formik.values.name}
-                            onChange={formik.handleChange}
-                            error={formik.touched.name && Boolean(formik.errors.name)}
-                            helperText={formik.touched.name && formik.errors.name}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            fullWidth
-                            id="sequence"
-                            name="sequence"
-                            label="Sequence"
-                            type="number"
-                            value={formik.values.sequence}
-                            onChange={formik.handleChange}
-                            error={formik.touched.sequence && Boolean(formik.errors.sequence)}
-                            helperText={formik.touched.sequence && formik.errors.sequence}
-                            InputProps={{
-                                endAdornment: (
-                                    <div
-                                        style={{
-                                            backgroundColor: formik.values.color,
-                                            width: 20,
-                                            height: 20,
-                                            borderRadius: "50%",
-                                        }}
+                <form onSubmit={formik.handleSubmit}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                id="name"
+                                name="name"
+                                label="Name"
+                                value={formik.values.name}
+                                onChange={formik.handleChange}
+                                error={formik.touched.name && Boolean(formik.errors.name)}
+                                helperText={formik.touched.name && formik.errors.name}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                id="sequence"
+                                name="sequence"
+                                label="Sequence"
+                                type="number"
+                                value={formik.values.sequence}
+                                onChange={formik.handleChange}
+                                error={formik.touched.sequence && Boolean(formik.errors.sequence)}
+                                helperText={formik.touched.sequence && formik.errors.sequence}
+                                InputProps={{
+                                    endAdornment: (
+                                        <div
+                                            style={{
+                                                backgroundColor: formik.values.color,
+                                                width: 20,
+                                                height: 20,
+                                                borderRadius: "50%",
+                                            }}
+                                        />
+                                    ),
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                id="description"
+                                name="description"
+                                label="Description"
+                                multiline
+                                rows={4}
+                                value={formik.values.description}
+                                onChange={formik.handleChange}
+                                error={
+                                    formik.touched.description && Boolean(formik.errors.description)
+                                }
+                                helperText={formik.touched.description && formik.errors.description}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <FormControl component="fieldset">
+                                <FormLabel component="legend">Select Color</FormLabel>
+                                <Box display="flex" alignItems="center" mt={1}>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={toggleColorPicker}
+                                    >
+                                        Choose Color
+                                    </Button>
+                                    <Box
+                                        width={24}
+                                        height={24}
+                                        bgcolor={selectedColor}
+                                        borderRadius="50%"
+                                        border="1px solid #ccc"
+                                        ml={2}
                                     />
-                                ),
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            fullWidth
-                            id="description"
-                            name="description"
-                            label="Description"
-                            multiline
-                            rows={4}
-                            value={formik.values.description}
-                            onChange={formik.handleChange}
-                            error={formik.touched.description && Boolean(formik.errors.description)}
-                            helperText={formik.touched.description && formik.errors.description}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <FormControl component="fieldset">
-                            <FormLabel component="legend">Select Color</FormLabel>
-                            <Box display="flex" alignItems="center" mt={1}>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={toggleColorPicker}
-                                >
-                                    Choose Color
-                                </Button>
-                                <Box
-                                    width={24}
-                                    height={24}
-                                    bgcolor={selectedColor}
-                                    borderRadius="50%"
-                                    border="1px solid #ccc"
-                                    ml={2}
-                                />
-                            </Box>
-                            {colorPickerVisible && (
-                                <ChromePicker
-                                    color={selectedColor}
-                                    onChange={handleColorChange}
-                                    style={{ marginTop: "10px" }}
-                                />
-                            )}
-                        </FormControl>
-                    </Grid>
+                                </Box>
+                                {colorPickerVisible && (
+                                    <ChromePicker
+                                        color={selectedColor}
+                                        onChange={handleColorChange}
+                                        style={{ marginTop: "10px" }}
+                                    />
+                                )}
+                            </FormControl>
+                        </Grid>
 
-                    <Grid item xs={12} style={{ display: "flex", justifyContent: "space-between" }}>
-                        <Button
-                            color="primary"
-                            variant="contained"
-                            type="submit"
-                            disabled={formik.isSubmitting}
+                        <Grid
+                            item
+                            xs={12}
+                            style={{ display: "flex", justifyContent: "space-between" }}
                         >
-                            Save
-                        </Button>
-                        <Button
-                            color="secondary"
-                            variant="contained"
-                            onClick={onCancel}
-                            disabled={formik.isSubmitting}
-                        >
-                            Cancel
-                        </Button>
+                            <Button
+                                color="primary"
+                                variant="contained"
+                                type="submit"
+                                disabled={formik.isSubmitting}
+                            >
+                                Save
+                            </Button>
+                            <Button
+                                color="secondary"
+                                variant="contained"
+                                onClick={onCancel}
+                                disabled={formik.isSubmitting}
+                            >
+                                Cancel
+                            </Button>
+                        </Grid>
                     </Grid>
-                </Grid>
-            </form>
+                </form>
             </div>
         </Paper>
     );
