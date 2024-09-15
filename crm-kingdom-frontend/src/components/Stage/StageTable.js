@@ -103,13 +103,13 @@ export default function StageTable({
 
     return (
         <Paper className="table-container">
-            {(contextUser.usertype != 2 || ( menuDetails && menuDetails.includes(2))) && (
+            {/* {(contextUser.usertype != 2 || ( menuDetails && menuDetails.includes(2))) && (
                 <div className="add-stage-button">
                     <Button variant="contained" color="success" onClick={onAddStage}>
                         Add Stage
                     </Button>
                 </div>
-            )}
+            )} */}
 
             <Box className="filter-container" sx={{ marginTop: "20px" }}>
                 {/* <IconButton onClick={() => setFilterOpen(!filterOpen)}>
@@ -135,9 +135,9 @@ export default function StageTable({
                     </Box>
                 </Collapse>
             </Box>
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
+            <TableContainer sx={{maxHeight:"37vh", overflow:"scroll"}}>
+                <Table stickyHeader>
+                    <TableHead sx={{}}>
                         <TableRow>
                             <TableCell>
                                 <TableSortLabel

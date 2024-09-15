@@ -195,7 +195,7 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
             <div>
                 <h2>{initialValues ? "Edit Lead" : "Add Lead"}</h2>
             </div>
-            <div className="add-lead-form">
+            <div className="custom-form">
                 <form onSubmit={formik.handleSubmit} >
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>

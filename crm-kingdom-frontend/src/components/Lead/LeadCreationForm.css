@@ -3,11 +3,11 @@
     justify-content: center;
 }
 
-.table-container{
+.custom-table-container{
     margin-bottom: 20px;
+    height: 100%;
+    overflow: hidden;
 }
 
-.add-lead-form{
-    height: 57vh;
-    overflow-y: scroll;
-}
+
+

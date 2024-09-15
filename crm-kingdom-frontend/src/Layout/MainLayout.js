@@ -18,10 +18,10 @@ const MainLayout = ({ children }) => {
     return (
         <div className="main-layout">
             <Grid container >
-                <Grid item xs={2} className="sidebar-grid">
+                <Grid item xs={2.5} className="sidebar-grid">
                     <Sidebar />
                 </Grid>
-                <Grid item xs={10} className="maincontent-grid">
+                <Grid item xs={9.5} className="maincontent-grid">
                     <div className="main-content">
                         <div className="add-user-button">
                             <Typography

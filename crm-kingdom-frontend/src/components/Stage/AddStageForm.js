@@ -51,6 +51,8 @@ const AddStageForm = ({ onSave, onCancel, pageTitle, initialValues }) => {
             <div>
                 <h2>{pageTitle}</h2>
             </div>
+            <div className="custom-form">
+
             <form onSubmit={formik.handleSubmit}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6}>
@@ -154,6 +156,7 @@ const AddStageForm = ({ onSave, onCancel, pageTitle, initialValues }) => {
                     </Grid>
                 </Grid>
             </form>
+            </div>
         </Paper>
     );
 };

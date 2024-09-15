@@ -298,29 +298,6 @@ const LeadTable = ({
                                 ))}
                             </Select>
                         </FormControl>
-                        {/* <FormControl
-                            variant="outlined"
-                            size="small"
-                            sx={{ flex: 1, minWidth: 250 }}
-                        >
-                            <InputLabel>Country</InputLabel>
-                            <Select
-                                label="Country"
-                                name="countryid"
-                                value={filters.country}
-                                onChange={handleFilterChange}
-                                fullWidth
-                            >
-                                <MenuItem value="">
-                                    <em>None</em>
-                                </MenuItem>
-                                {countries.map((country) => (
-                                    <MenuItem key={country.countryid} value={country.countryid}>
-                                        {country.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl> */}
                         <TextField
                             label="Country"
                             name="country"
@@ -377,15 +354,15 @@ const LeadTable = ({
                 sx={{
                     marginBottom: "16px",
                     display: "flex",
-                    justifyContent: "space-between",
+                    justifyContent: "space-end",
                     alignItems: "center",
                 }}
             >
-                <div>
+                {/* <div>
                     <Button variant="contained" color="success" onClick={handleAddLead}>
                         Add Lead
                     </Button>
-                </div>
+                </div> */}
                 <Box sx={{ display: "flex", alignItems: "center", gap: "16px" }}>
                     {selectedFile ? (
                         <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -468,8 +445,8 @@ const LeadTable = ({
                     </Button>
                 </DialogActions>
             </Dialog>
-            <TableContainer>
-                <Table>
+            <TableContainer sx={{maxHeight:"30vh", overflowX:"hidden"}}>
+                <Table stickyHeader >
                     <TableHead>
                         <TableRow>
                             {visibleColumns.companyName && (
@@ -541,7 +518,7 @@ const LeadTable = ({
                             <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
-                    <TableBody>
+                    <TableBody >
                         {leads.length > 0 ? (
                             leads.map((lead) => (
                                 <TableRow
