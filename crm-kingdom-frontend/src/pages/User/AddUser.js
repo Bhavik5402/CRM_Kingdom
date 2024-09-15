@@ -6,7 +6,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import userService from "services/user-service";
 import tokenManager from "utility/auth-guards/token-manager";
 import { AppRoutings } from "utility/enums/app-routings.ts";
-import { createCommonApiCall } from "utility/helper/create-api-call";
 
 const AddUser = () => {
     // get params

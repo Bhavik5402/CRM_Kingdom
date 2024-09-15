@@ -83,7 +83,8 @@ export const AddUserForm = ({ onSave, onCancel, formTitle, encUserId }) => {
                 setSuccessErrorContext,
             }).then((data) => {
                 if (data && data.isSuccessfull) {
-                    // navigate(AppRoutings.User);
+                    if (isEditData) navigate(AppRoutings.User);
+                    else formik.resetForm();
                 }
             });
         },

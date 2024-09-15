@@ -41,7 +41,6 @@ import { useNavigate } from "react-router-dom";
 import leadService from "services/lead-service";
 import { AppRoutings } from "utility/enums/app-routings.ts";
 import { SuccessErrorModalDispatchContext } from "Context/AlertContext";
-import { createCommonApiCall } from "utility/helper/create-api-call";
 import { WarningModal } from "components/Common/warning-modal";
 import { MenuContext } from "Context/MenuContext";
 import { UserContext } from "Context/UserContext";
@@ -68,7 +67,7 @@ const LeadTable = ({
         countryid: "",
         stageid: "",
         leadby: "",
-        country: ""
+        country: "",
     });
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -77,7 +76,7 @@ const LeadTable = ({
     const [nextStages, setNextStages] = useState([]);
     const setSuccessErrorContext = useContext(SuccessErrorModalDispatchContext);
     const [visibleColumns, setVisibleColumns] = useState({
-        companyName: true,
+        companyname: true,
         country: true,
         stage: true,
         leadBy: true,
@@ -260,7 +259,11 @@ const LeadTable = ({
         const formData = new FormData();
         formData.append("file", selectedFile);
         console.log("Uploaded file - ", selectedFile);
-        onUploadFile(selectedFile);
+        let isSuccessfull = await onUploadFile(selectedFile);
+        if(isSuccessfull)
+        {
+            setSelectedFile(null);
+        }
     };
 
     return (
@@ -403,8 +406,8 @@ const LeadTable = ({
                     )}
                     <TextField
                         label="Search"
-                        name="companyName"
-                        value={filters.companyName}
+                        name="companyname"
+                        value={filters.companyname}
                         onChange={handleFilterChange}
                         variant="outlined"
                         size="small"
@@ -445,11 +448,11 @@ const LeadTable = ({
                     </Button>
                 </DialogActions>
             </Dialog>
-            <TableContainer sx={{maxHeight:"30vh", overflowX:"hidden"}}>
-                <Table stickyHeader >
+            <TableContainer sx={{ maxHeight: "30vh", overflowX: "hidden" }}>
+                <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            {visibleColumns.companyName && (
+                            {visibleColumns.companyname && (
                                 <TableCell>
                                     <TableSortLabel
                                         active={orderBy === "companyname"}
@@ -518,7 +521,7 @@ const LeadTable = ({
                             <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
-                    <TableBody >
+                    <TableBody>
                         {leads.length > 0 ? (
                             leads.map((lead) => (
                                 <TableRow
@@ -526,8 +529,8 @@ const LeadTable = ({
                                     className="lead-row"
                                     onClick={() => handleOpenViewLead(lead.id)}
                                 >
-                                    {visibleColumns.companyName && (
-                                        <TableCell>{lead.companyName}</TableCell>
+                                    {visibleColumns.companyname && (
+                                        <TableCell>{lead.companyname}</TableCell>
                                     )}
                                     {visibleColumns.country && (
                                         <TableCell>{lead.country}</TableCell>

@@ -61,7 +61,8 @@ function ViewLead() {
             requestBody: { leadId },
             apiService: leadService.GetLeadById, // Assume this is the API to get stage by ID
             setSuccessErrorContext,
-            showPopup: false,
+            showSuccessMessage: false,
+            showErrorMessage: true,
         });
 
         if (data && data.isSuccessfull) {

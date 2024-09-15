@@ -14,15 +14,16 @@ export default function AddStage() {
     const navigate = useNavigate();
     const handleSaveStage = async (newStage) => {
         const reqObject = {
-            stage : newStage
-        }
+            stage: newStage,
+        };
         const response = await createCommonApiCall({
             requestBody: reqObject,
             apiService: stageService.addStage,
             setSuccessErrorContext,
-            showPopup: true,
+            showSuccessMessage: true,
+            showErrorMessage: true,
         });
-        if(response && response.statusCode == 200){
+        if (response && response.statusCode == 200) {
             navigate(AppRoutings.Stage);
         }
     };
@@ -34,7 +35,11 @@ export default function AddStage() {
     return (
         <div className="stage-page">
             <Breadcrumbs icon="home" title={pageTitle} route={breadcrumbRoute} light={false} />
-            <AddStageForm onSave={handleSaveStage} onCancel={handleCancel} pageTitle={"Add Stage"}/>
+            <AddStageForm
+                onSave={handleSaveStage}
+                onCancel={handleCancel}
+                pageTitle={"Add Stage"}
+            />
         </div>
     );
 }

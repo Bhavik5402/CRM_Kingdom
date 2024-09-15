@@ -26,7 +26,8 @@ export default function LeadPage() {
                     requestBody: {},
                     apiService: leadService.GetAllCountries, // Your custom API to get all countries
                     setSuccessErrorContext,
-                    showPopup: false,
+                    showSuccessMessage: false,
+                    showErrorMessage: true,
                 });
                 if (response && response.isSuccessfull) {
                     setCountries(response.data);
@@ -53,7 +54,8 @@ export default function LeadPage() {
                 requestBody: { userid: contextUser.userid },
                 apiService: stageService.getAllStagesByUserId, // API to get all stages by user ID
                 setSuccessErrorContext,
-                showPopup: false,
+                showSuccessMessage: false,
+                showErrorMessage: true,
             });
             if (response && response.isSuccessfull) {
                 setStages(response.data);
@@ -71,7 +73,8 @@ export default function LeadPage() {
                 requestBody: { leadId: contextUser.userid },
                 apiService: userService.getUsersByLeadId, // API to get all users by lead ID
                 setSuccessErrorContext,
-                showPopup: false,
+                showSuccessMessage: false,
+                showErrorMessage: true,
             });
             if (response && response.isSuccessfull) {
                 setUsers(response.data);
@@ -102,12 +105,13 @@ export default function LeadPage() {
             requestBody,
             apiService: leadService.GetAllLeads,
             setSuccessErrorContext,
-            showPopup: false,
+            showSuccessMessage: false,
+            showErrorMessage: true,
         });
         if (response && response.data) {
             const mappedLeads = response.data.rows.map((lead) => ({
                 id: lead.leadid,
-                companyName: lead.companyname,
+                companyname: lead.companyname,
                 country: lead.country,
                 stage: lead.stageDetails ? lead.stageDetails.name : "N/A",
                 stageColor: lead.stageDetails ? lead.stageDetails.color : "#1976d2",
@@ -125,6 +129,7 @@ export default function LeadPage() {
                 importManager: lead.managerusername,
                 stageId: lead.stageDetails.stageid,
             }));
+            console.log(mappedLeads);
             setLeads(mappedLeads);
             setTotalCount(response.data.count);
         }
@@ -147,7 +152,8 @@ export default function LeadPage() {
             requestBody: { leadId: leadId },
             apiService: leadService.DeleteLead,
             setSuccessErrorContext,
-            showPopup: true,
+            showSuccessMessage: true,
+            showErrorMessage: true,
         });
         if (response) {
             fetchLeads(); // Refresh the list of leads
@@ -159,7 +165,8 @@ export default function LeadPage() {
             requestBody: { leadId: leadId, newStageId: stageId, remarks: remarks },
             apiService: leadService.ChangeStage,
             setSuccessErrorContext,
-            showPopup: true,
+            showSuccessMessage: true,
+            showErrorMessage: true,
         });
         if (response && response.isSuccessfull) {
             fetchLeads();
@@ -175,8 +182,15 @@ export default function LeadPage() {
             requestBody: formData,
             apiService: leadService.UploadExcelSheet,
             setSuccessErrorContext,
-            showPopup: true,
+            showSuccessMessage: true,
+            showErrorMessage: true,
         });
+
+        if(response && response.isSuccessfull){
+            await fetchLeads();
+        }
+
+        return response.isSuccessfull;
     };
 
     return (
