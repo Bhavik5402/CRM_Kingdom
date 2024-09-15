@@ -20,10 +20,16 @@ export default function Stage() {
         fetchStages();
     }, []);
 
-    const fetchStages = async (filters = {}, page = 0, rowsPerPage = 5, order = "asc", orderBy = "sequencenumber") => {
+    const fetchStages = async (
+        filters = {},
+        page = 0,
+        rowsPerPage = 5,
+        order = "asc",
+        orderBy = "sequencenumber"
+    ) => {
         const requestBody = {
             filterObj: filters,
-            pageIndex: page , // Backend pages might start from 1
+            pageIndex: page, // Backend pages might start from 1
             pageSize: rowsPerPage,
             sortColumn: orderBy,
             sortDirection: order,
@@ -32,10 +38,11 @@ export default function Stage() {
             requestBody,
             apiService: stageService.getAllStages,
             setSuccessErrorContext,
-            showPopup : false
+            showSuccessMessage: false,
+            showErrorMessage: true,
         });
         if (response && response.data) {
-            const mappedStages = response.data.rows.map(stage => ({
+            const mappedStages = response.data.rows.map((stage) => ({
                 id: stage.stageid,
                 name: stage.name,
                 sequence: stage.sequencenumber,
@@ -64,15 +71,16 @@ export default function Stage() {
     };
 
     const handleDeleteStage = async (stageId) => {
-        console.log("Handle stage - ",stageId);
+        console.log("Handle stage - ", stageId);
         const response = await createCommonApiCall({
-            requestBody: {stageId : stageId},
+            requestBody: { stageId: stageId },
             apiService: stageService.deleteStage,
             setSuccessErrorContext,
-            showPopup: true,
+            showSuccessMessage: true,
+            showErrorMessage: true,
         });
         if (response) {
-            fetchStages();  // Refresh the list of stages
+            fetchStages(); // Refresh the list of stages
         }
     };
 
