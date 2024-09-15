@@ -8,7 +8,7 @@ import { sendResetPasswordEmail } from "../utils/emailHelper.js";
 export const Login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({ where: { email: email } });
+        const user = await User.findOne({ where: { email: email, deleteddate: null } });
         if (!user) {
             return res.status(404).json({
                 statusCode: 404,

@@ -4,9 +4,9 @@ import * as fs from "fs";
 import { Op } from "sequelize";
 
 export const uploadExcel = async (req, res) => {
+    const filePath = req.file.path;
     try {
         console.log("In Excel");
-        const filePath = req.file.path;
         // Read and parse the Excel file
         const workbook = xlsx.readFile(filePath);
         const sheetName = workbook.SheetNames[0];
@@ -16,7 +16,7 @@ export const uploadExcel = async (req, res) => {
         // Define the required fields
         const requiredFields = [
             "email", "companyname", "phonenumber", "whatsappnumber", "website",
-            "countryid", "stateid", "cityid", "address", "managerusername",
+            "country", "state", "city", "address", "managerusername",
             "manageremailid", "managerphonenumber", "managerwhatsappnumber",
             "instagram", "facebook", "linkedin", "remark"
         ];
@@ -61,9 +61,9 @@ export const uploadExcel = async (req, res) => {
             phonenumber: row["phonenumber"],
             whatsappnumber: row["whatsappnumber"],
             website: row["website"],
-            countryid: row["countryid"],
-            stateid: row["stateid"],
-            cityid: row["cityid"],
+            country: row["country"],
+            state: row["state"],
+            city: row["city"],
             address: row["address"],
             managerusername: row["managerusername"],
             manageremailid: row["manageremailid"],
@@ -110,17 +110,7 @@ export const uploadExcel = async (req, res) => {
                     throw error; // rethrow if it's not a unique constraint or validation error
                 }
             }
-        }));
-
-        // Deleting the uploaded file
-        fs.unlink(filePath, (err) => {
-            if (err) {
-                console.error("Error deleting file:", err);
-                return res.status(500).send("Error deleting file");
-            } else {
-                console.log("File deleted successfully");
-            }
-        });
+        }));        
 
         const successfulEntries = results.filter(result => result.success).length;
         const failedEntries = results.filter(result => !result.success).length;
@@ -133,6 +123,17 @@ export const uploadExcel = async (req, res) => {
     } catch (error) {
         console.error("Error occurred:", error);
         res.status(500).json({ error: error.message, message: "An error occurred while inserting data." });
+    }
+    finally {
+        // Deleting the uploaded file
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                console.error("Error deleting file:", err);
+                return res.status(500).send("Error deleting file");
+            } else {
+                console.log("File deleted successfully");
+            }
+        });
     }
 };
 

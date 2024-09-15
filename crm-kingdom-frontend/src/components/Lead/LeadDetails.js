@@ -15,7 +15,7 @@ const LeadDetails = ({ data, onEdit, onConfirm }) => {
     const sortedHistory = [...data.history].sort((a, b) => b.dateChanged - a.dateChanged);
 
     return (
-        <div>
+        <div className="view-lead-details">
             <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography variant="h6" style={{ fontWeight: "bold" }}>

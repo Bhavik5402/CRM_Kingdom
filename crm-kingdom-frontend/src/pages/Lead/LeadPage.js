@@ -111,7 +111,7 @@ export default function LeadPage() {
         if (response && response.data) {
             const mappedLeads = response.data.rows.map((lead) => ({
                 id: lead.leadid,
-                companyName: lead.companyname,
+                companyname: lead.companyname,
                 country: lead.country,
                 stage: lead.stageDetails ? lead.stageDetails.name : "N/A",
                 stageColor: lead.stageDetails ? lead.stageDetails.color : "#1976d2",
@@ -129,6 +129,7 @@ export default function LeadPage() {
                 importManager: lead.managerusername,
                 stageId: lead.stageDetails.stageid,
             }));
+            console.log(mappedLeads);
             setLeads(mappedLeads);
             setTotalCount(response.data.count);
         }
@@ -184,6 +185,12 @@ export default function LeadPage() {
             showSuccessMessage: true,
             showErrorMessage: true,
         });
+
+        if(response && response.isSuccessfull){
+            await fetchLeads();
+        }
+
+        return response.isSuccessfull;
     };
 
     return (
