@@ -83,7 +83,7 @@ export const AddUserForm = ({ onSave, onCancel, formTitle, encUserId }) => {
                 setSuccessErrorContext,
             }).then((data) => {
                 if (data && data.isSuccessfull) {
-                    navigate(AppRoutings.User);
+                    // navigate(AppRoutings.User);
                 }
             });
         },
@@ -135,47 +135,48 @@ export const AddUserForm = ({ onSave, onCancel, formTitle, encUserId }) => {
             <div>
                 <h2>{formTitle}</h2>
             </div>
-            <form onSubmit={formik.handleSubmit}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            fullWidth
-                            id="firstName"
-                            name="firstname"
-                            label="First Name"
-                            value={formik.values.firstname}
-                            onChange={formik.handleChange}
-                            error={formik.touched.firstname && Boolean(formik.errors.firstname)}
-                            helperText={formik.touched.firstname && formik.errors.firstname}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            fullWidth
-                            id="lastName"
-                            name="lastname"
-                            label="Last Name"
-                            value={formik.values.lastname}
-                            onChange={formik.handleChange}
-                            error={formik.touched.lastname && Boolean(formik.errors.lastname)}
-                            helperText={formik.touched.lastname && formik.errors.lastname}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            fullWidth
-                            id="email"
-                            name="email"
-                            label="Email"
-                            value={formik.values.email}
-                            onChange={formik.handleChange}
-                            error={formik.touched.email && Boolean(formik.errors.email)}
-                            helperText={formik.touched.email && formik.errors.email}
-                            disabled={isEditData}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        {/* <FormControl fullWidth>
+            <div className="custom-form">
+                <form onSubmit={formik.handleSubmit}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                id="firstName"
+                                name="firstname"
+                                label="First Name"
+                                value={formik.values.firstname}
+                                onChange={formik.handleChange}
+                                error={formik.touched.firstname && Boolean(formik.errors.firstname)}
+                                helperText={formik.touched.firstname && formik.errors.firstname}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                id="lastName"
+                                name="lastname"
+                                label="Last Name"
+                                value={formik.values.lastname}
+                                onChange={formik.handleChange}
+                                error={formik.touched.lastname && Boolean(formik.errors.lastname)}
+                                helperText={formik.touched.lastname && formik.errors.lastname}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                id="email"
+                                name="email"
+                                label="Email"
+                                value={formik.values.email}
+                                onChange={formik.handleChange}
+                                error={formik.touched.email && Boolean(formik.errors.email)}
+                                helperText={formik.touched.email && formik.errors.email}
+                                disabled={isEditData}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            {/* <FormControl fullWidth>
                             <IntlTelInput
                                 placeholder="Enter Phone Number"
                                 fieldId="phoneNumber"
@@ -194,76 +195,79 @@ export const AddUserForm = ({ onSave, onCancel, formTitle, encUserId }) => {
                         {formik.touched.phonenumber && Boolean(formik.errors.phonenumber) && (
                             <div className="custom-phone-error">{formik.errors.phonenumber}</div>
                         )} */}
-                        <TextField
-                            fullWidth
-                            id="phoneNumber"
-                            name="phonenumber"
-                            label="Phone Number"
-                            value={formik.values.phonenumber}
-                            onChange={formik.handleChange}
-                            error={formik.touched.phonenumber && Boolean(formik.errors.phonenumber)}
-                            helperText={formik.touched.phonenumber && formik.errors.phonenumber}
-                        />
+                            <TextField
+                                fullWidth
+                                id="phoneNumber"
+                                name="phonenumber"
+                                label="Phone Number"
+                                value={formik.values.phonenumber}
+                                onChange={formik.handleChange}
+                                error={
+                                    formik.touched.phonenumber && Boolean(formik.errors.phonenumber)
+                                }
+                                helperText={formik.touched.phonenumber && formik.errors.phonenumber}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                id="workDescription"
+                                name="workdescription"
+                                label="Work Description"
+                                multiline
+                                rows={4}
+                                value={formik.values.workdescription}
+                                onChange={formik.handleChange}
+                                error={
+                                    formik.touched.workdescription &&
+                                    Boolean(formik.errors.workdescription)
+                                }
+                                helperText={
+                                    formik.touched.workdescription && formik.errors.workdescription
+                                }
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <FormControl component="fieldset">
+                                <FormLabel component="legend">User Access</FormLabel>
+                                <FormGroup row>
+                                    {Object.entries(UserAccess).map(([key, accessInfo]) => (
+                                        <FormControlLabel
+                                            key={key}
+                                            control={
+                                                <Checkbox
+                                                    value={accessInfo.label}
+                                                    checked={formik.values.access.includes(
+                                                        accessInfo.label
+                                                    )}
+                                                    onChange={handleCheckboxChange}
+                                                />
+                                            }
+                                            label={accessInfo.label}
+                                        />
+                                    ))}
+                                </FormGroup>
+                            </FormControl>
+                            {formik.touched.access && Boolean(formik.errors.access) && (
+                                <div className="custom-phone-error">{formik.errors.access}</div>
+                            )}
+                        </Grid>
+                        <Grid item xs={12} style={{ display: "flex", justifyContent: "end" }}>
+                            <Button
+                                color="primary"
+                                variant="contained"
+                                type="submit"
+                                sx={{ marginRight: "10px" }}
+                            >
+                                Save
+                            </Button>
+                            <Button color="secondary" variant="contained" onClick={onCancel}>
+                                Cancel
+                            </Button>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            fullWidth
-                            id="workDescription"
-                            name="workdescription"
-                            label="Work Description"
-                            multiline
-                            rows={4}
-                            value={formik.values.workdescription}
-                            onChange={formik.handleChange}
-                            error={
-                                formik.touched.workdescription &&
-                                Boolean(formik.errors.workdescription)
-                            }
-                            helperText={
-                                formik.touched.workdescription && formik.errors.workdescription
-                            }
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <FormControl component="fieldset">
-                            <FormLabel component="legend">User Access</FormLabel>
-                            <FormGroup row>
-                                {Object.entries(UserAccess).map(([key, accessInfo]) => (
-                                    <FormControlLabel
-                                        key={key}
-                                        control={
-                                            <Checkbox
-                                                value={accessInfo.label}
-                                                checked={formik.values.access.includes(
-                                                    accessInfo.label
-                                                )}
-                                                onChange={handleCheckboxChange}
-                                            />
-                                        }
-                                        label={accessInfo.label}
-                                    />
-                                ))}
-                            </FormGroup>
-                        </FormControl>
-                        {formik.touched.access && Boolean(formik.errors.access) && (
-                            <div className="custom-phone-error">{formik.errors.access}</div>
-                        )}
-                    </Grid>
-                    <Grid item xs={12} style={{ display: "flex", justifyContent: "end" }}>
-                        <Button
-                            color="primary"
-                            variant="contained"
-                            type="submit"
-                            sx={{ marginRight: "10px" }}
-                        >
-                            Save
-                        </Button>
-                        <Button color="secondary" variant="contained" onClick={onCancel}>
-                            Cancel
-                        </Button>
-                    </Grid>
-                </Grid>
-            </form>
+                </form>
+            </div>
         </Paper>
     );
 };

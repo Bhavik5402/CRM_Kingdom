@@ -149,19 +149,19 @@ export const UserTable = ({ onAddUser }) => {
     return (
         <>
             <Paper className="table-container">
-                <div className="add-user-button">
+                {/* <div className="add-user-button">
                     <Button variant="contained" onClick={onAddUser} color="success">
                         Add User
                     </Button>
-                </div>
+                </div> */}
                 <UserTableSearch
                     filters={filters}
                     handleFilterChange={handleFilterChange}
                     handleSearch={handleSearch}
                     handleClear={handleClear}
                 />
-                <TableContainer>
-                    <Table>
+                <TableContainer sx={{maxHeight:"35vh", overflowX:"hidden"}}>
+                    <Table stickyHeader>
                         <TableHead>
                             <TableRow>
                                 <TableCell sx={headers}>

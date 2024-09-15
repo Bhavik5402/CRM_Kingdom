@@ -9,19 +9,43 @@ html,
 
 .main-layout {
   display: flex;
-  /* height: 100vh; */
-  min-height: 100vh;
+  height: 100vh;
+  /* overflow-y: scroll; */
+  /* min-height: 100vh; */
+  /* height: 100%; */
   background-color: #f5f5f5;
 }
 
+.main-content{
+  height: 84%;
+  /* overflow-y: scroll; */
+}
+
+.maincontent-grid{
+  height: 100%;
+} 
+.sidebar-grid{
+  height: 98%;
+} 
+
+.sidebar-menu-list-custom{
+  margin-left: 20px !important;
+}
+
+.submenu-item{
+  width: 80% !important;
+}
+
 .sidebar {
-  min-width: 250px;
-  width: 250px;
+  /* width: 80%; */
+  height: 96vh;
+  overflow-x: hidden;
   background: linear-gradient(195deg, #42424a, #191919);
   color: #fff;
   display: flex;
   flex-direction: column;
   margin: 1rem;
+  /* margin-top: 1px; */
   border-radius: 0.75rem;
   box-shadow: 0rem 1.25rem 1.6875rem 0rem rgba(0, 0, 0, 0.05);
 
@@ -51,10 +75,10 @@ html,
 .sidebar .MuiListItem-root {
   padding: 16px;
   color: #fff;
-  max-width: 88%;
+  width: 88%;
   align-items: center;
   padding: 0.5rem 0.625rem;
-  margin: 0.09375rem 1rem;
+  margin: 1.09375rem 1rem;
   border-radius: 0.375rem;
 
 }
@@ -132,4 +156,69 @@ html,
     opacity: 0.25;
     background-color: transparent;
     background-image: linear-gradient(to right, rgba(255, 255, 255, 0), #ffffff, rgba(255, 255, 255, 0)) !important;
+}
+
+.sidebar .MuiListItemText-root {
+  margin-left: 20px;
+  transition: opacity 0.3s ease;
+}
+
+.submenu {
+  margin-left: 20px; /* Adjust this value to set the right indentation */
+  padding-left: 20px;
+  color: #ffffff;
+}
+
+.sidebar .MuiListItem-root.active {
+  background: linear-gradient(195deg, #49a3f1, #1A73E8);
+}
+
+.sidebar .submenu:hover {
+  background-color: #3f51b5; /* Submenu hover effect */
+}
+
+
+
+@media (max-width: 1200px) {
+  .sidebar .MuiListItemText-root {
+    opacity: 0;
+    width: 0;
+    margin-left: 0;
+    transition: opacity 0.3s ease, width 0.3s ease;
+  }
+
+  .sidebar .MuiListItem-root {
+    justify-content: center;
+    padding: 16px 10px;
+  }
+
+  .sidebar .menu-icon {
+    margin-right: 0;
+  }
+
+  .sidebar .company-name {
+    display: none;
+  }
+
+  
+
+  .sidebarmenutext{
+    display: none;
+  }
+
+  .sidebar .MuiListItem-root{
+    width: 78%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .sidebar .MuiListItemText-root {
+    opacity: 1;
+    width: auto;
+    margin-left: 20px;
+  }
+  
+  .sidebar .company-name {
+    display: block;
+  }
 }

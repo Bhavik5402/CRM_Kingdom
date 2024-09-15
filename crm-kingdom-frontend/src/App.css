@@ -28,6 +28,16 @@
   color: #61dafb;
 }
 
+.custom-table-body{
+    max-height: 30vh;
+    overflow-y: scroll;
+}
+
+.custom-form{
+  max-height: 57vh;
+  overflow-x: hidden;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

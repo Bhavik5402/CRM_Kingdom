@@ -21,9 +21,9 @@ async function initialize() {
         Lead.belongsTo(Stage, { as: "stageDetails", foreignKey: "stageid" });
         Lead.belongsTo(User, { as: "leadGenerator", foreignKey: "leadby" });
 
-        Lead.belongsTo(Country, { foreignKey: "countryid", as: "country" });
-        Lead.belongsTo(State, { foreignKey: "stateid", as: "state" });
-        Lead.belongsTo(City, { foreignKey: "cityid", as: "city" });
+        // Lead.belongsTo(Country, { foreignKey: "countryid", as: "country" });
+        // Lead.belongsTo(State, { foreignKey: "stateid", as: "state" });
+        // Lead.belongsTo(City, { foreignKey: "cityid", as: "city" });
 
         // add PageAccess data if not available
         const pageAccessData = [

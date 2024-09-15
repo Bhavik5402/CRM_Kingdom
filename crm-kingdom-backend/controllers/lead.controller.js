@@ -44,6 +44,9 @@ export const CreateLead = async (req, res) => {
             phonenumber: lead?.phonenumber,
             whatsappnumber: lead?.whatsappnumber,
             website: lead?.website,
+            country: lead?.country,
+            state: lead?.state,
+            city: lead?.city,
             countryid: lead?.countryid,
             stateid: lead?.stateid,
             cityid: lead?.cityid,
@@ -110,16 +113,16 @@ export const EditLead = async (req, res) => {
             phonenumber: updatelead?.phonenumber || lead?.phonenumber,
             whatsappnumber: updatelead?.whatsappnumber || lead?.whatsappnumber,
             website: updatelead?.website || lead?.website,
-            countryid: updatelead?.countryid || lead?.countryid,
-            stateid: updatelead?.stateid || lead.stateid,
-            cityid: updatelead?.cityid || lead?.cityid,
+            country: updatelead?.country || lead?.country,
+            state: updatelead?.state || lead.state,
+            city: updatelead?.city || lead?.city,
             address: updatelead?.address || lead?.address,
             managerusername: updatelead?.managerusername || lead?.managerusername,
             manageremailid: updatelead?.manageremailid || lead?.manageremailid,
             instagram: updatelead?.instagram || lead?.instagram,
             facebook: updatelead?.facebook || lead?.facebook,
             linkedin: updatelead?.linkedin || lead?.linkedin,
-            remark: updatelead?.remark || lead?.remark,
+            remark: updatelead?.remarks || lead?.remark,
             updateddate: new Date(),
             updatedby: req.user.userid,
             managerphonenumber: updatelead?.managerphonenumber || lead?.managerphonenumber,
@@ -290,7 +293,7 @@ export const GetAllLeads = async (req, res) => {
 
         // Apply additional filters from filterObj
         if (filterObj) {
-            const { stageid, countryid, leadby, ...restFilters } = filterObj;
+            const { stageid, countryid,country, leadby, ...restFilters } = filterObj;
 
             // Adding stageid filter in where clause
             if (stageid) {
@@ -298,9 +301,14 @@ export const GetAllLeads = async (req, res) => {
             }
 
             // Adding countryid filter in where clause
-            if (countryid) {
-                whereCondition.countryid = countryid;
+            if (country) {
+                whereCondition.country = {
+                    [Op.iLike]: `%${country}%`
+                };
             }
+            // if (countryid) {
+            //     whereCondition.countryid = countryid;
+            // }
 
             // Adding leadby filter in where clause
             if (leadby) {
@@ -335,11 +343,7 @@ export const GetAllLeads = async (req, res) => {
                     where: {
                         deleteddate: null, // Only include stages that are not deleted
                     },
-                },
-                {
-                    model: Country,
-                    as: "country", // Include the Country model
-                },
+                }
             ],
         });
 

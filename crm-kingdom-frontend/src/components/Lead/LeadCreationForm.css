@@ -2,3 +2,12 @@
     display: flex;
     justify-content: center;
 }
+
+.custom-table-container{
+    margin-bottom: 20px;
+    height: 100%;
+    overflow: hidden;
+}
+
+
+
