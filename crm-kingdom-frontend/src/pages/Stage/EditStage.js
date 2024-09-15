@@ -20,24 +20,26 @@ export default function EditStage() {
                 requestBody: { stageId },
                 apiService: stageService.getStageById, // Assume this is the API to get stage by ID
                 setSuccessErrorContext,
-                showPopup: false,
+                showSuccessMessage: false,
+                showErrorMessage: true,
             });
             if (response && response.data) {
-                console.log("StageData - ",response.data);
+                console.log("StageData - ", response.data);
                 setInitialValues(response.data);
             }
         };
-        
+
         fetchStageData();
     }, [stageId, setSuccessErrorContext]);
 
     const handleSaveStage = async (updatedStage) => {
         // Call API to save updated stage details
         const response = await createCommonApiCall({
-            requestBody: {stage : { ...updatedStage, stageId }},
+            requestBody: { stage: { ...updatedStage, stageId } },
             apiService: stageService.updateStage, // Assume this is the API to update stage
             setSuccessErrorContext,
-            showPopup: true,
+            showSuccessMessage: true,
+            showErrorMessage: true,
         });
         if (response && response.isSuccessfull) {
             navigate(AppRoutings.Stage);

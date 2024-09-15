@@ -37,7 +37,8 @@ const ResetPasswordForm = () => {
                 requestBody: { token: resetToken, newPassword: values.password },
                 apiService: authService.resetPassword,
                 setSuccessErrorContext,
-                showPopup: true
+                showSuccessMessage: true,
+                showErrorMessage: true,
             });
             if (data && data.isSuccessfull) {
                 navigate(AppRoutings.Root, { replace: true });

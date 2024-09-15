@@ -32,7 +32,8 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                 requestBody: { countryid: countryId },
                 apiService: leadService.GetAllStates, // Your custom API method
                 setSuccessErrorContext,
-                showPopup: false,
+                showSuccessMessage: false,
+                showErrorMessage: true,
             });
             if (response && response.isSuccessfull) {
                 setStates(response.data);
@@ -53,7 +54,8 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                 requestBody: { stateid: stateId },
                 apiService: leadService.GetAllCities, // Your custom API method
                 setSuccessErrorContext,
-                showPopup: false,
+                showSuccessMessage: false,
+                showErrorMessage: true,
             });
             if (response && response.isSuccessfull) {
                 setCities(response.data);
@@ -140,7 +142,8 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                     requestBody: {},
                     apiService: leadService.GetAllCountries, // Your custom API to get all countries
                     setSuccessErrorContext,
-                    showPopup: false,
+                    showSuccessMessage: false,
+                    showErrorMessage: true,
                 });
                 if (response && response.isSuccessfull) {
                     setCountries(response.data);
@@ -196,7 +199,7 @@ const LeadCreationForm = ({ onSave, onCancel, initialValues }) => {
                 <h2>{initialValues ? "Edit Lead" : "Add Lead"}</h2>
             </div>
             <div className="custom-form">
-                <form onSubmit={formik.handleSubmit} >
+                <form onSubmit={formik.handleSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <TextField

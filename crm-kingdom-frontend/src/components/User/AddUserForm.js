@@ -84,6 +84,7 @@ export const AddUserForm = ({ onSave, onCancel, formTitle, encUserId }) => {
             }).then((data) => {
                 if (data && data.isSuccessfull) {
                     // navigate(AppRoutings.User);
+                    formik.resetForm();
                 }
             });
         },

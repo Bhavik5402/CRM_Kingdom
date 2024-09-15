@@ -36,6 +36,7 @@
 .custom-form{
   max-height: 57vh;
   overflow-x: hidden;
+  padding-top: 5px;
 }
 
 @keyframes App-logo-spin {

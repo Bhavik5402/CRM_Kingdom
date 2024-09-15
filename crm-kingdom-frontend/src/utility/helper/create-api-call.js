@@ -6,7 +6,8 @@ export const createCommonApiCall = async (args) => {
         requestBody,
         apiService,
         setSuccessErrorContext,
-        showPopup
+        showSuccessMessage,
+        showErrorMessage,
     } = args;
     try {
         showLoader();
@@ -22,11 +23,11 @@ export const createCommonApiCall = async (args) => {
             const { data } = response;
             hideLoader();
             if (data && data.isSuccessfull) {
-                if (showPopup)
+                if (showSuccessMessage)
                     openSucessErrorModal(setSuccessErrorContext, "Success", data.message, true);
                 return data;
             } else {
-                if (showPopup)
+                if (showErrorMessage)
                     openSucessErrorModal(setSuccessErrorContext, "Error", data.message, false);
             }
         }

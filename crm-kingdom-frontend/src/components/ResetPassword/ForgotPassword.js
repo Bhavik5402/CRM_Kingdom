@@ -31,7 +31,8 @@ const ForgotPasswordForm = () => {
                 requestBody: { email: values.username },
                 apiService: authService.forgotPassword,
                 setSuccessErrorContext,
-                showPopup: true
+                showSuccessMessage: true,
+                showErrorMessage: true,
             });
             if (data && data.isSuccessfull) {
                 navigate(AppRoutings.Root);

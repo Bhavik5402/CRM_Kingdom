@@ -8,7 +8,6 @@ import { createCommonApiCall } from "utility/helper/create-api-call";
 import leadService from "services/lead-service";
 
 export default function EditLead() {
-   
     const { leadId } = useParams();
     const [breadcrumbRoute, setBreadcrumbRoute] = useState(["home", "leads", "Edit"]);
     const pageTitle = "Edit Lead";
@@ -21,25 +20,27 @@ export default function EditLead() {
                 requestBody: { leadId },
                 apiService: leadService.GetLeadById, // Assume this is the API to get stage by ID
                 setSuccessErrorContext,
-                showPopup: false,
+                showSuccessMessage: false,
+                showErrorMessage: true,
             });
             if (response && response.data) {
                 setInitialValues(response.data);
-                console.log("Initial Values - ",initialValues);
+                console.log("Initial Values - ", initialValues);
             }
         };
-        
+
         fetchLeadData();
     }, [leadId, setSuccessErrorContext]);
-    
+
     const handleSaveLead = async (updatedLead) => {
         // Call API to save updated stage details
-        console.log("Updated WhatsappNumber - ",updatedLead);
+        console.log("Updated WhatsappNumber - ", updatedLead);
         const response = await createCommonApiCall({
-            requestBody: {updatelead : { ...updatedLead, leadId }},
+            requestBody: { updatelead: { ...updatedLead, leadId } },
             apiService: leadService.UpdateLead, // Assume this is the API to update stage
             setSuccessErrorContext,
-            showPopup: true,
+            showSuccessMessage: true,
+            showErrorMessage: true,
         });
         if (response && response.isSuccessfull) {
             navigate(AppRoutings.Leads);
@@ -53,7 +54,14 @@ export default function EditLead() {
     return (
         <div className="lead-page">
             <Breadcrumbs icon="home" title={pageTitle} route={breadcrumbRoute} light={false} />
-            {initialValues && (<LeadCreationForm onSave={handleSaveLead} onCancel={handleCancel} pageTitle={pageTitle}  initialValues={initialValues}/>)}
+            {initialValues && (
+                <LeadCreationForm
+                    onSave={handleSaveLead}
+                    onCancel={handleCancel}
+                    pageTitle={pageTitle}
+                    initialValues={initialValues}
+                />
+            )}
         </div>
     );
 }

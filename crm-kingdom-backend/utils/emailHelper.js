@@ -4,12 +4,12 @@ export const sendResetPasswordEmail = async (email, resetToken, isResetPassword 
     try {
         // Create a transporter object using Office 365 SMTP settings
         const transporter = nodemailer.createTransport({
-            host: "smtp.office365.com",
-            port: 587, // Port for TLS
-            secure: false, // Use false for TLS (587)
+            host: "smtp.gmail.com",
+            port: 465, // Port for TLS
+            secure: true, // Use false for TLS (587)
             auth: {
-                user: "", // Your Outlook email
-                pass: "", // Your Outlook password
+                user: "vedant.trainee.tatvasoft@gmail.com", // Your Outlook email
+                pass: "ifhi wwcn jrnd gasu", // Your Outlook password
             },
             tls: {
                 ciphers: "SSLv3",

@@ -27,7 +27,7 @@ export default function AddLead() {
         managerusername: "John Doe",
         managerwhatsappnumber: "+1 555 765 4321",
         manageremailid: "john.doe@abccorp.com",
-        remark: "Interested in bulk orders."
+        remark: "Interested in bulk orders.",
     });
     const [isEditing, setIsEditing] = useState(true);
     const [pageTitle, setPageTitle] = useState("Add Lead");
@@ -36,16 +36,17 @@ export default function AddLead() {
     const handleSaveLead = async (newLead) => {
         console.log("hello lead save");
         const reqObject = {
-            lead : newLead,
+            lead: newLead,
         };
         console.log(newLead);
         const response = await createCommonApiCall({
             requestBody: reqObject,
             apiService: leadService.addLead,
             setSuccessErrorContext,
-            showPopup: true,
+            showSuccessMessage: true,
+            showErrorMessage: true,
         });
-        if(response && response.statusCode == 200){
+        if (response && response.statusCode == 200) {
             navigate(AppRoutings.Leads);
         }
     };
@@ -67,7 +68,11 @@ export default function AddLead() {
     return (
         <div className="lead-page">
             <Breadcrumbs icon="home" title={pageTitle} route={breadcrumbRoute} light={false} />
-            <LeadCreationForm onSave={handleSaveLead} onCancel={handleCancel} pageTitle={"Add Lead"} />
+            <LeadCreationForm
+                onSave={handleSaveLead}
+                onCancel={handleCancel}
+                pageTitle={"Add Lead"}
+            />
             {/* <LeadDetails data={formData} onEdit={handleEdit} onConfirm={handleConfirm} /> */}
         </div>
     );
